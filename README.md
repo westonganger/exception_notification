@@ -276,6 +276,13 @@ A complete list of `smtp_settings` options can be found in the [ActionMailer Con
 The parent mailer which ExceptionNotification mailer inherit from.
 
 
+##### deliver_with
+
+*Symbol, default: :deliver_now
+
+The method name to send emalis using ActionMailer.
+
+
 ### Campfire notifier
 
 This notifier sends notifications to your Campfire room.
