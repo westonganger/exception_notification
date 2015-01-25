@@ -17,7 +17,7 @@ module ExceptionNotifier
     end
 
     def call(exception, options={})
-      @room.paste "A new exception occurred: '#{exception.message}' on '#{exception.backtrace.first}'" if active?
+      @room.paste "A new exception occurred: '#{exception.message}' on '#{exception.backtrace.first if exception.backtrace}'" if active?
     end
 
     private
