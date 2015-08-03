@@ -88,11 +88,11 @@ module ExceptionNotifier
             name = @env.nil? ? 'background_exception_notification' : 'exception_notification'
 
             headers = {
-                :delivery_method => @options[:delivery_method],
-                :to => @options[:exception_recipients],
-                :from => @options[:sender_address],
-                :subject => subject,
-                :template_name => name
+              :delivery_method => @options[:delivery_method],
+              :to => @options[:exception_recipients],
+              :from => @options[:sender_address],
+              :subject => subject,
+              :template_name => name
             }.merge(@options[:email_headers])
 
             mail = mail(headers) do |format|
