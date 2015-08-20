@@ -48,7 +48,7 @@ module ExceptionNotifier
       deep_reject(data, @ignore_data_if) if @ignore_data_if.is_a?(Proc)
       text = data.map{|k,v| "#{k}: #{v}"}.join(', ')
 
-      if text.present?
+      unless text.nil? || text.empty?
         text = ['*Data:*', text].join("\n")
         [message, text].join("\n")
       else
