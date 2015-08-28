@@ -149,4 +149,22 @@ class EmailNotifierTest < ActiveSupport::TestCase
     assert_equal @ignored_exception.class.inspect, "ActiveRecord::RecordNotFound"
     assert_nil @ignored_mail
   end
+
+  if defined?(Rails) && ('4.2'...'5.0').cover?(Rails.version)
+    test "should be able to specify ActionMailer::MessageDelivery method" do
+      email_notifier = ExceptionNotifier::EmailNotifier.new(
+        :email_prefix => '[Dummy ERROR] ',
+        :sender_address => %{"Dummy Notifier" <dummynotifier@example.com>},
+        :exception_recipients => %w{dummyexceptions@example.com},
+        :deliver_with => :deliver_now
+      )
+      # In Rails 4.2, it gives deprecation warning like "`#deliver` is
+      # deprecated and will be removed in Rails 5." when "#deliver" is
+      # used. If methods like "#deliver_now" is used, it should not
+      # give any warnings.
+      assert_silent do
+        email_notifier.call(@exception)
+      end
+    end
+  end
 end

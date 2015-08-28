@@ -7,7 +7,7 @@ module ExceptionNotifier
   class EmailNotifier < Struct.new(:sender_address, :exception_recipients,
     :email_prefix, :email_format, :sections, :background_sections,
     :verbose_subject, :normalize_subject, :delivery_method, :mailer_settings,
-    :email_headers, :mailer_parent, :template_path)
+    :email_headers, :mailer_parent, :template_path, :deliver_with)
 
     module Mailer
       class MissingController
@@ -123,7 +123,7 @@ module ExceptionNotifier
         :sender_address, :exception_recipients,
         :email_prefix, :email_format, :sections, :background_sections,
         :verbose_subject, :normalize_subject, :delivery_method, :mailer_settings,
-        :email_headers, :mailer_parent, :template_path))
+        :email_headers, :mailer_parent, :template_path, :deliver_with))
     end
 
     def options
@@ -140,12 +140,7 @@ module ExceptionNotifier
     end
 
     def call(exception, options={})
-      message = create_email(exception, options)
-      if message.respond_to?(:deliver_now)
-        message.deliver_now
-      else
-        message.deliver
-      end
+      create_email(exception, options).send(deliver_with)
     end
 
     def create_email(exception, options={})
@@ -172,7 +167,8 @@ module ExceptionNotifier
         :mailer_settings => nil,
         :email_headers => {},
         :mailer_parent => 'ActionMailer::Base',
-        :template_path => 'exception_notifier'
+        :template_path => 'exception_notifier',
+        :deliver_with => :deliver_now
       }
     end
 
