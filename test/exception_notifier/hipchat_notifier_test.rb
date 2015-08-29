@@ -16,6 +16,19 @@ class HipchatNotifierTest < ActiveSupport::TestCase
     hipchat.call(fake_exception)
   end
 
+  test "should send hipchat notification without backtrace info if properly configured" do
+    options = {
+      :api_token => 'good_token',
+      :room_name => 'room_name',
+      :color     => 'yellow',
+    }
+
+    HipChat::Room.any_instance.expects(:send).with('Exception', fake_body_without_backtrace, { :color => 'yellow' })
+
+    hipchat = ExceptionNotifier::HipchatNotifier.new(options)
+    hipchat.call(fake_exception_without_backtrace)
+  end
+
   test "should allow custom from value if set" do
     options = {
       :api_token => 'good_token',
@@ -110,5 +123,13 @@ class HipchatNotifierTest < ActiveSupport::TestCase
     rescue Exception => e
       e
     end
+  end
+
+  def fake_body_without_backtrace
+    "A new exception occurred: '#{fake_exception_without_backtrace.message}'"
+  end
+
+  def fake_exception_without_backtrace
+    StandardError.new('my custom error')
   end
 end
