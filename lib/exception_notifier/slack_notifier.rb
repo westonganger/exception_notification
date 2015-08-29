@@ -17,7 +17,8 @@ module ExceptionNotifier
     end
 
     def call(exception, options={})
-      message = "An exception occurred: '#{exception.message}' on '#{exception.backtrace.first if exception.backtrace}'"
+      message = "An exception occurred: '#{exception.message}'"
+      message += " on '#{exception.backtrace.first}'" if exception.backtrace
 
       message = enrich_message_with_data(message, options)
       message = enrich_message_with_backtrace(message, exception)
