@@ -16,6 +16,18 @@ class CampfireNotifierTest < ActiveSupport::TestCase
     assert_includes notif[:message][:body], "/exception_notification/test/campfire_test.rb:45"
   end
 
+  test "should send campfire notification without backtrace info if properly configured" do
+    ExceptionNotifier::CampfireNotifier.stubs(:new).returns(Object.new)
+    campfire = ExceptionNotifier::CampfireNotifier.new({:subdomain => 'test', :token => 'test_token', :room_name => 'test_room'})
+    campfire.stubs(:call).returns(fake_notification_without_backtrace)
+    notif = campfire.call(fake_exception_without_backtrace)
+
+    assert !notif[:message].empty?
+    assert_equal notif[:message][:type], 'PasteMessage'
+    assert_includes notif[:message][:body], "A new exception occurred:"
+    assert_includes notif[:message][:body], "my custom error"
+  end
+
   test "should not send campfire notification if badly configured" do
     wrong_params = {:subdomain => 'test', :token => 'bad_token', :room_name => 'test_room'}
     Tinder::Campfire.stubs(:new).with('test', {:token => 'bad_token'}).returns(nil)
@@ -49,5 +61,16 @@ class CampfireNotifierTest < ActiveSupport::TestCase
     rescue Exception => e
       e
     end
+  end
+
+  def fake_notification_without_backtrace
+    {:message => {:type => 'PasteMessage',
+                  :body => "A new exception occurred: 'my custom error'"
+                 }
+    }
+  end
+
+  def fake_exception_without_backtrace
+    StandardError.new('my custom error')
   end
 end

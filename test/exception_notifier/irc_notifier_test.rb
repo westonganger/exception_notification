@@ -16,6 +16,19 @@ class IrcNotifierTest < ActiveSupport::TestCase
     irc.call(fake_exception)
   end
 
+  test "should send irc notification without backtrace info if properly configured" do
+    options = {
+      :domain => 'irc.example.com'
+    }
+
+    CarrierPigeon.expects(:send).with(has_key(:uri)) do |v|
+      /my custom error/.match(v[:message])
+    end
+
+    irc = ExceptionNotifier::IrcNotifier.new(options)
+    irc.call(fake_exception_without_backtrace)
+  end
+
   test "should properly construct URI from constituent parts" do
     options = {
       :nick => 'BadNewsBot',
@@ -81,5 +94,9 @@ class IrcNotifierTest < ActiveSupport::TestCase
     rescue Exception => e
       e
     end
+  end
+
+  def fake_exception_without_backtrace
+    StandardError.new('my custom error')
   end
 end

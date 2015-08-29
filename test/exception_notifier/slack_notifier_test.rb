@@ -20,6 +20,17 @@ class SlackNotifierTest < ActiveSupport::TestCase
     slack_notifier.call(@exception)
   end
 
+  test "should send a slack notification without backtrace info if properly configured" do
+    options = {
+      webhook_url: "http://slack.webhook.url"
+    }
+
+    Slack::Notifier.any_instance.expects(:ping).with(fake_notification_without_backtrace, {})
+
+    slack_notifier = ExceptionNotifier::SlackNotifier.new(options)
+    slack_notifier.call(fake_exception_without_backtrace)
+  end
+
   test "should send the notification to the specified channel" do
     options = {
       webhook_url: "http://slack.webhook.url",
@@ -113,5 +124,13 @@ class SlackNotifierTest < ActiveSupport::TestCase
     message = "An exception occurred: '#{exception.message}' on '#{exception.backtrace.first}'\n"
     message += "*Data:*\n#{data_string}\n" unless data_string.nil?
     message += "*Backtrace:*\n" + exception.backtrace.join("\n")
+  end
+
+  def fake_exception_without_backtrace
+    StandardError.new('my custom error')
+  end
+
+  def fake_notification_without_backtrace
+    message = "An exception occurred: '#{fake_exception_without_backtrace.message}'"
   end
 end

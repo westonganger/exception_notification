@@ -6,7 +6,8 @@ module ExceptionNotifier
     end
 
     def call(exception, options={})
-      message = "'#{exception.message}' on '#{exception.backtrace.first}'"
+      message = "'#{exception.message}'"
+      message += " on '#{exception.backtrace.first}'" if exception.backtrace
       send_message([*@config.prefix, *message].join(' ')) if active?
     end
 
