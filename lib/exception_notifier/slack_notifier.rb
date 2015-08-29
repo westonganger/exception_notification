@@ -21,7 +21,7 @@ module ExceptionNotifier
       message += " on '#{exception.backtrace.first}'" if exception.backtrace
 
       message = enrich_message_with_data(message, options)
-      message = enrich_message_with_backtrace(message, exception)
+      message = enrich_message_with_backtrace(message, exception) if exception.backtrace
 
       @notifier.ping(message, @message_opts) if valid?
     end
