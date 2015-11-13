@@ -16,6 +16,24 @@ class HipchatNotifierTest < ActiveSupport::TestCase
     hipchat.call(fake_exception)
   end
 
+  test "should call pre/post_callback if specified" do
+    pre_callback_called, post_callback_called = 0,0
+    options = {
+      :api_token => 'good_token',
+      :room_name => 'room_name',
+      :color     => 'yellow',
+      :pre_callback => proc { |*| pre_callback_called += 1},
+      :post_callback => proc { |*| post_callback_called += 1}
+    }
+
+    HipChat::Room.any_instance.expects(:send).with('Exception', fake_body, { :color => 'yellow' }.merge(options.except(:api_token, :room_name)))
+
+    hipchat = ExceptionNotifier::HipchatNotifier.new(options)
+    hipchat.call(fake_exception)
+    assert_equal(1, pre_callback_called)
+    assert_equal(1, post_callback_called)
+  end
+
   test "should send hipchat notification without backtrace info if properly configured" do
     options = {
       :api_token => 'good_token',

@@ -110,6 +110,34 @@ class SlackNotifierTest < ActiveSupport::TestCase
     slack_notifier.call(@exception, notification_options)
   end
 
+  test "should call pre/post_callback proc if specified" do
+    post_callback_called = 0
+    options = {
+      webhook_url: "http://slack.webhook.url",
+      username: "test",
+      custom_hook: "hook",
+      :pre_callback => proc { |opts, notifier, backtrace, message, message_opts|
+        (message_opts[:attachments] ||= []) << { text: "#{backtrace.join("\n")}", color: 'danger' }
+      },
+      :post_callback => proc { |opts, notifier, backtrace, message, message_opts|
+        post_callback_called = 1
+      },
+      additional_parameters: {
+        icon_url: "icon",
+      }
+    }
+
+    Slack::Notifier.any_instance.expects(:ping).with(fake_notification,
+                                                     {:icon_url => 'icon',
+                                                      :attachments => [
+                                                        {:text => "backtrace line 1\nbacktrace line 2", :color => 'danger'}
+                                                     ]})
+
+    slack_notifier = ExceptionNotifier::SlackNotifier.new(options)
+    slack_notifier.call(@exception)
+    assert_equal(post_callback_called, 1)
+  end
+
   private
 
   def fake_exception
@@ -131,6 +159,6 @@ class SlackNotifierTest < ActiveSupport::TestCase
   end
 
   def fake_notification_without_backtrace
-    message = "An exception occurred: '#{fake_exception_without_backtrace.message}'"
+    "An exception occurred: '#{fake_exception_without_backtrace.message}'"
   end
 end

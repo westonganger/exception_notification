@@ -4,7 +4,9 @@ require 'action_dispatch'
 require 'pp'
 
 module ExceptionNotifier
-  class EmailNotifier < Struct.new(:sender_address, :exception_recipients,
+  class EmailNotifier < BaseNotifier
+    attr_accessor(:sender_address, :exception_recipients,
+    :pre_callback, :post_callback,
     :email_prefix, :email_format, :sections, :background_sections,
     :verbose_subject, :normalize_subject, :delivery_method, :mailer_settings,
     :email_headers, :mailer_parent, :template_path, :deliver_with)
@@ -115,20 +117,22 @@ module ExceptionNotifier
     end
 
     def initialize(options)
+      super
       delivery_method = (options[:delivery_method] || :smtp)
       mailer_settings_key = "#{delivery_method}_settings".to_sym
       options[:mailer_settings] = options.delete(mailer_settings_key)
 
-      super(*options.reverse_merge(EmailNotifier.default_options).values_at(
+      options.reverse_merge(EmailNotifier.default_options).select{|k,v|[
         :sender_address, :exception_recipients,
+        :pre_callback, :post_callback,
         :email_prefix, :email_format, :sections, :background_sections,
         :verbose_subject, :normalize_subject, :delivery_method, :mailer_settings,
-        :email_headers, :mailer_parent, :template_path, :deliver_with))
+        :email_headers, :mailer_parent, :template_path, :deliver_with].include?(k)}.each{|k,v| send("#{k}=", v)}
     end
 
     def options
       @options ||= {}.tap do |opts|
-        each_pair { |k,v| opts[k] = v }
+        self.instance_variables.each { |var| opts[var[1..-1].to_sym] = self.instance_variable_get(var) }
       end
     end
 
@@ -147,9 +151,13 @@ module ExceptionNotifier
       env = options[:env]
       default_options = self.options
       if env.nil?
-        mailer.background_exception_notification(exception, options, default_options)
+        send_notice(exception, options, nil, default_options) do |_, default_opts|
+          mailer.background_exception_notification(exception, options, default_opts)
+        end
       else
-        mailer.exception_notification(env, exception, options, default_options)
+        send_notice(exception, options, nil, default_options) do |_, default_opts|
+          mailer.exception_notification(env, exception, options, default_opts)
+        end
       end
     end
 

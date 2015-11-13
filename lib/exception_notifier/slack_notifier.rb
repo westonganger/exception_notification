@@ -1,10 +1,11 @@
 module ExceptionNotifier
-  class SlackNotifier
+  class SlackNotifier < BaseNotifier
     include ExceptionNotifier::BacktraceCleaner
 
     attr_accessor :notifier
 
     def initialize(options)
+      super
       begin
         @ignore_data_if = options[:ignore_data_if]
 
@@ -22,8 +23,11 @@ module ExceptionNotifier
 
       message = enrich_message_with_data(message, options)
       message = enrich_message_with_backtrace(message, exception) if exception.backtrace
-
-      @notifier.ping(message, @message_opts) if valid?
+      if valid?
+        send_notice(exception, options, message, @message_opts) do |msg, message_opts|
+          @notifier.ping(msg, message_opts)
+        end
+      end
     end
 
     protected

@@ -1,11 +1,12 @@
 module ExceptionNotifier
-  class CampfireNotifier
+  class CampfireNotifier < BaseNotifier
 
     attr_accessor :subdomain
     attr_accessor :token
     attr_accessor :room
 
     def initialize(options)
+      super
       begin
         subdomain = options.delete(:subdomain)
         room_name = options.delete(:room_name)
@@ -20,7 +21,9 @@ module ExceptionNotifier
       if active?
         message = "A new exception occurred: '#{exception.message}'"
         message += " on '#{exception.backtrace.first}'" if exception.backtrace
-        @room.paste message message
+        send_notice(exception, options, message) do |msg, _|
+          @room.paste msg
+        end
       end
     end
 
