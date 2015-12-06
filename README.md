@@ -7,13 +7,9 @@
 
 **THIS README IS FOR THE MASTER BRANCH AND REFLECTS THE WORK CURRENTLY EXISTING ON THE MASTER BRANCH. IF YOU ARE WISHING TO USE A NON-MASTER BRANCH OF EXCEPTION NOTIFICATION, PLEASE CONSULT THAT BRANCH'S README AND NOT THIS ONE.**
 
--
+---
 
-The Exception Notification gem provides a set of [notifiers](#notifiers) for sending notifications when errors occur in a Rack/Rails application.
-
-The built-in notifiers can deliver notifications by [email](#email-notifier), [Campfire](#campfire-notifier), [HipChat](#hipchat-notifier), [Slack](#slack-notifier),
-[IRC](#irc-notifier) or via custom [WebHooks](#webhook-notifier).
-
+The Exception Notification gem provides a set of [notifiers](#notifiers) for sending notifications when errors occur in a Rack/Rails application. The built-in notifiers can deliver notifications by [email](#email-notifier), [Campfire](#campfire-notifier), [HipChat](#hipchat-notifier), [Slack](#slack-notifier), [IRC](#irc-notifier) or via custom [WebHooks](#webhook-notifier).
 
 There's a great [Railscast about Exception Notification](http://railscasts.com/episodes/104-exception-notifications-revised) you can see that may help you getting started.
 
@@ -21,8 +17,8 @@ There's a great [Railscast about Exception Notification](http://railscasts.com/e
 
 ## Requirements
 
-* Ruby 1.9.3 or greater
-* Rails 3.1 or greater, Sinatra or another Rack-based application.
+* Ruby 2.0 or greater
+* Rails 4.0 or greater, Sinatra or another Rack-based application.
 
 For previous releases, please checkout [this](#versions).
 
@@ -34,7 +30,9 @@ Add the following line to your application's Gemfile:
 gem 'exception_notification'
 ```
 
-As of Rails 3 ExceptionNotification is used as a rack middleware, or in the environment you want it to run. In most cases you would want ExceptionNotification to run on production. Thus, you can make it work by putting the following lines in your `config/environments/production.rb`:
+### Rails
+
+ExceptionNotification is used as a rack middleware, or in the environment you want it to run. In most cases you would want ExceptionNotification to run on production. Thus, you can make it work by putting the following lines in your `config/environments/production.rb`:
 
 ```ruby
 Rails.application.config.middleware.use ExceptionNotification::Rack,
@@ -45,33 +43,11 @@ Rails.application.config.middleware.use ExceptionNotification::Rack,
   }
 ```
 
-> **Note**: In order to enable delivery notifications by email make sure you have [ActionMailer configured](#actionmailer-configuration).
+**Note**: In order to enable delivery notifications by email make sure you have [ActionMailer configured](#actionmailer-configuration).
+
+### Rack/Sinatra
 
 In order to use ExceptionNotification with Sinatra, please take a look in the [example application](https://github.com/smartinez87/exception_notification/tree/master/examples/sinatra).
-
-### Upgrading to 4.x version
-
-As of 4.x version the configuration syntax has changed. All email related options MUST BE nested under the `:email` key. Thus, previous configuration like:
-
-```ruby
-Rails.application.config.middleware.use ExceptionNotifier,
-  :email_prefix => "[PREFIX] ",
-  :sender_address => %{"notifier" <notifier@example.com>},
-  :exception_recipients => %w{exceptions@example.com}
-```
-
-becomes:
-
-```ruby
-Rails.application.config.middleware.use ExceptionNotification::Rack,
-  :email => {
-    :email_prefix => "[PREFIX] ",
-    :sender_address => %{"notifier" <notifier@example.com>},
-    :exception_recipients => %w{exceptions@example.com}
-  }
-```
-
-Beside that, the rack middleware was renamed to `ExceptionNotification::Rack`.
 
 ## Notifiers
 
@@ -141,7 +117,7 @@ For more options to set Campfire, like _ssl_, check [here](https://github.com/co
 
 The Email notifier sends notifications by email. The notifications/emails sent includes information about the current request, session, and environment, and also gives a backtrace of the exception.
 
-After an exception notification has been delivered the rack environment variable 'exception_notifier.delivered' will be set to true.
+After an exception notification has been delivered the rack environment variable `exception_notifier.delivered` will be set to true.
 
 #### ActionMailer configuration
 
@@ -570,7 +546,7 @@ more information. Default: 'incoming-webhook'
 Contains additional payload for a message (e.g avatar, attachments, etc). See [slack-notifier](https://github.com/stevenosloan/slack-notifier#additional-parameters) for more information.. Default: '{}'
 
 
-### Webhook notifier
+### WebHook notifier
 
 This notifier ships notifications over the HTTP protocol.
 
