@@ -1,3 +1,7 @@
+== 4.1.2
+* enhancements
+  * Change format of Slack notifications (by @eldano)
+
 == 4.1.1
 
 * bug fixes

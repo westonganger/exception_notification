@@ -18,14 +18,30 @@ module ExceptionNotifier
     end
 
     def call(exception, options={})
-      message = "An exception occurred: '#{exception.message}'"
-      message += " on '#{exception.backtrace.first}'" if exception.backtrace
+      env = options[:env] || {}
+      title = "#{env['REQUEST_METHOD']} <#{env['REQUEST_URI']}>"
+      data = (env['exception_notifier.exception_data'] || {}).merge(options[:data] || {})
+      text = "*An exception occurred while doing*: `#{title}`\n"
 
-      message = enrich_message_with_data(message, options)
-      message = enrich_message_with_backtrace(message, exception) if exception.backtrace
+      clean_message = exception.message.gsub("`", "'")
+      fields = [ { title: 'Exception', value: clean_message} ]
+
+      if exception.backtrace
+        formatted_backtrace = "```#{exception.backtrace.first(5).join("\n")}```"
+        fields.push({ title: 'Backtrace', value: formatted_backtrace })
+      end
+
+      unless data.empty?
+        deep_reject(data, @ignore_data_if) if @ignore_data_if.is_a?(Proc)
+        data_string = data.map{|k,v| "#{k}: #{v}"}.join("\n")
+        fields.push({ title: 'Data', value: "```#{data_string}```" })
+      end
+
+      attchs = [color: 'danger', text: text, fields: fields, mrkdwn_in: %w(text fields)]
+
       if valid?
-        send_notice(exception, options, message, @message_opts) do |msg, message_opts|
-          @notifier.ping(msg, message_opts)
+        send_notice(exception, options, clean_message, @message_opts.merge(attachments: attchs)) do |msg, message_opts| 
+          @notifier.ping '', message_opts
         end
       end
     end
@@ -36,34 +52,16 @@ module ExceptionNotifier
       !@notifier.nil?
     end
 
-    def enrich_message_with_data(message, options)
-      def deep_reject(hash, block)
-        hash.each do |k, v|
-          if v.is_a?(Hash)
-            deep_reject(v, block)
-          end
+    def deep_reject(hash, block)
+      hash.each do |k, v|
+        if v.is_a?(Hash)
+          deep_reject(v, block)
+        end
 
-          if block.call(k, v)
-            hash.delete(k)
-          end
+        if block.call(k, v)
+          hash.delete(k)
         end
       end
-
-      data = ((options[:env] || {})['exception_notifier.exception_data'] || {}).merge(options[:data] || {})
-      deep_reject(data, @ignore_data_if) if @ignore_data_if.is_a?(Proc)
-      text = data.map{|k,v| "#{k}: #{v}"}.join(', ')
-
-      unless text.nil? || text.empty?
-        text = ['*Data:*', text].join("\n")
-        [message, text].join("\n")
-      else
-        message
-      end
-    end
-
-    def enrich_message_with_backtrace(message, exception)
-      backtrace = clean_backtrace(exception).first(10).join("\n")
-      [message, ['*Backtrace:*', backtrace]].join("\n")
     end
 
   end
