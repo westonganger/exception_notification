@@ -1,3 +1,8 @@
+== undefined
+
+* enhancements
+  * Add a way to have a backtrace callback on notifiers (by @pcboy)
+
 == 4.1.2
 * enhancements
   * Change format of Slack notifications (by @eldano)
