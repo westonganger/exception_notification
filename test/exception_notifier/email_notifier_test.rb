@@ -13,6 +13,11 @@ class EmailNotifierTest < ActiveSupport::TestCase
     end
   end
 
+  test "should call pre/post_callback if specified" do
+    assert_equal @email_notifier.options[:pre_callback_called], 1
+    assert_equal @email_notifier.options[:post_callback_called], 1
+  end
+
   test "should have default sender address overridden" do
     assert_equal @email_notifier.sender_address, %("Dummy Notifier" <dummynotifier@example.com>)
   end

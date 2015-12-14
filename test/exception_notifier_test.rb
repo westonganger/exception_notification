@@ -98,4 +98,5 @@ class ExceptionNotifierTest < ActiveSupport::TestCase
 
     ExceptionNotifier.unregister_exception_notifier(:test)
   end
+
 end

@@ -1,6 +1,7 @@
 require 'logger'
 require 'active_support/core_ext/string/inflections'
 require 'active_support/core_ext/module/attribute_accessors'
+require 'exception_notifier/base_notifier'
 
 module ExceptionNotifier
 

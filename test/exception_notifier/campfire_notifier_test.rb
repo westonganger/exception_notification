@@ -46,6 +46,30 @@ class CampfireNotifierTest < ActiveSupport::TestCase
     assert_nil campfire.call(fake_exception)
   end
 
+  test "should call pre/post_callback if specified" do 
+    pre_callback_called, post_callback_called = 0,0
+    Tinder::Campfire.stubs(:new).returns(Object.new)
+
+    campfire = ExceptionNotifier::CampfireNotifier.new(
+      {
+        :subdomain => 'test',
+        :token => 'test_token',
+        :room_name => 'test_room',
+        :pre_callback => proc { |opts, notifier, backtrace, message, message_opts|
+          pre_callback_called += 1
+        },
+        :post_callback => proc { |opts, notifier, backtrace, message, message_opts|
+          post_callback_called += 1
+        }
+      }
+    )
+    campfire.room = Object.new
+    campfire.room.stubs(:paste).returns(fake_notification)
+    campfire.call(fake_exception)
+    assert_equal(1, pre_callback_called)
+    assert_equal(1, post_callback_called)
+  end
+
   private
 
   def fake_notification

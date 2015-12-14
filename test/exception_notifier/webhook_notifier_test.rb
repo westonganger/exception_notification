@@ -25,6 +25,12 @@ class WebhookNotifierTest < ActiveSupport::TestCase
     assert response[:body][:data][:extra_data].has_key?(:data_item1)
   end
 
+  test "should call pre/post_callback if specified" do
+    HTTParty.stubs(:send).returns(fake_response)
+    webhook = ExceptionNotifier::WebhookNotifier.new({:url => 'http://localhost:8000'})
+    webhook.call(fake_exception)
+  end
+
   private
 
   def fake_response
