@@ -1,8 +1,8 @@
 Gem::Specification.new do |s|
   s.name = 'exception_notification'
-  s.version = '4.1.2'
+  s.version = '4.1.3'
   s.authors = ["Jamis Buck", "Josh Peek"]
-  s.date = %q{2015-12-04}
+  s.date = %q{2015-12-22}
   s.summary = "Exception notification for Rails apps"
   s.homepage = "http://smartinez87.github.com/exception_notification"
   s.email = "smartinez87@gmail.com"
@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency "rails", "~> 4.0"
   s.add_development_dependency "resque", "~> 1.2.0"
-  # Sidekiq 3.2.2 does not support Ruby 1.9. 
+  # Sidekiq 3.2.2 does not support Ruby 1.9.
   s.add_development_dependency "sidekiq", "~> 3.0.0", "< 3.2.2"
   s.add_development_dependency "tinder", "~> 1.8"
   s.add_development_dependency "httparty", "~> 0.10.2"
