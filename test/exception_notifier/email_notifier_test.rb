@@ -155,6 +155,26 @@ class EmailNotifierTest < ActiveSupport::TestCase
     assert_nil @ignored_mail
   end
 
+  test "should encode environment strings" do
+    email_notifier = ExceptionNotifier::EmailNotifier.new(
+      :sender_address => "<dummynotifier@example.com>",
+      :exception_recipients => %w{dummyexceptions@example.com},
+      :deliver_with => :deliver_now
+    )
+
+    mail = email_notifier.create_email(
+      @exception,
+      :env => {
+        "REQUEST_METHOD" => "GET",
+        "rack.input" => "",
+        "invalid_encoding" => "R\xC3\xA9sum\xC3\xA9".force_encoding(Encoding::ASCII),
+      },
+      :email_format => :text
+    )
+
+    assert_match /invalid_encoding\s+: R__sum__/, mail.encoded
+  end
+
   if defined?(Rails) && ('4.2'...'5.0').cover?(Rails.version)
     test "should be able to specify ActionMailer::MessageDelivery method" do
       email_notifier = ExceptionNotifier::EmailNotifier.new(

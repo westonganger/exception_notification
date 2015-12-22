@@ -80,6 +80,12 @@ module ExceptionNotifier
             end
           end
 
+          helper_method :safe_encode
+
+          def safe_encode(value)
+            value.encode("utf-8", invalid: :replace, undef: :replace, replace: "_")
+          end
+
           def html_mail?
             @options[:email_format] == :html
           end
