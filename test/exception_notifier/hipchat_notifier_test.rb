@@ -104,6 +104,22 @@ class HipchatNotifierTest < ActiveSupport::TestCase
     hipchat.call(fake_exception)
   end
 
+  test "should send hipchat notification with HTML-escaped meessage if using default message_template" do
+    options = {
+      :api_token => 'good_token',
+      :room_name => 'room_name',
+      :color     => 'yellow',
+    }
+
+    exception = fake_exception_with_html_characters
+    body = "A new exception occurred: '#{Rack::Utils.escape_html(exception.message)}' on '#{exception.backtrace.first}'"
+
+    HipChat::Room.any_instance.expects(:send).with('Exception', body, { :color => 'yellow' })
+
+    hipchat = ExceptionNotifier::HipchatNotifier.new(options)
+    hipchat.call(exception)
+  end
+
   test "should use APIv1 if api_version is not specified" do
     options = {
       :api_token => 'good_token',
@@ -138,6 +154,14 @@ class HipchatNotifierTest < ActiveSupport::TestCase
   def fake_exception
     exception = begin
       5/0
+    rescue Exception => e
+      e
+    end
+  end
+
+  def fake_exception_with_html_characters
+    exception = begin
+      raise StandardError.new('an error with <html> characters')
     rescue Exception => e
       e
     end
