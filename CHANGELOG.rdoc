@@ -1,4 +1,10 @@
-== undefined
+== 4.1.4
+
+* bug fixes
+  * HTML-escape exception messages sent to hipchat
+  * Send the correct options in send_notice
+
+== 4.1.3
 
 * enhancements
   * Add a way to have a backtrace callback on notifiers (by @pcboy)
