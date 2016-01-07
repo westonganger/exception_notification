@@ -1,8 +1,10 @@
+== undefined
+
 == 4.1.4
 
 * bug fixes
-  * HTML-escape exception messages sent to hipchat
-  * Send the correct options in send_notice
+  * HTML-escape exception messages sent to hipchat (by @gburt)
+  * Send the correct options in send_notice (by @pcboy)
 
 == 4.1.3
 
