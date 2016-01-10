@@ -1,5 +1,8 @@
 == undefined
 
+* enhancements
+  * update URL in gemspec (by @ktdreyer)
+
 == 4.1.4
 
 * bug fixes
