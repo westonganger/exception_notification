@@ -3,7 +3,7 @@ Gem::Specification.new do |s|
   s.version = '4.1.4'
   s.authors = ["Jamis Buck", "Josh Peek"]
   s.summary = "Exception notification for Rails apps"
-  s.homepage = "http://smartinez87.github.com/exception_notification"
+  s.homepage = "https://smartinez87.github.io/exception_notification/"
   s.email = "smartinez87@gmail.com"
   s.license = "MIT"
 
