@@ -1,4 +1,5 @@
 require 'test_helper'
+require 'action_mailer'
 
 class EmailNotifierTest < ActiveSupport::TestCase
   setup do
@@ -173,6 +174,21 @@ class EmailNotifierTest < ActiveSupport::TestCase
     )
 
     assert_match /invalid_encoding\s+: R__sum__/, mail.encoded
+  end
+
+  test "should send email using ActionMailer" do
+    ActionMailer::Base.deliveries.clear
+
+    email_notifier = ExceptionNotifier::EmailNotifier.new(
+      :email_prefix => '[Dummy ERROR] ',
+      :sender_address => %{"Dummy Notifier" <dummynotifier@example.com>},
+      :exception_recipients => %w{dummyexceptions@example.com},
+      :delivery_method => :test
+    )
+
+    email_notifier.call(@exception)
+
+    assert_equal 1, ActionMailer::Base.deliveries.count
   end
 
   def self.rails_greater_than_4_1
