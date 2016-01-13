@@ -106,7 +106,7 @@ class EmailNotifierTest < ActiveSupport::TestCase
       prefix = '[Dummy ERROR]  '
     else
       # On Rails 4.1 the subject prefix has a single space.
-      prefix = '[Dummy ERROR] '
+      prefix = '[Dummy ERROR]  '
     end
     assert_equal @mail.subject, prefix + '(ZeroDivisionError) "divided by 0"'
   end
