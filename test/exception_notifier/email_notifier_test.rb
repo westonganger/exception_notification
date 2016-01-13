@@ -175,13 +175,20 @@ class EmailNotifierTest < ActiveSupport::TestCase
     assert_match /invalid_encoding\s+: R__sum__/, mail.encoded
   end
 
-  if defined?(Rails) && ('4.2'...'5.0').cover?(Rails.version)
+  def self.rails_greater_than_4_1
+    defined?(Rails) &&
+      (Rails::VERSION::MAJOR == 4 && Rails::VERSION::MINOR >= 2) ||
+      (Rails::VERSION::MAJOR > 4)
+  end
+
+  if rails_greater_than_4_1
     test "should be able to specify ActionMailer::MessageDelivery method" do
       email_notifier = ExceptionNotifier::EmailNotifier.new(
         :email_prefix => '[Dummy ERROR] ',
         :sender_address => %{"Dummy Notifier" <dummynotifier@example.com>},
         :exception_recipients => %w{dummyexceptions@example.com},
-        :deliver_with => :deliver_now
+        :deliver_with => :deliver_now,
+        :delivery_method => :test
       )
       # In Rails 4.2, it gives deprecation warning like "`#deliver` is
       # deprecated and will be removed in Rails 5." when "#deliver" is
