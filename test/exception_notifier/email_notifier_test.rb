@@ -101,15 +101,7 @@ class EmailNotifierTest < ActiveSupport::TestCase
   end
 
   test "mail should have a descriptive subject" do
-    # On Rails < 4.1 the subject prefix has two spaces before the rest of the
-    # subject content.
-    if self.class.rails_greater_than_4_1
-      prefix = '[Dummy ERROR] '
-    else
-      # On Rails 4.1 the subject prefix has a single space.
-      prefix = '[Dummy ERROR]  '
-    end
-    assert_equal @mail.subject, prefix + '(ZeroDivisionError) "divided by 0"'
+    assert_match /^\[Dummy ERROR\]\s+\(ZeroDivisionError\) "divided by 0"$/, @mail.subject
   end
 
   test "mail should say exception was raised in background at show timestamp" do
@@ -189,11 +181,5 @@ class EmailNotifierTest < ActiveSupport::TestCase
     email_notifier.call(@exception)
 
     assert_equal 1, ActionMailer::Base.deliveries.count
-  end
-
-  def self.rails_greater_than_4_1
-    defined?(Rails) &&
-      (Rails::VERSION::MAJOR == 4 && Rails::VERSION::MINOR > 1) ||
-      (Rails::VERSION::MAJOR > 4)
   end
 end
