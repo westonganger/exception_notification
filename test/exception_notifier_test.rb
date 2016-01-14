@@ -1,7 +1,5 @@
 require 'test_helper'
 
-ExceptionNotifier.testing_mode!
-
 class ExceptionNotifierTest < ActiveSupport::TestCase
   test "should have default ignored exceptions" do
     assert_equal ExceptionNotifier.ignored_exceptions, ['ActiveRecord::RecordNotFound', 'AbstractController::ActionNotFound', 'ActionController::RoutingError', 'ActionController::UnknownFormat']
