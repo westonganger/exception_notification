@@ -103,8 +103,8 @@ class EmailNotifierTest < ActiveSupport::TestCase
   test "mail should have a descriptive subject" do
     # On Rails < 4.1 the subject prefix has two spaces before the rest of the
     # subject content.
-    if Gem::Version.new(ActionMailer::VERSION::STRING) < Gem::Version.new('4.1')
-      prefix = '[Dummy ERROR]  '
+    if self.class.rails_greater_than_4_1
+      prefix = '[Dummy ERROR] '
     else
       # On Rails 4.1 the subject prefix has a single space.
       prefix = '[Dummy ERROR]  '
@@ -128,7 +128,7 @@ class EmailNotifierTest < ActiveSupport::TestCase
   end
 
   test "mail should contain backtrace in body" do
-    assert @mail.encoded.include?("test/exception_notifier/email_notifier_test.rb:8"), "\n#{@mail.inspect}"
+    assert @mail.encoded.include?("test/exception_notifier/email_notifier_test.rb:9"), "\n#{@mail.inspect}"
   end
 
   test "mail should contain data in body" do
@@ -193,26 +193,7 @@ class EmailNotifierTest < ActiveSupport::TestCase
 
   def self.rails_greater_than_4_1
     defined?(Rails) &&
-      (Rails::VERSION::MAJOR == 4 && Rails::VERSION::MINOR >= 2) ||
+      (Rails::VERSION::MAJOR == 4 && Rails::VERSION::MINOR > 1) ||
       (Rails::VERSION::MAJOR > 4)
-  end
-
-  if rails_greater_than_4_1
-    test "should be able to specify ActionMailer::MessageDelivery method" do
-      email_notifier = ExceptionNotifier::EmailNotifier.new(
-        :email_prefix => '[Dummy ERROR] ',
-        :sender_address => %{"Dummy Notifier" <dummynotifier@example.com>},
-        :exception_recipients => %w{dummyexceptions@example.com},
-        :deliver_with => :deliver_now,
-        :delivery_method => :test
-      )
-      # In Rails 4.2, it gives deprecation warning like "`#deliver` is
-      # deprecated and will be removed in Rails 5." when "#deliver" is
-      # used. If methods like "#deliver_now" is used, it should not
-      # give any warnings.
-      assert_silent do
-        email_notifier.call(@exception)
-      end
-    end
   end
 end
