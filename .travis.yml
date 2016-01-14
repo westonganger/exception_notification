@@ -3,6 +3,9 @@ rvm:
   - 2.0.0
   - 2.1
   - 2.2
+install:
+  - "gem install bundler"
+  - "bundle install --jobs=3 --retry=3"
 gemfile:
  - Gemfile
  - gemfiles/rails4_0.gemfile
