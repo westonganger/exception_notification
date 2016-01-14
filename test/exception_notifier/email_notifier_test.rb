@@ -1,4 +1,5 @@
 require 'test_helper'
+require 'action_mailer'
 
 class EmailNotifierTest < ActiveSupport::TestCase
   setup do
@@ -100,15 +101,7 @@ class EmailNotifierTest < ActiveSupport::TestCase
   end
 
   test "mail should have a descriptive subject" do
-    # On Rails < 4.1 the subject prefix has two spaces before the rest of the
-    # subject content.
-    if Gem::Version.new(ActionMailer::VERSION::STRING) < Gem::Version.new('4.1')
-      prefix = '[Dummy ERROR]  '
-    else
-      # On Rails 4.1 the subject prefix has a single space.
-      prefix = '[Dummy ERROR] '
-    end
-    assert_equal @mail.subject, prefix + '(ZeroDivisionError) "divided by 0"'
+    assert_match /^\[Dummy ERROR\]\s+\(ZeroDivisionError\) "divided by 0"$/, @mail.subject
   end
 
   test "mail should say exception was raised in background at show timestamp" do
@@ -127,7 +120,7 @@ class EmailNotifierTest < ActiveSupport::TestCase
   end
 
   test "mail should contain backtrace in body" do
-    assert @mail.encoded.include?("test/exception_notifier/email_notifier_test.rb:8"), "\n#{@mail.inspect}"
+    assert @mail.encoded.include?("test/exception_notifier/email_notifier_test.rb:9"), "\n#{@mail.inspect}"
   end
 
   test "mail should contain data in body" do
@@ -175,21 +168,18 @@ class EmailNotifierTest < ActiveSupport::TestCase
     assert_match /invalid_encoding\s+: R__sum__/, mail.encoded
   end
 
-  if defined?(Rails) && ('4.2'...'5.0').cover?(Rails.version)
-    test "should be able to specify ActionMailer::MessageDelivery method" do
-      email_notifier = ExceptionNotifier::EmailNotifier.new(
-        :email_prefix => '[Dummy ERROR] ',
-        :sender_address => %{"Dummy Notifier" <dummynotifier@example.com>},
-        :exception_recipients => %w{dummyexceptions@example.com},
-        :deliver_with => :deliver_now
-      )
-      # In Rails 4.2, it gives deprecation warning like "`#deliver` is
-      # deprecated and will be removed in Rails 5." when "#deliver" is
-      # used. If methods like "#deliver_now" is used, it should not
-      # give any warnings.
-      assert_silent do
-        email_notifier.call(@exception)
-      end
-    end
+  test "should send email using ActionMailer" do
+    ActionMailer::Base.deliveries.clear
+
+    email_notifier = ExceptionNotifier::EmailNotifier.new(
+      :email_prefix => '[Dummy ERROR] ',
+      :sender_address => %{"Dummy Notifier" <dummynotifier@example.com>},
+      :exception_recipients => %w{dummyexceptions@example.com},
+      :delivery_method => :test
+    )
+
+    email_notifier.call(@exception)
+
+    assert_equal 1, ActionMailer::Base.deliveries.count
   end
 end

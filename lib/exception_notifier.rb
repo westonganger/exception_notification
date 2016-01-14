@@ -25,12 +25,19 @@ module ExceptionNotifier
   mattr_accessor :ignored_exceptions
   @@ignored_exceptions = %w{ActiveRecord::RecordNotFound AbstractController::ActionNotFound ActionController::RoutingError ActionController::UnknownFormat}
 
+  mattr_accessor :testing_mode
+  @@testing_mode = false
+
   class << self
     # Store conditions that decide when exceptions must be ignored or not.
     @@ignores = []
 
     # Store notifiers that send notifications when exceptions are raised.
     @@notifiers = {}
+
+    def testing_mode!
+      self.testing_mode = true
+    end
 
     def notify_exception(exception, options={})
       return false if ignored_exception?(options[:ignore_exceptions], exception)
@@ -82,6 +89,8 @@ module ExceptionNotifier
     def ignored?(exception, options)
       @@ignores.any?{ |condition| condition.call(exception, options) }
     rescue Exception => e
+      raise e if @@testing_mode
+
       logger.warn "An error occurred when evaluating an ignore condition. #{e.class}: #{e.message}\n#{e.backtrace.join("\n")}"
       false
     end
@@ -94,6 +103,8 @@ module ExceptionNotifier
       notifier = registered_exception_notifier(notifier_name)
       notifier.call(exception, options)
     rescue Exception => e
+      raise e if @@testing_mode
+
       logger.warn "An error occurred when sending a notification using '#{notifier_name}' notifier. #{e.class}: #{e.message}\n#{e.backtrace.join("\n")}"
       false
     end

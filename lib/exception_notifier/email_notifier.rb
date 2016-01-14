@@ -150,7 +150,18 @@ module ExceptionNotifier
     end
 
     def call(exception, options={})
-      create_email(exception, options).send(deliver_with)
+      message = create_email(exception, options)
+
+      # FIXME: use `if Gem::Version.new(ActionMailer::VERSION::STRING) < Gem::Version.new('4.1')`
+      if deliver_with == :default
+        if message.respond_to?(:deliver_now)
+          deliver_with = :deliver_now
+        else
+          deliver_with = :deliver
+        end
+      end
+
+      message.send(deliver_with)
     end
 
     def create_email(exception, options={})
@@ -182,7 +193,7 @@ module ExceptionNotifier
         :email_headers => {},
         :mailer_parent => 'ActionMailer::Base',
         :template_path => 'exception_notifier',
-        :deliver_with => :deliver_now
+        :deliver_with => :default
       }
     end
 

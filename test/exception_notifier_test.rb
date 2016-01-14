@@ -24,6 +24,7 @@ class ExceptionNotifierTest < ActiveSupport::TestCase
     assert_equal ExceptionNotifier.notifiers.sort, [:email, :proc]
 
     exception = StandardError.new
+
     ExceptionNotifier.notify_exception(exception)
     assert called
 

@@ -27,7 +27,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "mocha", ">= 0.13.0"
   s.add_development_dependency "sqlite3", ">= 1.3.4"
   s.add_development_dependency "coveralls", "~> 0.8.2"
-  s.add_development_dependency "appraisal", "~> 1.0.0"
+  s.add_development_dependency "appraisal", "~> 2.0.0"
   s.add_development_dependency "hipchat", ">= 1.0.0"
   s.add_development_dependency "carrier-pigeon", ">= 0.7.0"
   s.add_development_dependency "slack-notifier", ">= 1.0.0"
