@@ -824,6 +824,9 @@ Here's the list of [issues](https://github.com/smartinez87/exception_notificatio
 
 To contribute, please read first the [Contributing Guide](https://github.com/smartinez87/exception_notification/blob/master/CONTRIBUTING.md).
 
+## Code of Conduct
+
+Everyone interacting in this project's codebases, issue trackers, chat rooms, and mailing lists is expected to follow our [code of conduct](https://github.com/smartinez87/exception_notification/blob/master/CODE_OF_CONDUCT.md).
 
 ## License
 
