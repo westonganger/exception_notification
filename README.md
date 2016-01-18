@@ -775,6 +775,7 @@ Since his first version, ExceptionNotification was just a simple rack middleware
 
 This command generates an initialize file (`config/initializers/exception_notification.rb`) where you can customize your configurations.
 
+Make sure the gem is not listed solely under the `production` group, since this initializer will be loaded regardless of environment.
 
 ### Resque/Sidekiq
 
@@ -786,6 +787,7 @@ or
 
     rails g exception_notification:install --sidekiq
 
+As above, make sure the gem is not listed solely under the `production` group, since this initializer will be loaded regardless of environment.
 
 ## Versions
 
