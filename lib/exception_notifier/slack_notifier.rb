@@ -26,6 +26,8 @@ module ExceptionNotifier
       clean_message = exception.message.gsub("`", "'")
       fields = [ { title: 'Exception', value: clean_message} ]
 
+      fields.push({ title: 'Hostname', value: Socket.gethostname })
+
       if exception.backtrace
         formatted_backtrace = "```#{exception.backtrace.first(5).join("\n")}```"
         fields.push({ title: 'Backtrace', value: formatted_backtrace })
@@ -40,7 +42,7 @@ module ExceptionNotifier
       attchs = [color: 'danger', text: text, fields: fields, mrkdwn_in: %w(text fields)]
 
       if valid?
-        send_notice(exception, options, clean_message, @message_opts.merge(attachments: attchs)) do |msg, message_opts| 
+        send_notice(exception, options, clean_message, @message_opts.merge(attachments: attchs)) do |msg, message_opts|
           @notifier.ping '', message_opts
         end
       end

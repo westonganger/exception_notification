@@ -7,6 +7,7 @@ class SlackNotifierTest < ActiveSupport::TestCase
     @exception = fake_exception
     @exception.stubs(:backtrace).returns(["backtrace line 1", "backtrace line 2"])
     @exception.stubs(:message).returns('exception message')
+    Socket.stubs(:gethostname).returns('example.com')
   end
 
   test "should send a slack notification if properly configured" do
@@ -153,10 +154,11 @@ class SlackNotifierTest < ActiveSupport::TestCase
     StandardError.new('my custom error')
   end
 
-  def fake_notification(exception=@exception, data_string=nil)
+  def fake_notification(exception = @exception, data_string = nil)
     text = "*An exception occurred while doing*: ` <>`\n"
 
     fields = [ { title: 'Exception', value: exception.message} ]
+    fields.push({ title: 'Hostname', value: 'example.com' })
     fields.push({ title: 'Backtrace', value: "```backtrace line 1\nbacktrace line 2```" }) if exception.backtrace
     fields.push({ title: 'Data', value: "```#{data_string}```" }) if data_string
 
