@@ -2,6 +2,7 @@
 
 * enhancements
   * update URL in gemspec (by @ktdreyer)
+  * Add `hostname` to Slack notifier (by @juanazam)
 
 == 4.1.4
 
