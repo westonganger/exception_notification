@@ -29,7 +29,7 @@ module ExceptionNotifier
       fields.push({ title: 'Hostname', value: Socket.gethostname })
 
       if exception.backtrace
-        formatted_backtrace = "```#{exception.backtrace.first(5).join("\n")}```"
+        formatted_backtrace = "```#{exception.backtrace.join("\n")}```"
         fields.push({ title: 'Backtrace', value: formatted_backtrace })
       end
 
