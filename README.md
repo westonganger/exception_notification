@@ -493,7 +493,20 @@ Rails.application.config.middleware.use ExceptionNotification::Rack,
   }
 ```
 
-The slack notification will include any data saved under `env["exception_notifier.exception_data"]`. If you find this too verbose, you can determine to exclude certain information by doing the following:
+The slack notification will include any data saved under `env["exception_notifier.exception_data"]`.
+
+An example of how to send the server name to Slack in Rails (put this code in application_controller.rb):
+
+```ruby
+before_filter :set_notification
+
+def set_notification
+     request.env['exception_notifier.exception_data'] = {"server" => request.env['SERVER_NAME']}
+     # can be any key-value pairs
+end
+```
+
+If you find this too verbose, you can determine to exclude certain information by doing the following:
 
 ```ruby
 Rails.application.config.middleware.use ExceptionNotification::Rack,
