@@ -144,9 +144,9 @@ Who the message is from.
 
 ##### exception_recipients
 
-*String/Array of strings, default: []*
+*String/Array of strings/Proc, default: []*
 
-Who the message is destined for, can be a string of addresses, or an array of addresses.
+Who the message is destined for, can be a string of addresses, an array of addresses, or it can be a proc that returns a string of addresses or an array of addresses. The proc will be evaluated when the mail is sent.
 
 ##### email_prefix
 

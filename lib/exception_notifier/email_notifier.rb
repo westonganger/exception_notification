@@ -94,10 +94,11 @@ module ExceptionNotifier
             set_data_variables
             subject = compose_subject
             name = @env.nil? ? 'background_exception_notification' : 'exception_notification'
+            exception_recipients = maybe_call(@options[:exception_recipients])
 
             headers = {
               :delivery_method => @options[:delivery_method],
-              :to => @options[:exception_recipients],
+              :to => exception_recipients,
               :from => @options[:sender_address],
               :subject => subject,
               :template_name => name
@@ -117,6 +118,10 @@ module ExceptionNotifier
             if defined?(Rails) && Rails.respond_to?(:root)
               self.prepend_view_path Rails.root.nil? ? "app/views" : "#{Rails.root}/app/views"
             end
+          end
+
+          def maybe_call(maybe_proc)
+            maybe_proc.respond_to?(:call) ? maybe_proc.call : maybe_proc
           end
         end
       end
