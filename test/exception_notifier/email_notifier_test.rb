@@ -182,4 +182,19 @@ class EmailNotifierTest < ActiveSupport::TestCase
 
     assert_equal 1, ActionMailer::Base.deliveries.count
   end
+
+  test "should lazily evaluate exception_recipients" do
+    exception_recipients = %w{first@example.com second@example.com}
+    email_notifier = ExceptionNotifier::EmailNotifier.new(
+      :email_prefix => '[Dummy ERROR] ',
+      :sender_address => %{"Dummy Notifier" <dummynotifier@example.com>},
+      :exception_recipients => -> { [ exception_recipients.shift ] },
+      :delivery_method => :test
+    )
+
+    mail = email_notifier.call(@exception)
+    assert_equal %w{first@example.com}, mail.to
+    mail = email_notifier.call(@exception)
+    assert_equal %w{second@example.com}, mail.to
+  end
 end

@@ -222,3 +222,31 @@ class PostsControllerTestBackgroundNotification < ActionController::TestCase
     assert_includes @mail.encoded, "* New background section for testing"
   end
 end
+
+class PostsControllerTestWithExceptionRecipientsAsProc < ActionController::TestCase
+  tests PostsController
+  setup do
+    exception_recipients = %w{first@example.com second@example.com}
+
+    @email_notifier = ExceptionNotifier::EmailNotifier.new(
+      exception_recipients: -> { [ exception_recipients.shift ] }
+    )
+
+    @action = proc do
+      begin
+        @post = posts(:one)
+        post :create, :post => @post.attributes
+      rescue => e
+        @exception = e
+        @mail = @email_notifier.create_email(@exception, {:env => request.env})
+      end
+    end
+  end
+
+  test "should lazily evaluate exception_recipients" do
+    @action.call
+    assert_equal [ "first@example.com" ], @mail.to
+    @action.call
+    assert_equal [ "second@example.com" ], @mail.to
+  end
+end
