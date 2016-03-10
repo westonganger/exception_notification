@@ -3,6 +3,7 @@
 * enhancements
   * update URL in gemspec (by @ktdreyer)
   * Add `hostname` to Slack notifier (by @juanazam)
+  * Allow `exception_recipients` to be a proc (by @kellyjosephprice)
 
 == 4.1.4
 
