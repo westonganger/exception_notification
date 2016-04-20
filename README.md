@@ -308,7 +308,7 @@ This notifier sends notifications to your Hipchat room.
 
 #### Usage
 
-Just add the [hipchat](https://github.com/hipchat/hipchat) gem to your `Gemfile`:
+Just add the [hipchat](https://github.com/hipchat/hipchat-rb) gem to your `Gemfile`:
 
 ```ruby
 gem 'hipchat'
