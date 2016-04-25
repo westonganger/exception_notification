@@ -49,6 +49,36 @@ Rails.application.config.middleware.use ExceptionNotification::Rack,
 
 In order to use ExceptionNotification with Sinatra, please take a look in the [example application](https://github.com/smartinez87/exception_notification/tree/master/examples/sinatra).
 
+### Custom Data, e.g. Current User
+
+Save the current user in the `request` using a controller callback.
+
+```ruby
+class ApplicationController < ActionController::Base
+  before_filter :prepare_exception_notifier
+  private
+  def prepare_exception_notifier
+    request.env["exception_notifier.exception_data"] = {
+      :current_user => current_user
+    }
+  end
+end
+```
+
+The current user will show up in your email, in a new section titled "Data".
+
+```
+------------------------------- Data:
+
+* data: {:current_user=>
+  #<User:0x007ff03c0e5860
+   id: 3,
+   email: "jane.doe@example.com", # etc...
+```
+
+For more control over the display of custom data, see "Email notifier ->
+Options -> sections" below.
+
 ## Notifiers
 
 ExceptionNotification relies on notifiers to deliver notifications when errors occur in your applications. By default, six notifiers are available:
