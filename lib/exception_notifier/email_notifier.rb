@@ -1,4 +1,5 @@
 require "active_support/core_ext/hash/reverse_merge"
+require 'active_support/core_ext/time'
 require 'action_mailer'
 require 'action_dispatch'
 require 'pp'
@@ -33,6 +34,7 @@ module ExceptionNotifier
             @kontroller = env['action_controller.instance'] || MissingController.new
             @request    = ActionDispatch::Request.new(env)
             @backtrace  = exception.backtrace ? clean_backtrace(exception) : []
+            @timestamp  = Time.current
             @sections   = @options[:sections]
             @data       = (env['exception_notifier.exception_data'] || {}).merge(options[:data] || {})
             @sections   = @sections + %w(data) unless @data.empty?
@@ -46,6 +48,7 @@ module ExceptionNotifier
             @exception = exception
             @options   = options.reverse_merge(default_options)
             @backtrace = exception.backtrace || []
+            @timestamp = Time.current
             @sections  = @options[:background_sections]
             @data      = options[:data] || {}
 
