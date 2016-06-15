@@ -1,4 +1,5 @@
 require 'action_dispatch'
+require 'active_support/core_ext/time'
 
 module ExceptionNotifier
   class WebhookNotifier < BaseNotifier
