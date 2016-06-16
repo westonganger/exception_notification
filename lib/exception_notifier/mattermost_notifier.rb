@@ -1,9 +1,6 @@
 module ExceptionNotifier
   class MattermostNotifier
 
-    GIT_URL = "git.studio-hb.fr/studio-hb"
-    USERNAME = "Exception Notifier"
-
     attr_accessor :httparty
 
     def initialize(options = {})
@@ -20,7 +17,7 @@ module ExceptionNotifier
 
       @application_name = @options.delete(:app_name) || Rails.application.class.parent_name.underscore
       @gitlab_url = @options.delete(:git_url)
-      @username = @options.delete(:username) || USERNAME
+      @username = @options.delete(:username) || "Exception Notifier"
       @avatar = @options.delete(:avatar)
 
       @webhook_url = @options.delete(:webhook_url)
