@@ -20,6 +20,7 @@ module ExceptionNotifier
       @username = @options.delete(:username) || "Exception Notifier"
       @avatar = @options.delete(:avatar)
 
+      @channel = @options.delete(:channel)
       @webhook_url = @options.delete(:webhook_url)
       raise ArgumentError.new "You must provide 'webhook_url' parameter." unless @webhook_url
 
@@ -41,7 +42,7 @@ module ExceptionNotifier
 
       end
 
-      payload = message_text.merge(user_info)
+      payload = message_text.merge(user_info).merge(channel_info)
 
       @options[:body] = payload.to_json
       @options[:headers] ||= {}
@@ -51,6 +52,14 @@ module ExceptionNotifier
     end
 
     private
+
+      def channel_info
+        if @channel
+          { channel: @channel }
+        else
+          {}
+        end
+      end
 
       def user_info
         infos = {}

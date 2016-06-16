@@ -590,6 +590,82 @@ more information. Default: 'incoming-webhook'
 
 Contains additional payload for a message (e.g avatar, attachments, etc). See [slack-notifier](https://github.com/stevenosloan/slack-notifier#additional-parameters) for more information.. Default: '{}'
 
+## Mattermost notifier
+
+Post notification in a mattermost channel via [incoming webhook](http://docs.mattermost.com/developer/webhooks-incoming.html)
+
+Just add the [HTTParty](https://github.com/jnunemaker/httparty) gem to your `Gemfile`:
+
+```ruby
+gem 'httparty'
+```
+
+To configure it, you **need** to set the `webhook_url` option.  
+You can also specify an other channel with `channel` option.
+
+```ruby
+Rails.application.config.middleware.use ExceptionNotification::Rack,
+  :email => {
+    :email_prefix => "[PREFIX] ",
+    :sender_address => %{"notifier" <notifier@example.com>},
+    :exception_recipients => %w{exceptions@example.com}
+  },
+  :mattermost => {
+    :webhook_url => 'http://your-mattermost.com/hooks/blablabla',
+    :channel => 'my-channel'
+  }
+```
+
+If you are using Github or Gitlab for issues tracking, you can specify `git_url` as follow to add a *Create issue* link in you notification.  
+By default this will use your Rails application name to match the git repository. If yours differ you can specify `app_name`.
+
+
+```ruby
+Rails.application.config.middleware.use ExceptionNotification::Rack,
+  :email => {
+    :email_prefix => "[PREFIX] ",
+    :sender_address => %{"notifier" <notifier@example.com>},
+    :exception_recipients => %w{exceptions@example.com}
+  },
+  :mattermost => {
+    :webhook_url => 'http://your-mattermost.com/hooks/blablabla',
+    :git_url => 'github.com/aschen'
+  }
+```
+
+You can also specify the bot name and avatar with `username` and `avatar` options.
+
+```ruby
+Rails.application.config.middleware.use ExceptionNotification::Rack,
+  :email => {
+    :email_prefix => "[PREFIX] ",
+    :sender_address => %{"notifier" <notifier@example.com>},
+    :exception_recipients => %w{exceptions@example.com}
+  },
+  :mattermost => {
+    :webhook_url => 'http://your-mattermost.com/hooks/blablabla',
+    :avatar => 'http://example.com/your-image.png',
+    :username => 'Fail bot'
+  }
+```
+
+Finally since the notifier use HTTParty, you can include all HTTParty options, like basic_auth for example.
+
+```ruby
+Rails.application.config.middleware.use ExceptionNotification::Rack,
+  :email => {
+    :email_prefix => "[PREFIX] ",
+    :sender_address => %{"notifier" <notifier@example.com>},
+    :exception_recipients => %w{exceptions@example.com}
+  },
+  :mattermost => {
+    :webhook_url => 'http://your-mattermost.com/hooks/blablabla',
+    :basic_auth => {
+      :username => 'clara',
+      :password => 'password'
+    }
+  }
+```
 
 ### WebHook notifier
 
@@ -651,81 +727,6 @@ Rails.application.config.middleware.use ExceptionNotification::Rack,
 ```
 
 For more HTTParty options, check out the [documentation](https://github.com/jnunemaker/httparty).
-
-## Mattermost notifier
-
-Post notification in a mattermost channel via [incoming webhook](http://docs.mattermost.com/developer/webhooks-incoming.html)
-
-Just add the [HTTParty](https://github.com/jnunemaker/httparty) gem to your `Gemfile`:
-
-```ruby
-gem 'httparty'
-```
-
-To configure it, you need to set the `webhook_url` option, like this:
-
-```ruby
-Rails.application.config.middleware.use ExceptionNotification::Rack,
-  :email => {
-    :email_prefix => "[PREFIX] ",
-    :sender_address => %{"notifier" <notifier@example.com>},
-    :exception_recipients => %w{exceptions@example.com}
-  },
-  :mattermost => {
-    :webhook_url => 'http://your-mattermost.com/hooks/blablabla'
-  }
-```
-
-If you are using Github or Gitlab for issues tracking, you can specify `git_url` as follow to add a *Create issue* link in you notification.  
-By default this will use your Rails application name to match the git repository. If yours differ you can specify `app_name`.
-
-
-```ruby
-Rails.application.config.middleware.use ExceptionNotification::Rack,
-  :email => {
-    :email_prefix => "[PREFIX] ",
-    :sender_address => %{"notifier" <notifier@example.com>},
-    :exception_recipients => %w{exceptions@example.com}
-  },
-  :mattermost => {
-    :webhook_url => 'http://your-mattermost.com/hooks/blablabla',
-    :git_url => 'github.com/aschen'
-  }
-```
-
-You can also specify the bot name and avatar with `username` and `avatar` options.
-
-```ruby
-Rails.application.config.middleware.use ExceptionNotification::Rack,
-  :email => {
-    :email_prefix => "[PREFIX] ",
-    :sender_address => %{"notifier" <notifier@example.com>},
-    :exception_recipients => %w{exceptions@example.com}
-  },
-  :mattermost => {
-    :webhook_url => 'http://your-mattermost.com/hooks/blablabla',
-    :avatar => 'http://example.com/your-image.png',
-    :username => 'Fail bot'
-  }
-```
-
-Finally since the notifier use HTTParty, you can include all HTTParty options, like basic_auth for example.
-
-```ruby
-Rails.application.config.middleware.use ExceptionNotification::Rack,
-  :email => {
-    :email_prefix => "[PREFIX] ",
-    :sender_address => %{"notifier" <notifier@example.com>},
-    :exception_recipients => %w{exceptions@example.com}
-  },
-  :mattermost => {
-    :webhook_url => 'http://your-mattermost.com/hooks/blablabla',
-    :basic_auth => {
-      :username => 'clara',
-      :password => 'password'
-    }
-  }
-```
 
 ### Custom notifier
 
