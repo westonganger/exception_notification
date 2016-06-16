@@ -9,7 +9,7 @@
 
 ---
 
-The Exception Notification gem provides a set of [notifiers](#notifiers) for sending notifications when errors occur in a Rack/Rails application. The built-in notifiers can deliver notifications by [email](#email-notifier), [Campfire](#campfire-notifier), [HipChat](#hipchat-notifier), [Slack](#slack-notifier), [IRC](#irc-notifier) or via custom [WebHooks](#webhook-notifier).
+The Exception Notification gem provides a set of [notifiers](#notifiers) for sending notifications when errors occur in a Rack/Rails application. The built-in notifiers can deliver notifications by [email](#email-notifier), [Campfire](#campfire-notifier), [HipChat](#hipchat-notifier), [Slack](#slack-notifier), [Mattermost](#mattermost-notifier), [IRC](#irc-notifier) or via custom [WebHooks](#webhook-notifier).
 
 There's a great [Railscast about Exception Notification](http://railscasts.com/episodes/104-exception-notifications-revised) you can see that may help you getting started.
 
@@ -89,6 +89,7 @@ ExceptionNotification relies on notifiers to deliver notifications when errors o
 * [HipChat notifier](#hipchat-notifier)
 * [IRC notifier](#irc-notifier)
 * [Slack notifier](#slack-notifier)
+* [Mattermost notifier](#mattermost-notifier)
 * [WebHook notifier](#webhook-notifier)
 
 But, you also can easily implement your own [custom notifier](#custom-notifier).
