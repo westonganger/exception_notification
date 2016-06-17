@@ -111,6 +111,7 @@ module ExceptionNotifier
       def message_backtrace(size = 3)
         text = []
 
+        size = @backtrace.size < size ? @backtrace.size : size
         text << "### Backtrace"
         text << "```"
         size.times { |i| text << "* " + @backtrace[i] }
