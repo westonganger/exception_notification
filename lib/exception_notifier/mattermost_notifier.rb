@@ -3,6 +3,7 @@ require 'active_support/core_ext/time'
 
 module ExceptionNotifier
   class MattermostNotifier
+    include ExceptionNotifier::BacktraceCleaner
 
     attr_accessor :httparty
 
@@ -15,6 +16,7 @@ module ExceptionNotifier
     def call(exception, options = {})
       @options = options.merge(@default_options)
       @exception = exception
+      @backtrace = exception.backtrace ? clean_backtrace(exception) : nil
 
       @env = @options.delete(:env)
 
@@ -79,7 +81,7 @@ module ExceptionNotifier
         text += ["@channel"]
         text += message_header
         text += message_request if @request_items
-        text += message_backtrace if @exception.backtrace
+        text += message_backtrace if @backtrace
         text += message_issue_link if @gitlab_url
 
         { text: text.join("\n") }
@@ -111,7 +113,7 @@ module ExceptionNotifier
 
         text << "### Backtrace"
         text << "```"
-        size.times { |i| text << "* " + @exception.backtrace[i] }
+        size.times { |i| text << "* " + @backtrace[i] }
         text << "```"
 
         text
