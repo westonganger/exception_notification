@@ -667,6 +667,45 @@ Rails.application.config.middleware.use ExceptionNotification::Rack,
   }
 ```
 
+#### Options
+
+##### webhook_url
+
+*String, required*
+
+The Incoming WebHook URL on mattermost.
+
+##### channel
+
+*String, optional*
+
+Message will appear in this channel. Defaults to the channel you set as such on mattermost.
+
+##### username
+
+*String, optional*
+
+Username of the bot. Defaults to "Incoming Webhook"
+
+##### avatar
+
+*String, optional*
+
+Avatar of the bot. Defaults to incoming webhook icon.
+
+##### git_url
+
+*String, optional*
+
+Url of your gitlab or github with your organisation name for issue creation link (Eg: `github.com/aschen`). Defaults to nil and don't add link to the notification.
+
+##### app_name
+
+*String, optional*
+
+Your application name used for issue creation link. Defaults to ``` Rails.application.class.parent_name.underscore```.
+
+
 ### WebHook notifier
 
 This notifier ships notifications over the HTTP protocol.
