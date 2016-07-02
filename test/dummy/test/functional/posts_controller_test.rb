@@ -71,7 +71,7 @@ class PostsControllerTest < ActionController::TestCase
 
   test "should not send notification if one of ignored exceptions" do
     begin
-      get :show, params: {:id => @post.to_param + "10"}
+      get :invalid
     rescue => e
       @ignored_exception = e
       unless ExceptionNotifier.ignored_exceptions.include?(@ignored_exception.class.name)
@@ -79,7 +79,7 @@ class PostsControllerTest < ActionController::TestCase
       end
     end
 
-    assert_equal @ignored_exception.class.inspect, "ActiveRecord::RecordNotFound"
+    assert_equal @ignored_exception.class.inspect, "ActionController::UrlGenerationError"
     assert_nil @ignored_mail
   end
 
@@ -145,7 +145,9 @@ class PostsControllerTestWithoutVerboseSubject < ActionController::TestCase
   end
 
   test "should not include exception message in subject" do
-    assert_equal "[ERROR] posts#create (NoMethodError)", @mail.subject
+    assert_includes @mail.subject, '[ERROR]'
+    assert_includes @mail.subject, '(NoMethodError)'
+    refute_includes @mail.subject, 'undefined method'
   end
 end
 
