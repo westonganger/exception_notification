@@ -5,6 +5,15 @@ require 'appraisal'
 
 require 'rake/testtask'
 
+task :default => [:test]
+
+Rake::TestTask.new(:test => :setup_dummy_app) do |t|
+  t.libs << 'lib'
+  t.libs << 'test'
+  t.pattern = 'test/**/*_test.rb'
+  t.verbose = true
+end
+
 task 'setup_dummy_app' do
   unless File.exists? "test/dummy/db/test.sqlite3"
     Bundler.with_clean_env do
@@ -12,12 +21,3 @@ task 'setup_dummy_app' do
     end
   end
 end
-
-Rake::TestTask.new(:test) do |t|
-  t.libs << 'lib'
-  t.libs << 'test'
-  t.pattern = 'test/**/*_test.rb'
-  t.verbose = true
-end
-
-task :default => [:setup_dummy_app, :test]

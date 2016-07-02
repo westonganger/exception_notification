@@ -51,6 +51,7 @@ module ExceptionNotifier
             @timestamp = Time.current
             @sections  = @options[:background_sections]
             @data      = options[:data] || {}
+            @env = @kontroller = nil
 
             compose_email
           end
