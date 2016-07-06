@@ -74,12 +74,12 @@ class PostsControllerTest < ActionController::TestCase
     rescue => e
       @ignored_exception = e
       unless ExceptionNotifier.ignored_exceptions.include?(@ignored_exception.class.name)
-        @ignored_mail = @email_notifier.create_email(@ignored_exception, {:env => request.env})
+        ignored_mail = @email_notifier.create_email(@ignored_exception, {:env => request.env})
       end
     end
 
     assert_equal @ignored_exception.class.inspect, "ActionController::UrlGenerationError"
-    assert_nil @ignored_mail
+    assert_nil ignored_mail
   end
 
   test "should filter session_id on secure requests" do
@@ -105,11 +105,11 @@ class PostsControllerTest < ActionController::TestCase
       custom_env['exception_notifier.options'].merge!(:ignore_crawlers => %w(Googlebot))
       ignore_array = custom_env['exception_notifier.options'][:ignore_crawlers]
       unless ExceptionNotification::Rack.new(Dummy::Application, custom_env['exception_notifier.options']).send(:from_crawler, custom_env, ignore_array)
-        @ignored_mail = @email_notifier.create_email(@exception, {:env => custom_env})
+        ignored_mail = @email_notifier.create_email(@exception, {:env => custom_env})
       end
     end
 
-    assert_nil @ignored_mail
+    assert_nil ignored_mail
   end
 
   test "should send html email when selected html format" do
