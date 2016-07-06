@@ -7,17 +7,9 @@ require 'rake/testtask'
 
 task :default => [:test]
 
-Rake::TestTask.new(:test => :setup_dummy_app) do |t|
+Rake::TestTask.new(:test) do |t|
   t.libs << 'lib'
   t.libs << 'test'
   t.pattern = 'test/**/*_test.rb'
   t.verbose = true
-end
-
-task 'setup_dummy_app' do
-  unless File.exists? "test/dummy/db/test.sqlite3"
-    Bundler.with_clean_env do
-      sh "cd test/dummy; bundle; bundle exec rake db:migrate; bundle exec rake db:test:prepare; cd ../../;"
-    end
-  end
 end

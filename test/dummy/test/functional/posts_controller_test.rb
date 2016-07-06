@@ -5,8 +5,7 @@ class PostsControllerTest < ActionController::TestCase
     Time.stubs(:current).returns('Sat, 20 Apr 2013 20:58:55 UTC +00:00')
     @email_notifier = ExceptionNotifier.registered_exception_notifier(:email)
     begin
-      @post = posts(:one)
-      post :create, method: :post, params: { post: @post.attributes }
+      post :create, method: :post, params: { secret: "secret" }
     rescue => e
       @exception = e
       @mail = @email_notifier.create_email(@exception, {:env => request.env, :data => {:message => 'My Custom Message'}})
@@ -86,8 +85,7 @@ class PostsControllerTest < ActionController::TestCase
   test "should filter session_id on secure requests" do
     request.env['HTTPS'] = 'on'
     begin
-      @post = posts(:one)
-      post :create, method: :post, params: { post: @post.attributes }
+      post :create, method: :post
     rescue => e
       @secured_mail = @email_notifier.create_email(e, {:env => request.env})
     end
@@ -99,8 +97,7 @@ class PostsControllerTest < ActionController::TestCase
   test "should ignore exception if from unwanted crawler" do
     request.env['HTTP_USER_AGENT'] = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
     begin
-      @post = posts(:one)
-      post :create, method: :post, params: { post: @post.attributes }
+      post :create, method: :post
     rescue => e
       @exception = e
       custom_env = request.env
@@ -117,8 +114,7 @@ class PostsControllerTest < ActionController::TestCase
 
   test "should send html email when selected html format" do
     begin
-      @post = posts(:one)
-      post :create, method: :post, params: { post: @post.attributes }
+      post :create, method: :post
     rescue => e
       @exception = e
       custom_env = request.env
@@ -136,8 +132,7 @@ class PostsControllerTestWithoutVerboseSubject < ActionController::TestCase
   setup do
     @email_notifier = ExceptionNotifier::EmailNotifier.new(:verbose_subject => false)
     begin
-      @post = posts(:one)
-      post :create, method: :post, params: { post: @post.attributes }
+      post :create, method: :post
     rescue => e
       @exception = e
       @mail = @email_notifier.create_email(@exception, {:env => request.env})
@@ -160,8 +155,7 @@ class PostsControllerTestWithSmtpSettings < ActionController::TestCase
     })
 
     begin
-      @post = posts(:one)
-      post :create, method: :post, params: { post: @post.attributes }
+      post :create, method: :post
     rescue => e
       @exception = e
       @mail = @email_notifier.create_email(@exception, {:env => request.env})
@@ -185,8 +179,7 @@ class PostsControllerTestBackgroundNotification < ActionController::TestCase
   setup do
     @email_notifier = ExceptionNotifier.registered_exception_notifier(:email)
     begin
-      @post = posts(:one)
-      post :create, method: :post, params: { post: @post.attributes }
+      post :create, method: :post
     rescue => exception
       @mail = @email_notifier.create_email(exception)
     end
@@ -208,8 +201,7 @@ class PostsControllerTestWithExceptionRecipientsAsProc < ActionController::TestC
 
     @action = proc do
       begin
-        @post = posts(:one)
-        post :create, :post => @post.attributes
+        post :create, method: :post
       rescue => e
         @exception = e
         @mail = @email_notifier.create_email(@exception, {:env => request.env})
