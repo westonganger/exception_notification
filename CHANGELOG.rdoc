@@ -5,6 +5,7 @@
   * Add `hostname` to Slack notifier (by @juanazam)
   * Allow `exception_recipients` to be a proc (by @kellyjosephprice)
   * Add Mattermost integration (by @Aschen)
+  * Rails 5 compatible
 
 * bug fixes
   * Fix error when showing timestamp on non Rails apps

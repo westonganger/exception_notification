@@ -140,12 +140,12 @@ class EmailNotifierTest < ActiveSupport::TestCase
     rescue => e
       @ignored_exception = e
       unless ExceptionNotifier.ignored_exceptions.include?(@ignored_exception.class.name)
-        @ignored_mail = @email_notifier.create_email(@ignored_exception)
+        ignored_mail = @email_notifier.create_email(@ignored_exception)
       end
     end
 
     assert_equal @ignored_exception.class.inspect, "ActiveRecord::RecordNotFound"
-    assert_nil @ignored_mail
+    assert_nil ignored_mail
   end
 
   test "should encode environment strings" do

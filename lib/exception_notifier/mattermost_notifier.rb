@@ -44,7 +44,8 @@ module ExceptionNotifier
           current_user = User.find(request.session["warden.user.user.key"][0][0])
           @request_items.merge!({ current_user: { id: current_user.id, email: current_user.email  } })
         end
-
+      else
+        @controller = @request_items = nil
       end
 
       payload = message_text.merge(user_info).merge(channel_info)
