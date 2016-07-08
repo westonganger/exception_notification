@@ -183,6 +183,27 @@ class EmailNotifierTest < ActiveSupport::TestCase
     assert_equal 1, ActionMailer::Base.deliveries.count
   end
 
+  test "should be able to specify ActionMailer::MessageDelivery method" do
+    ActionMailer::Base.deliveries.clear
+
+    if ActionMailer.version < Gem::Version.new("4.2")
+      deliver_with = :deliver
+    else
+      deliver_with = :deliver_now
+    end
+
+    email_notifier = ExceptionNotifier::EmailNotifier.new(
+      :email_prefix => '[Dummy ERROR] ',
+      :sender_address => %{"Dummy Notifier" <dummynotifier@example.com>},
+      :exception_recipients => %w{dummyexceptions@example.com},
+      :deliver_with => deliver_with
+    )
+
+    email_notifier.call(@exception)
+
+    assert_equal 1, ActionMailer::Base.deliveries.count
+  end
+
   test "should lazily evaluate exception_recipients" do
     exception_recipients = %w{first@example.com second@example.com}
     email_notifier = ExceptionNotifier::EmailNotifier.new(
