@@ -163,13 +163,13 @@ module ExceptionNotifier
       # FIXME: use `if Gem::Version.new(ActionMailer::VERSION::STRING) < Gem::Version.new('4.1')`
       if deliver_with == :default
         if message.respond_to?(:deliver_now)
-          deliver_with = :deliver_now
+          message.deliver_now
         else
-          deliver_with = :deliver
+          message.deliver
         end
+      else
+        message.send(deliver_with)
       end
-
-      message.send(deliver_with)
     end
 
     def create_email(exception, options={})
