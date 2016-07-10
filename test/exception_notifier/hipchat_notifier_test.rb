@@ -152,7 +152,7 @@ class HipchatNotifierTest < ActiveSupport::TestCase
   end
 
   def fake_exception
-    exception = begin
+    begin
       5/0
     rescue Exception => e
       e
@@ -160,7 +160,7 @@ class HipchatNotifierTest < ActiveSupport::TestCase
   end
 
   def fake_exception_with_html_characters
-    exception = begin
+    begin
       raise StandardError.new('an error with <html> characters')
     rescue Exception => e
       e

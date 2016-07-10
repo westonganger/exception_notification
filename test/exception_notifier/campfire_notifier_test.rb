@@ -80,7 +80,7 @@ class CampfireNotifierTest < ActiveSupport::TestCase
   end
 
   def fake_exception
-    exception = begin
+    begin
       5/0
     rescue Exception => e
       e
