@@ -1,5 +1,11 @@
 require 'test_helper'
-require 'hipchat'
+
+# silence_warnings trick around require can be removed once
+# https://github.com/hipchat/hipchat-rb/pull/174
+# gets merged and released
+silence_warnings do
+  require 'hipchat'
+end
 
 class HipchatNotifierTest < ActiveSupport::TestCase
 
