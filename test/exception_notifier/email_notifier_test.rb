@@ -101,7 +101,7 @@ class EmailNotifierTest < ActiveSupport::TestCase
   end
 
   test "mail should have a descriptive subject" do
-    assert_match /^\[Dummy ERROR\]\s+\(ZeroDivisionError\) "divided by 0"$/, @mail.subject
+    assert_match(/^\[Dummy ERROR\]\s+\(ZeroDivisionError\) "divided by 0"$/, @mail.subject)
   end
 
   test "mail should say exception was raised in background at show timestamp" do
@@ -165,7 +165,7 @@ class EmailNotifierTest < ActiveSupport::TestCase
       :email_format => :text
     )
 
-    assert_match /invalid_encoding\s+: R__sum__/, mail.encoded
+    assert_match(/invalid_encoding\s+: R__sum__/, mail.encoded)
   end
 
   test "should send email using ActionMailer" do
