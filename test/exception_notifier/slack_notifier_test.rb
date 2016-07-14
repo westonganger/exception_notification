@@ -66,7 +66,7 @@ class SlackNotifierTest < ActiveSupport::TestCase
       backtrace_lines: 1
     }
 
-    Slack::Notifier.any_instance.expects(:ping).with('', fake_notification(@exception, nil, 1))
+    Slack::Notifier.any_instance.expects(:ping).with('', fake_notification(@exception, {}, nil, 1))
 
     slack_notifier = ExceptionNotifier::SlackNotifier.new(options)
     slack_notifier.call(@exception)
