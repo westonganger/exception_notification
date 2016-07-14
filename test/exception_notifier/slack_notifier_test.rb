@@ -106,7 +106,7 @@ class SlackNotifierTest < ActiveSupport::TestCase
 
     expected_data_string = "foo: bar\njohn: doe\nuser_id: 5"
 
-    Slack::Notifier.any_instance.expects(:ping).with('', fake_notification(@exception, expected_data_string))
+    Slack::Notifier.any_instance.expects(:ping).with('', fake_notification(@exception, notification_options, expected_data_string))
     slack_notifier = ExceptionNotifier::SlackNotifier.new(options)
     slack_notifier.call(@exception, notification_options)
   end
@@ -165,8 +165,21 @@ class SlackNotifierTest < ActiveSupport::TestCase
     ]
   end
 
-  def fake_notification(exception = @exception, data_string = nil)
-    text = "*An exception occurred while doing*: ` <>`\n"
+  def fake_notification(exception = @exception, notification_options = {}, data_string = nil)
+    exception_name = "*#{exception.class.to_s =~ /^[aeiou]/i ? 'An' : 'A'}* `#{exception.class.to_s}`"
+    if notification_options[:env].nil?
+      text = "#{exception_name} *occured in background*"
+    else
+      env = notification_options[:env]
+
+      kontroller = env['action_controller.instance']
+      request = "#{env['REQUEST_METHOD']} <#{env['REQUEST_URI']}>"
+
+      text = "#{exception_name} *occurred while* `#{request}`"
+      text += " *was processed by* `#{kontroller.controller_name}##{kontroller.action_name}`" if kontroller
+    end
+
+    text += "\n"
 
     fields = [ { title: 'Exception', value: exception.message} ]
     fields.push({ title: 'Hostname', value: 'example.com' })
