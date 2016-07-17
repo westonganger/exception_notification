@@ -1,3 +1,13 @@
+== 4.2.1
+
+* enhancements
+  * Allow customizable backtrace for Slack (by @aried3r)
+  * Add `Mongoid::Errors::DocumentNotFound` to ignored_exceptions (by @nazarok)
+  * Improved text in Slack notifier (by @vojtad)
+
+* bug fixes
+  * Fix data being sent on webhook notifier
+
 == 4.2.0
 
 * enhancements
