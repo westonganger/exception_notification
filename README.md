@@ -950,13 +950,13 @@ As above, make sure the gem is not listed solely under the `production` group, s
 
 ## Versions
 
+For v4.2.1, see this tag:
+
+http://github.com/smartinez87/exception_notification/tree/v4.2.1
+
 For v4.2.0, see this tag:
 
 http://github.com/smartinez87/exception_notification/tree/v4.2.0
-
-For v4.1.4, see this tag:
-
-http://github.com/smartinez87/exception_notification/tree/v4.1.4
 
 For previous releases, visit:
 
