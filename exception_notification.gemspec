@@ -32,5 +32,4 @@ Gem::Specification.new do |s|
   s.add_development_dependency "hipchat", ">= 1.0.0"
   s.add_development_dependency "carrier-pigeon", ">= 0.7.0"
   s.add_development_dependency "slack-notifier", ">= 1.0.0"
-   
 end
