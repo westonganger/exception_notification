@@ -74,13 +74,17 @@ module ExceptionNotifier
           end
 
           helper_method :inspect_object
-
+          
+          def truncate(string, max)
+            string.length > max ? "#{string[0...max]}..." : string
+          end
+          
           def inspect_object(object)
             case object
               when Hash, Array
-                object.inspect
+                truncate(object.inspect, 300)
               else
-                object.to_s
+                  object.to_s 
             end
           end
 
