@@ -82,7 +82,7 @@ Options -> sections" below.
 
 ## Notifiers
 
-ExceptionNotification relies on notifiers to deliver notifications when errors occur in your applications. By default, six notifiers are available:
+ExceptionNotification relies on notifiers to deliver notifications when errors occur in your applications. By default, 7 notifiers are available:
 
 * [Campfire notifier](#campfire-notifier)
 * [Email notifier](#email-notifier)
