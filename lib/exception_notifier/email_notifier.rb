@@ -46,7 +46,7 @@ module ExceptionNotifier
             load_custom_views
 
             @exception = exception
-            @options   = options.reverse_merge(default_options)
+            @options   = options.reverse_merge(default_options).symbolize_keys
             @backtrace = exception.backtrace || []
             @timestamp = Time.current
             @sections  = @options[:background_sections]
