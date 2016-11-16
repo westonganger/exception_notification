@@ -9,8 +9,8 @@ module ExceptionNotifier
     attr_accessor(:sender_address, :exception_recipients,
     :pre_callback, :post_callback,
     :email_prefix, :email_format, :sections, :background_sections,
-    :verbose_subject, :normalize_subject, :delivery_method, :mailer_settings,
-    :email_headers, :mailer_parent, :template_path, :deliver_with)
+    :verbose_subject, :normalize_subject, :include_controller_and_action_names_in_subject,
+    :delivery_method, :mailer_settings, :email_headers, :mailer_parent, :template_path, :deliver_with)
 
     module Mailer
       class MissingController
@@ -60,7 +60,7 @@ module ExceptionNotifier
 
           def compose_subject
             subject = "#{@options[:email_prefix]}"
-            subject << "#{@kontroller.controller_name}##{@kontroller.action_name}" if @kontroller
+            subject << "#{@kontroller.controller_name}##{@kontroller.action_name}" if @kontroller && @options[:include_controller_and_action_names_in_subject]
             subject << " (#{@exception.class})"
             subject << " #{@exception.message.inspect}" if @options[:verbose_subject]
             subject = EmailNotifier.normalize_digits(subject) if @options[:normalize_subject]
@@ -142,10 +142,10 @@ module ExceptionNotifier
       options[:mailer_settings] = options.delete(mailer_settings_key)
 
       options.reverse_merge(EmailNotifier.default_options).select{|k,v|[
-        :sender_address, :exception_recipients,
-        :pre_callback, :post_callback,
-        :email_prefix, :email_format, :sections, :background_sections,
-        :verbose_subject, :normalize_subject, :delivery_method, :mailer_settings,
+        :sender_address, :exception_recipients, :pre_callback,
+        :post_callback, :email_prefix, :email_format,
+        :sections, :background_sections, :verbose_subject, :normalize_subject,
+        :include_controller_and_action_names_in_subject, :delivery_method, :mailer_settings,
         :email_headers, :mailer_parent, :template_path, :deliver_with].include?(k)}.each{|k,v| send("#{k}=", v)}
     end
 
@@ -201,6 +201,7 @@ module ExceptionNotifier
         :background_sections => %w(backtrace data),
         :verbose_subject => true,
         :normalize_subject => false,
+        :include_controller_and_action_names_in_subject => true,
         :delivery_method => nil,
         :mailer_settings => nil,
         :email_headers => {},

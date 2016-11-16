@@ -279,6 +279,12 @@ If enabled, include the exception message in the subject. Use `:verbose_subject 
 
 If enabled, remove numbers from subject so they thread as a single one. Use `:normalize_subject => true` to enable it.
 
+##### include_controller_and_action_names_in_subject
+
+*Boolean, default: true*
+
+If enabled, include the controller and action names in the subject. Use `:include_controller_and_action_names_in_subject => false` to exclude them.
+
 ##### email_format
 
 *Symbol, default: :text*
