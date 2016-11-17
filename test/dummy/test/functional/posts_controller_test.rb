@@ -35,7 +35,7 @@ class PostsControllerTest < ActionController::TestCase
   test "mail subject should have the proper prefix" do
     assert_includes @mail.subject, "[Dummy ERROR]"
   end
-
+  
   test "mail subject should include descriptive error message" do
     assert_includes @mail.subject, "(NoMethodError) \"undefined method `nw'"
   end
@@ -143,6 +143,25 @@ class PostsControllerTestWithoutVerboseSubject < ActionController::TestCase
     assert_includes @mail.subject, '[ERROR]'
     assert_includes @mail.subject, '(NoMethodError)'
     refute_includes @mail.subject, 'undefined method'
+  end
+end
+
+class PostsControllerTestWithoutControllerAndActionNames < ActionController::TestCase
+  tests PostsController
+  setup do
+    @email_notifier = ExceptionNotifier::EmailNotifier.new(:include_controller_and_action_names_in_subject => false)
+    begin
+      post :create, method: :post
+    rescue => e
+      @exception = e
+      @mail = @email_notifier.create_email(@exception, {:env => request.env})
+    end
+  end
+
+  test "should include controller and action names in subject" do
+    assert_includes @mail.subject, '[ERROR]'
+    assert_includes @mail.subject, '(NoMethodError)'
+    refute_includes @mail.subject, 'posts#create'
   end
 end
 
