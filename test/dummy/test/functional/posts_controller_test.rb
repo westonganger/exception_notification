@@ -35,11 +35,7 @@ class PostsControllerTest < ActionController::TestCase
   test "mail subject should have the proper prefix" do
     assert_includes @mail.subject, "[Dummy ERROR]"
   end
-
-  test "mail subject should have controller and action name by default" do
-    assert_includes @mail.subject, "posts#create"
-  end
-
+  
   test "mail subject should include descriptive error message" do
     assert_includes @mail.subject, "(NoMethodError) \"undefined method `nw'"
   end
