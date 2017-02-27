@@ -30,7 +30,7 @@ module ExceptionNotifier
 
         kontroller = env['action_controller.instance']
         request = "#{env['REQUEST_METHOD']} <#{env['REQUEST_URI']}>"
-        text = "#{exception_name} *occurred while* `#{env['REQUEST_METHOD']} <#{env['REQUEST_URI']}>`"
+        text = "#{exception_name} *occurred while* `#{request}`"
         text += " *was processed by* `#{kontroller.controller_name}##{kontroller.action_name}`" if kontroller
         text += "\n"
       end
