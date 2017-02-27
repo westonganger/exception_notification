@@ -12,6 +12,7 @@ module ExceptionNotifier
 
         webhook_url = options.fetch(:webhook_url)
         @message_opts = options.fetch(:additional_parameters, {})
+        @color = @message_opts.delete(:color) { 'danger' }
         @notifier = Slack::Notifier.new webhook_url, options
       rescue
         @notifier = nil
@@ -36,7 +37,7 @@ module ExceptionNotifier
       end
 
       clean_message = exception.message.gsub("`", "'")
-      fields = [ { title: 'Exception', value: clean_message} ]
+      fields = [ { title: 'Exception', value: clean_message } ]
 
       fields.push({ title: 'Hostname', value: Socket.gethostname })
 
@@ -51,7 +52,7 @@ module ExceptionNotifier
         fields.push({ title: 'Data', value: "```#{data_string}```" })
       end
 
-      attchs = [color: 'danger', text: text, fields: fields, mrkdwn_in: %w(text fields)]
+      attchs = [color: @color, text: text, fields: fields, mrkdwn_in: %w(text fields)]
 
       if valid?
         send_notice(exception, options, clean_message, @message_opts.merge(attachments: attchs)) do |msg, message_opts|
