@@ -43,7 +43,8 @@ class SlackNotifierTest < ActiveSupport::TestCase
     slack_notifier = ExceptionNotifier::SlackNotifier.new(options)
     slack_notifier.call(@exception)
 
-    assert_equal slack_notifier.notifier.channel, options[:channel]
+    channel = slack_notifier.notifier.config.defaults[:channel]
+    assert_equal channel, options[:channel]
   end
 
   test "should send the notification to the specified username" do
@@ -57,7 +58,8 @@ class SlackNotifierTest < ActiveSupport::TestCase
     slack_notifier = ExceptionNotifier::SlackNotifier.new(options)
     slack_notifier.call(@exception)
 
-    assert_equal slack_notifier.notifier.username, options[:username]
+    username = slack_notifier.notifier.config.defaults[:username]
+    assert_equal username, options[:username]
   end
 
   test "should send the notification with specific backtrace lines" do
