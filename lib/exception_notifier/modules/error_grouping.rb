@@ -17,7 +17,7 @@ module ExceptionNotifier
       mattr_accessor :error_grouping_cache
     end
 
-    class_methods do
+    module ClassMethods
       # Fallback to the memory store while the specified cache store doesn't work
       #
       def fallback_cache_store
