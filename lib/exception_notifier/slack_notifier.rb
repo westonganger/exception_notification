@@ -8,7 +8,7 @@ module ExceptionNotifier
       super
       begin
         @ignore_data_if = options[:ignore_data_if]
-        @backtrace_lines = options[:backtrace_lines]
+        @backtrace_lines = options.fetch(:backtrace_lines, 10)
 
         webhook_url = options.fetch(:webhook_url)
         @message_opts = options.fetch(:additional_parameters, {})
@@ -44,7 +44,7 @@ module ExceptionNotifier
       fields.push({ title: 'Hostname', value: Socket.gethostname })
 
       if exception.backtrace
-        formatted_backtrace = @backtrace_lines ? "```#{exception.backtrace.first(@backtrace_lines).join("\n")}```" : "```#{exception.backtrace.join("\n")}```"
+        formatted_backtrace = "```#{exception.backtrace.first(@backtrace_lines).join("\n")}```"
         fields.push({ title: 'Backtrace', value: formatted_backtrace })
       end
 

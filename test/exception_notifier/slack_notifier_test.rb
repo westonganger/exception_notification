@@ -179,7 +179,7 @@ class SlackNotifierTest < ActiveSupport::TestCase
     ]
   end
 
-  def fake_notification(exception = @exception, notification_options = {}, data_string = nil, expected_backtrace_lines = nil)
+  def fake_notification(exception = @exception, notification_options = {}, data_string = nil, expected_backtrace_lines = 10)
     exception_name = "*#{exception.class.to_s =~ /^[aeiou]/i ? 'An' : 'A'}* `#{exception.class.to_s}`"
     if notification_options[:env].nil?
       text = "#{exception_name} *occured in background*"
@@ -198,7 +198,7 @@ class SlackNotifierTest < ActiveSupport::TestCase
     fields = [ { title: 'Exception', value: exception.message} ]
     fields.push({ title: 'Hostname', value: 'example.com' })
     if exception.backtrace
-      formatted_backtrace = expected_backtrace_lines ? "```#{exception.backtrace.first(expected_backtrace_lines).join("\n")}```" : "```#{exception.backtrace.join("\n")}```"
+      formatted_backtrace = "```#{exception.backtrace.first(expected_backtrace_lines).join("\n")}```"
       fields.push({ title: 'Backtrace', value: formatted_backtrace })
     end
     fields.push({ title: 'Data', value: "```#{data_string}```" }) if data_string
