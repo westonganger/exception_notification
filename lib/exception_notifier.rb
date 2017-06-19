@@ -104,7 +104,9 @@ module ExceptionNotifier
     end
 
     def ignored_exception?(ignore_array, exception)
-      (Array(ignored_exceptions) + Array(ignore_array)).map(&:to_s).include?(exception.class.name)
+      all_ignored_exceptions = (Array(ignored_exceptions) + Array(ignore_array)).map(&:to_s)
+      exception_ancestors = exception.class.ancestors.map(&:to_s)
+      !(all_ignored_exceptions & exception_ancestors).empty?
     end
 
     def fire_notification(notifier_name, exception, options)

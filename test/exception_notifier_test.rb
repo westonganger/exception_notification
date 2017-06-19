@@ -110,6 +110,21 @@ class ExceptionNotifierTest < ActiveSupport::TestCase
     assert_equal @notifier_calls, 1
   end
 
+  test "should not send notification if subclass of one of ignored exceptions" do
+    ExceptionNotifier.register_exception_notifier(:test, @test_notifier)
+
+    class StandardErrorSubclass < StandardError
+    end
+
+    exception = StandardErrorSubclass.new
+
+    ExceptionNotifier.notify_exception(exception, {:notifiers => :test})
+    assert_equal @notifier_calls, 1
+
+    ExceptionNotifier.notify_exception(exception, {:notifiers => :test, :ignore_exceptions => 'StandardError' })
+    assert_equal @notifier_calls, 1
+  end
+
   test "should not call group_error! or send_notification? if error_grouping false" do
     exception = StandardError.new
     ExceptionNotifier.expects(:group_error!).never
