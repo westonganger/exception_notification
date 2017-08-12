@@ -399,6 +399,12 @@ Color of the message. Default : 'red'.
 
 Message will appear from this nickname. Default : 'Exception'.
 
+##### server_url
+
+*String, optional*
+
+Custom Server URL for self-hosted, Enterprise HipChat Server
+
 For all options & possible values see [Hipchat API](https://www.hipchat.com/docs/api/method/rooms/message).
 
 ### IRC notifier
