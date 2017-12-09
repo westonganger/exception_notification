@@ -60,7 +60,7 @@ module ExceptionNotifier
 
           def compose_subject
             subject = "#{@options[:email_prefix]}"
-            subject << "(#{@options[:accumulated_errors_count]} times) " if @options[:accumulated_errors_count].to_i > 1
+            subject << "(#{@options[:accumulated_errors_count]} times)" if @options[:accumulated_errors_count].to_i > 1
             subject << "#{@kontroller.controller_name} #{@kontroller.action_name}" if @kontroller && @options[:include_controller_and_action_names_in_subject]
             subject << " (#{@exception.class})"
             subject << " #{@exception.message.inspect}" if @options[:verbose_subject]
@@ -75,17 +75,17 @@ module ExceptionNotifier
           end
 
           helper_method :inspect_object
-          
+
           def truncate(string, max)
             string.length > max ? "#{string[0...max]}..." : string
           end
-          
+
           def inspect_object(object)
             case object
               when Hash, Array
                 truncate(object.inspect, 300)
               else
-                  object.to_s 
+                  object.to_s
             end
           end
 
