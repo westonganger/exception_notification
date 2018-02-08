@@ -5,6 +5,11 @@ module ExceptionNotifier
   class MattermostNotifier
     include ExceptionNotifier::BacktraceCleaner
 
+    class MissingController
+      def method_missing(*args, &block)
+      end
+    end
+
     attr_accessor :httparty
 
     def initialize(options = {})
