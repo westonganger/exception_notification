@@ -42,7 +42,7 @@ module ExceptionNotifier
       self.testing_mode = true
     end
 
-    def notify_exception(exception, options={})
+    def notify_exception(exception, options={}, &block)
       return false if ignored_exception?(options[:ignore_exceptions], exception)
       return false if ignored?(exception, options)
       if error_grouping
@@ -52,7 +52,7 @@ module ExceptionNotifier
 
       selected_notifiers = options.delete(:notifiers) || notifiers
       [*selected_notifiers].each do |notifier|
-        fire_notification(notifier, exception, options.dup)
+        fire_notification(notifier, exception, options.dup, &block)
       end
       true
     end
@@ -109,9 +109,9 @@ module ExceptionNotifier
       !(all_ignored_exceptions & exception_ancestors).empty?
     end
 
-    def fire_notification(notifier_name, exception, options)
+    def fire_notification(notifier_name, exception, options, &block)
       notifier = registered_exception_notifier(notifier_name)
-      notifier.call(exception, options)
+      notifier.call(exception, options, &block)
     rescue Exception => e
       raise e if @@testing_mode
 

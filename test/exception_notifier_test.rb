@@ -125,6 +125,20 @@ class ExceptionNotifierTest < ActiveSupport::TestCase
     assert_equal @notifier_calls, 1
   end
 
+  test "should call received block" do
+    @block_called = false
+    notifier = lambda { |exception, options, &block| block.call }
+    ExceptionNotifier.register_exception_notifier(:test, notifier)
+
+    exception = ExceptionOne.new
+
+    ExceptionNotifier.notify_exception(exception) do
+      @block_called = true
+    end
+
+    assert @block_called
+  end
+
   test "should not call group_error! or send_notification? if error_grouping false" do
     exception = StandardError.new
     ExceptionNotifier.expects(:group_error!).never
