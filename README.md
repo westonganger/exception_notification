@@ -9,7 +9,7 @@
 
 ---
 
-The Exception Notification gem provides a set of [notifiers](#notifiers) for sending notifications when errors occur in a Rack/Rails application. The built-in notifiers can deliver notifications by [email](#email-notifier), [Campfire](#campfire-notifier), [HipChat](#hipchat-notifier), [Slack](#slack-notifier), [Mattermost](#mattermost-notifier), [IRC](#irc-notifier) or via custom [WebHooks](#webhook-notifier).
+The Exception Notification gem provides a set of [notifiers](#notifiers) for sending notifications when errors occur in a Rack/Rails application. The built-in notifiers can deliver notifications by [email](#email-notifier), [Campfire](#campfire-notifier), [HipChat](#hipchat-notifier), [Slack](#slack-notifier), [Mattermost](#mattermost-notifier), [IRC](#irc-notifier), [Google Chat](#google-chat-notifier) or via custom [WebHooks](#webhook-notifier).
 
 There's a great [Railscast about Exception Notification](http://railscasts.com/episodes/104-exception-notifications-revised) you can see that may help you getting started.
 
@@ -90,6 +90,7 @@ ExceptionNotification relies on notifiers to deliver notifications when errors o
 * [IRC notifier](#irc-notifier)
 * [Slack notifier](#slack-notifier)
 * [Mattermost notifier](#mattermost-notifier)
+* [Google Chat notifier](#google-chat-notifier)
 * [WebHook notifier](#webhook-notifier)
 
 But, you also can easily implement your own [custom notifier](#custom-notifier).
@@ -723,6 +724,36 @@ Url of your gitlab or github with your organisation name for issue creation link
 
 Your application name used for issue creation link. Defaults to ``` Rails.application.class.parent_name.underscore```.
 
+### Google Chat Notifier
+
+Post notifications in a Google Chats channel via [incoming webhook](https://developers.google.com/hangouts/chat/how-tos/webhooks)
+
+Add the [HTTParty](https://github.com/jnunemaker/httparty) gem to your `Gemfile`:
+
+```ruby
+gem 'httparty'
+```
+
+To configure it, you **need** to set the `webhook_url` option.
+
+```ruby
+Rails.application.config.middleware.use ExceptionNotification::Rack,
+  :google_chat => {
+    :webhook_url => 'https://chat.googleapis.com/v1/spaces/XXXXXXXX/messages?key=YYYYYYYYYYYYY&token=ZZZZZZZZZZZZ'
+  }
+```
+
+##### webhook_url
+
+*String, required*
+
+The Incoming WebHook URL on Google Chats.
+
+##### app_name
+
+*String, optional*
+
+Your application name, shown in the notification. Defaults to `Rails.application.class.parent_name.underscore`.
 
 ### WebHook notifier
 
