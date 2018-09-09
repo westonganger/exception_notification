@@ -56,7 +56,7 @@ Save the current user in the `request` using a controller callback.
 
 ```ruby
 class ApplicationController < ActionController::Base
-  before_filter :prepare_exception_notifier
+  before_action :prepare_exception_notifier
   private
   def prepare_exception_notifier
     request.env["exception_notifier.exception_data"] = {
