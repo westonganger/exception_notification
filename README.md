@@ -220,7 +220,7 @@ If your new section requires information that isn't available by default, make s
 
 ```ruby
 class ApplicationController < ActionController::Base
-  before_filter :log_additional_data
+  before_action :log_additional_data
   ...
   protected
     def log_additional_data
@@ -542,7 +542,7 @@ The slack notification will include any data saved under `env["exception_notifie
 An example of how to send the server name to Slack in Rails (put this code in application_controller.rb):
 
 ```ruby
-before_filter :set_notification
+before_action :set_notification
 
 def set_notification
      request.env['exception_notifier.exception_data'] = {"server" => request.env['SERVER_NAME']}
