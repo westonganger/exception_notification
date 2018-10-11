@@ -9,7 +9,7 @@
 
 ---
 
-The Exception Notification gem provides a set of [notifiers](#notifiers) for sending notifications when errors occur in a Rack/Rails application. The built-in notifiers can deliver notifications by [email](#email-notifier), [Campfire](#campfire-notifier), [HipChat](#hipchat-notifier), [Slack](#slack-notifier), [Mattermost](#mattermost-notifier), [IRC](#irc-notifier) or via custom [WebHooks](#webhook-notifier).
+The Exception Notification gem provides a set of [notifiers](#notifiers) for sending notifications when errors occur in a Rack/Rails application. The built-in notifiers can deliver notifications by [email](#email-notifier), [Campfire](#campfire-notifier), [HipChat](#hipchat-notifier), [Slack](#slack-notifier), [Mattermost](#mattermost-notifier), [IRC](#irc-notifier), [Datadog](#datadog-notifier) or via custom [WebHooks](#webhook-notifier).
 
 There's a great [Railscast about Exception Notification](http://railscasts.com/episodes/104-exception-notifications-revised) you can see that may help you getting started.
 
@@ -82,9 +82,10 @@ Options -> sections" below.
 
 ## Notifiers
 
-ExceptionNotification relies on notifiers to deliver notifications when errors occur in your applications. By default, 7 notifiers are available:
+ExceptionNotification relies on notifiers to deliver notifications when errors occur in your applications. By default, 8 notifiers are available:
 
 * [Campfire notifier](#campfire-notifier)
+* [Datadog notifier](#datadog-notifier)
 * [Email notifier](#email-notifier)
 * [HipChat notifier](#hipchat-notifier)
 * [IRC notifier](#irc-notifier)
@@ -144,6 +145,59 @@ The API token to allow access to your Campfire account.
 
 
 For more options to set Campfire, like _ssl_, check [here](https://github.com/collectiveidea/tinder/blob/master/lib/tinder/campfire.rb#L17).
+
+### Datadog notifier
+
+This notifier sends error events to Datadog using the [Dogapi](https://github.com/DataDog/dogapi-rb) gem.
+
+#### Usage
+
+Just add the [Dogapi](https://github.com/DataDog/dogapi-rb) gem to your `Gemfile`:
+
+```ruby
+gem 'dogapi'
+```
+
+To use datadog notifier, you first need to create a `Dogapi::Client` with your datadog api and application keys, like this:
+
+```ruby
+cilent = Dogapi::Client.new(api_key, application_key)
+```
+
+You then need to set the `client` option, like this:
+
+```ruby
+Rails.application.config.middleware.use ExceptionNotification::Rack,
+  :email => {
+    :email_prefix => "[PREFIX] ",
+    :sender_address => %{"notifier" <notifier@example.com>},
+    :exception_recipients => %w{exceptions@example.com}
+  },
+  :datadog => {
+    :client => client
+  }
+```
+
+#### Options
+
+##### client
+
+*DogApi::Client, required*
+
+The API client to send events to Datadog.
+
+##### title_prefix
+
+*String, optional*
+
+Prefix for event title in Datadog.
+
+##### tags
+
+*Array of Strings, optional*
+
+Optional tags for events in Datadog.
+
 
 ### Email notifier
 
