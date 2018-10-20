@@ -5,7 +5,7 @@ class TeamsNotifierTest < ActiveSupport::TestCase
 
   test "should send notification if properly configured" do
     options = {
-      :webhook_url => 'http://localhost:8000'
+      webhook_url: 'http://localhost:8000'
     }
     teams_notifier = ExceptionNotifier::TeamsNotifier.new
     teams_notifier.httparty = FakeHTTParty.new
@@ -26,8 +26,8 @@ class TeamsNotifierTest < ActiveSupport::TestCase
 
   test "should send notification with create gitlab issue link if specified" do
     options = {
-      :webhook_url => 'http://localhost:8000',
-      :git_url => 'github.com/aschen'
+      webhook_url: 'http://localhost:8000',
+      git_url: 'github.com/aschen'
     }
     teams_notifier = ExceptionNotifier::TeamsNotifier.new
     teams_notifier.httparty = FakeHTTParty.new
@@ -44,12 +44,12 @@ class TeamsNotifierTest < ActiveSupport::TestCase
 
   test 'should add other HTTParty options to params' do
     options = {
-      :webhook_url => 'http://localhost:8000',
-      :username => "Test Bot",
-      :avatar => 'http://site.com/icon.png',
-      :basic_auth => {
-        :username => 'clara',
-        :password => 'password'
+      webhook_url: 'http://localhost:8000',
+      username: "Test Bot",
+      avatar: 'http://site.com/icon.png',
+      basic_auth: {
+        username: 'clara',
+        password: 'password'
       }
     }
     teams_notifier = ExceptionNotifier::TeamsNotifier.new
