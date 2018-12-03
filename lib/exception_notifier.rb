@@ -17,7 +17,9 @@ module ExceptionNotifier
   autoload :IrcNotifier, 'exception_notifier/irc_notifier'
   autoload :SlackNotifier, 'exception_notifier/slack_notifier'
   autoload :MattermostNotifier, 'exception_notifier/mattermost_notifier'
+  autoload :TeamsNotifier, 'exception_notifier/teams_notifier'
   autoload :SnsNotifier, 'exception_notifier/sns_notifier'
+  autoload :GoogleChatNotifier, 'exception_notifier/google_chat_notifier'
   autoload :DatadogNotifier, 'exception_notifier/datadog_notifier'
 
   class UndefinedNotifierError < StandardError; end

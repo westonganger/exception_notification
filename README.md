@@ -9,7 +9,7 @@
 
 ---
 
-The Exception Notification gem provides a set of [notifiers](#notifiers) for sending notifications when errors occur in a Rack/Rails application. The built-in notifiers can deliver notifications by [email](#email-notifier), [Campfire](#campfire-notifier), [HipChat](#hipchat-notifier), [Slack](#slack-notifier), [Mattermost](#mattermost-notifier), [IRC](#irc-notifier), [Amazon SNS](#amazon-sns-notifier), [Datadog](#datadog-notifier) or via custom [WebHooks](#webhook-notifier).
+The Exception Notification gem provides a set of [notifiers](#notifiers) for sending notifications when errors occur in a Rack/Rails application. The built-in notifiers can deliver notifications by [email](#email-notifier), [Campfire](#campfire-notifier), [HipChat](#hipchat-notifier), [Slack](#slack-notifier), [Mattermost](#mattermost-notifier), [Teams](#teams-notifier), [IRC](#irc-notifier), [Amazon SNS](#amazon-sns-notifier), [Google Chat](#google-chat-notifier), [Datadog](#datadog-notifier) or via custom [WebHooks](#webhook-notifier).
 
 There's a great [Railscast about Exception Notification](http://railscasts.com/episodes/104-exception-notifications-revised) you can see that may help you getting started.
 
@@ -91,7 +91,9 @@ ExceptionNotification relies on notifiers to deliver notifications when errors o
 * [IRC notifier](#irc-notifier)
 * [Slack notifier](#slack-notifier)
 * [Mattermost notifier](#mattermost-notifier)
+* [Teams notifier](#teams-notifier)
 * [Amazon SNS](#amazon-sns-notifier)
+* [Google Chat notifier](#google-chat-notifier)
 * [WebHook notifier](#webhook-notifier)
 
 But, you also can easily implement your own [custom notifier](#custom-notifier).
@@ -663,7 +665,7 @@ Contains additional payload for a message (e.g avatar, attachments, etc). See [s
 
 Contains additional fields that will be added to the attachement. See [Slack documentation](https://api.slack.com/docs/message-attachments).
 
-## Mattermost notifier
+### Mattermost notifier
 
 Post notification in a mattermost channel via [incoming webhook](http://docs.mattermost.com/developer/webhooks-incoming.html)
 
@@ -778,6 +780,36 @@ Url of your gitlab or github with your organisation name for issue creation link
 
 Your application name used for issue creation link. Defaults to ``` Rails.application.class.parent_name.underscore```.
 
+### Google Chat Notifier
+
+Post notifications in a Google Chats channel via [incoming webhook](https://developers.google.com/hangouts/chat/how-tos/webhooks)
+
+Add the [HTTParty](https://github.com/jnunemaker/httparty) gem to your `Gemfile`:
+
+```ruby
+gem 'httparty'
+```
+
+To configure it, you **need** to set the `webhook_url` option.
+
+```ruby
+Rails.application.config.middleware.use ExceptionNotification::Rack,
+  :google_chat => {
+    :webhook_url => 'https://chat.googleapis.com/v1/spaces/XXXXXXXX/messages?key=YYYYYYYYYYYYY&token=ZZZZZZZZZZZZ'
+  }
+```
+
+##### webhook_url
+
+*String, required*
+
+The Incoming WebHook URL on Google Chats.
+
+##### app_name
+
+*String, optional*
+
+Your application name, shown in the notification. Defaults to `Rails.application.class.parent_name.underscore`.
 
 ### Amazon SNS Notifier
 
@@ -816,6 +848,60 @@ Number of backtrace lines to be displayed in the notification message. By defaul
 #### Note:
 * You may need to update your previous `aws-sdk-*` gems in order to setup `aws-sdk-sns` correctly.
 * If you need any further information about the available regions or any other SNS related topic consider: [SNS faqs](https://aws.amazon.com/sns/faqs/)
+
+### Teams notifier
+
+Post notification in a Microsoft Teams channel via [Incoming Webhook Connector](https://docs.microsoft.com/en-us/outlook/actionable-messages/actionable-messages-via-connectors)
+Just add the [HTTParty](https://github.com/jnunemaker/httparty) gem to your `Gemfile`:
+
+```ruby
+gem 'httparty'
+```
+
+To configure it, you **need** to set the `webhook_url` option.  
+If you are using GitLab for issue tracking, you can specify `git_url` as follows to add a *Create issue* button in your notification.  
+By default this will use your Rails application name to match the git repository. If yours differs, you can specify `app_name`.  
+By that same notion, you may also set a `jira_url` to get a button that will send you to the New Issue screen in Jira.
+
+```ruby
+Rails.application.config.middleware.use ExceptionNotification::Rack,
+  :email => {
+    :email_prefix => "[PREFIX] ",
+    :sender_address => %{"notifier" <notifier@example.com>},
+    :exception_recipients => %w{exceptions@example.com}
+  },
+  :teams => {
+    :webhook_url => 'https://outlook.office.com/webhook/your-guid/IncomingWebhook/team-guid',
+    :git_url => 'https://your-gitlab.com/Group/Project',
+    :jira_url => 'https://your-jira.com'
+  }
+```
+
+#### Options
+
+##### webhook_url
+
+*String, required*
+
+The Incoming WebHook URL on mattermost.
+
+##### git_url
+
+*String, optional*
+
+Url of your gitlab or github with your organisation name for issue creation link (Eg: `github.com/aschen`). Defaults to nil and doesn't add link to the notification.
+
+##### jira_url
+
+*String, optional*
+
+Url of your Jira instance, adds button for Create Issue screen. Defaults to nil and doesn't add a button to the card.
+
+##### app_name
+
+*String, optional*
+
+Your application name used for git issue creation link. Defaults to `Rails.application.class.parent_name.underscore`.
 
 ### WebHook notifier
 
