@@ -829,7 +829,7 @@ Rails.application.config.middleware.use ExceptionNotification::Rack,
 
 *String, required*
 
-The Incoming WebHook URL on mattermost.
+The Incoming WebHook URL on Teams.
 
 ##### git_url
 
