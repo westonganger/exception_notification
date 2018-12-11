@@ -5,7 +5,7 @@ class GoogleChatNotifierTest < ActiveSupport::TestCase
 
   test "should send notification if properly configured" do
     options = {
-      :webhook_url => 'http://localhost:8000'
+      webhook_url: 'http://localhost:8000'
     }
     google_chat_notifier = ExceptionNotifier::GoogleChatNotifier.new
     google_chat_notifier.httparty = FakeHTTParty.new

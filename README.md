@@ -36,11 +36,11 @@ ExceptionNotification is used as a rack middleware, or in the environment you wa
 
 ```ruby
 Rails.application.config.middleware.use ExceptionNotification::Rack,
-  :email => {
-    :deliver_with => :deliver, # Rails >= 4.2.1 do not need this option since it defaults to :deliver_now
-    :email_prefix => "[PREFIX] ",
-    :sender_address => %{"notifier" <notifier@example.com>},
-    :exception_recipients => %w{exceptions@example.com}
+  email: {
+    deliver_with: :deliver, # Rails >= 4.2.1 do not need this option since it defaults to :deliver_now
+    email_prefix: '[PREFIX] ',
+    sender_address: %{"notifier" <notifier@example.com>},
+    exception_recipients: %w{exceptions@example.com}
   }
 ```
 
@@ -57,10 +57,12 @@ Save the current user in the `request` using a controller callback.
 ```ruby
 class ApplicationController < ActionController::Base
   before_action :prepare_exception_notifier
+
   private
+
   def prepare_exception_notifier
     request.env["exception_notifier.exception_data"] = {
-      :current_user => current_user
+      current_user: current_user
     }
   end
 end
@@ -114,16 +116,16 @@ To configure it, you need to set the `subdomain`, `token` and `room_name` option
 
 ```ruby
 Rails.application.config.middleware.use ExceptionNotification::Rack,
-  :email => {
-    :email_prefix => "[PREFIX] ",
-    :sender_address => %{"notifier" <notifier@example.com>},
-    :exception_recipients => %w{exceptions@example.com}
-  },
-  :campfire => {
-    :subdomain => 'my_subdomain',
-    :token => 'my_token',
-    :room_name => 'my_room'
-  }
+                                        email: {
+                                          email_prefix: '[PREFIX] ',
+                                          sender_address: %{"notifier" <notifier@example.com>},
+                                          exception_recipients: %w{exceptions@example.com}
+                                        },
+                                        campfire: {
+                                          subdomain: 'my_subdomain',
+                                          token: 'my_token',
+                                          room_name: 'my_room'
+                                        }
 ```
 
 #### Options
@@ -164,20 +166,20 @@ gem 'dogapi'
 To use datadog notifier, you first need to create a `Dogapi::Client` with your datadog api and application keys, like this:
 
 ```ruby
-cilent = Dogapi::Client.new(api_key, application_key)
+client = Dogapi::Client.new(api_key, application_key)
 ```
 
 You then need to set the `client` option, like this:
 
 ```ruby
 Rails.application.config.middleware.use ExceptionNotification::Rack,
-  :email => {
-    :email_prefix => "[PREFIX] ",
-    :sender_address => %{"notifier" <notifier@example.com>},
-    :exception_recipients => %w{exceptions@example.com}
+  email: {
+    email_prefix: "[PREFIX] ",
+    sender_address: %{"notifier" <notifier@example.com>},
+    exception_recipients: %w{exceptions@example.com}
   },
-  :datadog => {
-    :client => client
+  datadog: {
+    client: client
   }
 ```
 
@@ -216,8 +218,8 @@ For the email to be sent, there must be a default ActionMailer `delivery_method`
 config.action_mailer.delivery_method = :sendmail
 # Defaults to:
 # config.action_mailer.sendmail_settings = {
-#   :location => '/usr/sbin/sendmail',
-#   :arguments => '-i -t'
+#   location: '/usr/sbin/sendmail',
+#   arguments: '-i -t'
 # }
 config.action_mailer.perform_deliveries = true
 config.action_mailer.raise_delivery_errors = true
@@ -263,12 +265,12 @@ describe application-specific data--just add the section's name to the list (whe
 
 ```ruby
 Rails.application.config.middleware.use ExceptionNotification::Rack,
-  :email => {
-    :email_prefix => "[PREFIX] ",
-    :sender_address => %{"notifier" <notifier@example.com>},
-    :exception_recipients => %w{exceptions@example.com},
-    :sections => %w{my_section1 my_section2}
-  }
+                                        email: {
+                                          email_prefix: '[PREFIX] ',
+                                          sender_address: %{"notifier" <notifier@example.com>},
+                                          exception_recipients: %w{exceptions@example.com},
+                                          sections: %w{my_section1 my_section2}
+                                        }
 ```
 
 Place your custom sections under `./app/views/exception_notifier/` with the suffix `.text.erb`, e.g. `./app/views/exception_notifier/_my_section1.text.erb`.
@@ -280,12 +282,13 @@ class ApplicationController < ActionController::Base
   before_action :log_additional_data
   ...
   protected
-    def log_additional_data
-      request.env["exception_notifier.exception_data"] = {
-        :document => @document,
-        :person => @person
-      }
-    end
+
+  def log_additional_data
+    request.env['exception_notifier.exception_data'] = {
+      document: @document,
+      person: @person
+    }
+  end
   ...
 end
 ```
@@ -300,12 +303,12 @@ When using [background notifications](#background-notifications) some variables 
 
 ```ruby
 Rails.application.config.middleware.use ExceptionNotification::Rack,
-  :email => {
-    :email_prefix => "[PREFIX] ",
-    :sender_address => %{"notifier" <notifier@example.com>},
-    :exception_recipients => %w{exceptions@example.com},
-    :background_sections => %w{my_section1 my_section2 backtrace data}
-  }
+                                        email: {
+                                          email_prefix: '[PREFIX] ',
+                                          sender_address: %{"notifier" <notifier@example.com>},
+                                          exception_recipients: %w{exceptions@example.com},
+                                          background_sections: %w{my_section1 my_section2 backtrace data}
+                                        }
 ```
 
 ##### email_headers
@@ -316,37 +319,37 @@ Additionally, you may want to set customized headers on the outcoming emails. To
 
 ```ruby
 Rails.application.config.middleware.use ExceptionNotification::Rack,
-  :email => {
-    :email_prefix         => "[PREFIX] ",
-    :sender_address       => %{"notifier" <notifier@example.com>},
-    :exception_recipients => %w{exceptions@example.com},
-    :email_headers        => { "X-Custom-Header" => "foobar" }
-  }
+                                        email: {
+                                          email_prefix: "[PREFIX] ",
+                                          sender_address: %{"notifier" <notifier@example.com>},
+                                          exception_recipients: %w{exceptions@example.com},
+                                          email_headers: { "X-Custom-Header" => "foobar" }
+                                        }
 ```
 
 ##### verbose_subject
 
 *Boolean, default: true*
 
-If enabled, include the exception message in the subject. Use `:verbose_subject => false` to exclude it.
+If enabled, include the exception message in the subject. Use `verbose_subject: false` to exclude it.
 
 ##### normalize_subject
 
 *Boolean, default: false*
 
-If enabled, remove numbers from subject so they thread as a single one. Use `:normalize_subject => true` to enable it.
+If enabled, remove numbers from subject so they thread as a single one. Use `normalize_subject: true` to enable it.
 
 ##### include_controller_and_action_names_in_subject
 
 *Boolean, default: true*
 
-If enabled, include the controller and action names in the subject. Use `:include_controller_and_action_names_in_subject => false` to exclude them.
+If enabled, include the controller and action names in the subject. Use `include_controller_and_action_names_in_subject: false` to exclude them.
 
 ##### email_format
 
 *Symbol, default: :text*
 
-By default, ExceptionNotification sends emails in plain text, in order to sends multipart notifications (aka HTML emails) use `:email_format => :html`.
+By default, ExceptionNotification sends emails in plain text, in order to sends multipart notifications (aka HTML emails) use `email_format: :html`.
 
 ##### delivery_method
 
@@ -356,31 +359,31 @@ By default, ExceptionNotification sends emails using the ActionMailer configurat
 
 ```ruby
 Rails.application.config.middleware.use ExceptionNotification::Rack,
-  :email => {
-    :email_prefix         => "[PREFIX] ",
-    :sender_address       => %{"notifier" <notifier@example.com>},
-    :exception_recipients => %w{exceptions@example.com},
-    :delivery_method => :postmark,
-    :postmark_settings => {
-      :api_key => ENV["POSTMARK_API_KEY"]
-    }
-  }
+                                        email: {
+                                          email_prefix: '[PREFIX] ',
+                                          sender_address: %{"notifier" <notifier@example.com>},
+                                          exception_recipients: %w{exceptions@example.com},
+                                          delivery_method: :postmark,
+                                          postmark_settings: {
+                                            api_key: ENV['POSTMARK_API_KEY']
+                                          }
+                                        }
 ```
 
 Besides the `delivery_method` option, you also can customize the mailer settings by passing a hash under an option named `DELIVERY_METHOD_settings`. Thus, you can use override specific SMTP settings for notifications using:
 
 ```ruby
 Rails.application.config.middleware.use ExceptionNotification::Rack,
-  :email => {
-    :email_prefix         => "[PREFIX] ",
-    :sender_address       => %{"notifier" <notifier@example.com>},
-    :exception_recipients => %w{exceptions@example.com},
-    :delivery_method => :smtp,
-    :smtp_settings => {
-      :user_name => "bob",
-      :password => "password",
-    }
-  }
+                                        email: {
+                                          email_prefix: '[PREFIX] ',
+                                          sender_address: %{"notifier" <notifier@example.com>},
+                                          exception_recipients: %w{exceptions@example.com},
+                                          delivery_method: :smtp,
+                                          smtp_settings: {
+                                            user_name: 'bob',
+                                            password: 'password',
+                                          }
+                                        }
 ```
 
 A complete list of `smtp_settings` options can be found in the [ActionMailer Configuration documentation](http://api.rubyonrails.org/classes/ActionMailer/Base.html#class-ActionMailer::Base-label-Configuration+options).
@@ -413,15 +416,15 @@ To configure it, you need to set the `token` and `room_name` options, like this:
 
 ```ruby
 Rails.application.config.middleware.use ExceptionNotification::Rack,
-  :email => {
-    :email_prefix => "[PREFIX] ",
-    :sender_address => %{"notifier" <notifier@example.com>},
-    :exception_recipients => %w{exceptions@example.com}
-  },
-  :hipchat => {
-    :api_token => 'my_token',
-    :room_name => 'my_room'
-  }
+                                        email: {
+                                          email_prefix: '[PREFIX] ',
+                                          sender_address: %{"notifier" <notifier@example.com>},
+                                          exception_recipients: %w{exceptions@example.com}
+                                        },
+                                        hipchat: {
+                                          api_token: 'my_token',
+                                          room_name: 'my_room'
+                                        }
 ```
 
 #### Options
@@ -480,31 +483,30 @@ To configure it, you need to set at least the 'domain' option, like this:
 
 ```ruby
 Rails.application.config.middleware.use ExceptionNotification::Rack,
-  :email => {
-    :email_prefix => "[PREFIX] ",
-    :sender_address => %{"notifier" <notifier@example.com>},
-    :exception_recipients => %w{exceptions@example.com}
-  },
-  :irc => {
-    :domain => 'irc.example.com'
-  }
+                                        email: {
+                                          email_prefix: '[PREFIX] ',
+                                          sender_address: %{"notifier" <notifier@example.com>},
+                                          exception_recipients: %w{exceptions@example.com}
+                                        },
+                                        irc: {
+                                          domain: 'irc.example.com'
+                                        }
 ```
 
 There are several other options, which are described below. For example, to use ssl and a password, add a prefix, post to the '#log' channel, and include recipients in the message (so that they will be notified), your configuration might look like this:
 
 ```ruby
 Rails.application.config.middleware.use ExceptionNotification::Rack,
-  :irc => {
-    :domain => 'irc.example.com',
-    :nick => 'BadNewsBot',
-    :password => 'secret',
-    :port => 6697,
-    :channel => '#log',
-    :ssl => true,
-    :prefix => '[Exception Notification]',
-    :recipients => ['peter', 'michael', 'samir']
-  }
-
+                                        irc: {
+                                          domain: 'irc.example.com',
+                                          nick: 'BadNewsBot',
+                                          password: 'secret',
+                                          port: 6697,
+                                          channel: '#log',
+                                          ssl: true,
+                                          prefix: '[Exception Notification]',
+                                          recipients: ['peter', 'michael', 'samir']
+                                        }
 ```
 
 #### Options
@@ -579,22 +581,22 @@ To configure it, you need to set at least the 'webhook_url' option, like this:
 
 ```ruby
 Rails.application.config.middleware.use ExceptionNotification::Rack,
-  :email => {
-    :email_prefix => "[PREFIX] ",
-    :sender_address => %{"notifier" <notifier@example.com>},
-    :exception_recipients => %w{exceptions@example.com}
-  },
-  :slack => {
-    :webhook_url => "[Your webhook url]",
-    :channel => "#exceptions",
-    :additional_parameters => {
-      :icon_url => "http://image.jpg",
-      :mrkdwn => true
-    }
-  }
+                                        email: {
+                                          email_prefix: '[PREFIX] ',
+                                          sender_address: %{"notifier" <notifier@example.com>},
+                                          exception_recipients: %w{exceptions@example.com}
+                                        },
+                                        slack: {
+                                          webhook_url: '[Your webhook url]',
+                                          channel: '#exceptions',
+                                          additional_parameters: {
+                                            icon_url: 'http://image.jpg',
+                                            mrkdwn: true
+                                          }
+                                        }
 ```
 
-The slack notification will include any data saved under `env["exception_notifier.exception_data"]`.
+The slack notification will include any data saved under `env['exception_notifier.exception_data']`.
 
 An example of how to send the server name to Slack in Rails (put this code in application_controller.rb):
 
@@ -602,8 +604,8 @@ An example of how to send the server name to Slack in Rails (put this code in ap
 before_action :set_notification
 
 def set_notification
-     request.env['exception_notifier.exception_data'] = {"server" => request.env['SERVER_NAME']}
-     # can be any key-value pairs
+  request.env['exception_notifier.exception_data'] = { 'server' => request.env['SERVER_NAME'] }
+  # can be any key-value pairs
 end
 ```
 
@@ -611,17 +613,17 @@ If you find this too verbose, you can determine to exclude certain information b
 
 ```ruby
 Rails.application.config.middleware.use ExceptionNotification::Rack,
-  :slack => {
-    :webhook_url => "[Your webhook url]",
-    :channel => "#exceptions",
-    :additional_parameters => {
-      :icon_url => "http://image.jpg",
-      :mrkdwn => true
-    },
-    :ignore_data_if => lambda {|key, value|
-      "#{key}" == 'key_to_ignore' || value.is_a?(ClassToBeIgnored)
-    }
-  }
+                                        slack: {
+                                          webhook_url: '[Your webhook url]',
+                                          channel: '#exceptions',
+                                          additional_parameters: {
+                                            icon_url: 'http://image.jpg',
+                                            mrkdwn: true
+                                          },
+                                          ignore_data_if: lambda {|key, value|
+                                            "#{key}" == 'key_to_ignore' || value.is_a?(ClassToBeIgnored)
+                                          }
+                                        }
 ```
 
 Any evaluation to `true` will cause the key / value pair not be be sent along to Slack.
@@ -680,15 +682,15 @@ You can also specify an other channel with `channel` option.
 
 ```ruby
 Rails.application.config.middleware.use ExceptionNotification::Rack,
-  :email => {
-    :email_prefix => "[PREFIX] ",
-    :sender_address => %{"notifier" <notifier@example.com>},
-    :exception_recipients => %w{exceptions@example.com}
-  },
-  :mattermost => {
-    :webhook_url => 'http://your-mattermost.com/hooks/blablabla',
-    :channel => 'my-channel'
-  }
+                                        email: {
+                                          email_prefix: '[PREFIX] ',
+                                          sender_address: %{"notifier" <notifier@example.com>},
+                                          exception_recipients: %w{exceptions@example.com}
+                                        },
+                                        mattermost: {
+                                          webhook_url: 'http://your-mattermost.com/hooks/blablabla',
+                                          channel: 'my-channel'
+                                        }
 ```
 
 If you are using Github or Gitlab for issues tracking, you can specify `git_url` as follow to add a *Create issue* link in you notification.
@@ -697,49 +699,49 @@ By default this will use your Rails application name to match the git repository
 
 ```ruby
 Rails.application.config.middleware.use ExceptionNotification::Rack,
-  :email => {
-    :email_prefix => "[PREFIX] ",
-    :sender_address => %{"notifier" <notifier@example.com>},
-    :exception_recipients => %w{exceptions@example.com}
-  },
-  :mattermost => {
-    :webhook_url => 'http://your-mattermost.com/hooks/blablabla',
-    :git_url => 'github.com/aschen'
-  }
+                                        email: {
+                                          email_prefix: '[PREFIX] ',
+                                          sender_address: %{"notifier" <notifier@example.com>},
+                                          exception_recipients: %w{exceptions@example.com}
+                                        },
+                                        mattermost: {
+                                          webhook_url: 'http://your-mattermost.com/hooks/blablabla',
+                                          git_url: 'github.com/aschen'
+                                        }
 ```
 
 You can also specify the bot name and avatar with `username` and `avatar` options.
 
 ```ruby
 Rails.application.config.middleware.use ExceptionNotification::Rack,
-  :email => {
-    :email_prefix => "[PREFIX] ",
-    :sender_address => %{"notifier" <notifier@example.com>},
-    :exception_recipients => %w{exceptions@example.com}
-  },
-  :mattermost => {
-    :webhook_url => 'http://your-mattermost.com/hooks/blablabla',
-    :avatar => 'http://example.com/your-image.png',
-    :username => 'Fail bot'
-  }
+                                        email: {
+                                          email_prefix: 'PREFIX] ',
+                                          sender_address: %{"notifier" <notifier@example.com>},
+                                          exception_recipients: %w{exceptions@example.com}
+                                        },
+                                        mattermost: {
+                                          webhook_url: 'http://your-mattermost.com/hooks/blablabla',
+                                          avatar: 'http://example.com/your-image.png',
+                                          username: 'Fail bot'
+                                        }
 ```
 
 Finally since the notifier use HTTParty, you can include all HTTParty options, like basic_auth for example.
 
 ```ruby
 Rails.application.config.middleware.use ExceptionNotification::Rack,
-  :email => {
-    :email_prefix => "[PREFIX] ",
-    :sender_address => %{"notifier" <notifier@example.com>},
-    :exception_recipients => %w{exceptions@example.com}
-  },
-  :mattermost => {
-    :webhook_url => 'http://your-mattermost.com/hooks/blablabla',
-    :basic_auth => {
-      :username => 'clara',
-      :password => 'password'
-    }
-  }
+                                        email: {
+                                          email_prefix: '[PREFIX] ',
+                                          sender_address: %{"notifier" <notifier@example.com>},
+                                          exception_recipients: %w{exceptions@example.com}
+                                        },
+                                        mattermost: {
+                                          webhook_url: 'http://your-mattermost.com/hooks/blablabla',
+                                          basic_auth: {
+                                            username: 'clara',
+                                            password: 'password'
+                                          }
+                                        }
 ```
 
 #### Options
@@ -778,7 +780,7 @@ Url of your gitlab or github with your organisation name for issue creation link
 
 *String, optional*
 
-Your application name used for issue creation link. Defaults to ``` Rails.application.class.parent_name.underscore```.
+Your application name used for issue creation link. Defaults to ```Rails.application.class.parent_name.underscore```.
 
 ### Google Chat Notifier
 
@@ -794,8 +796,8 @@ To configure it, you **need** to set the `webhook_url` option.
 
 ```ruby
 Rails.application.config.middleware.use ExceptionNotification::Rack,
-  :google_chat => {
-    :webhook_url => 'https://chat.googleapis.com/v1/spaces/XXXXXXXX/messages?key=YYYYYYYYYYYYY&token=ZZZZZZZZZZZZ'
+  google_chat: {
+    webhook_url: 'https://chat.googleapis.com/v1/spaces/XXXXXXXX/messages?key=YYYYYYYYYYYYY&token=ZZZZZZZZZZZZ'
   }
 ```
 
@@ -827,12 +829,12 @@ To configure it, you **need** to set 3 required options for aws: `region`, `acce
 
 ```ruby
 Rails.application.config.middleware.use ExceptionNotification::Rack,
-  sns: {
-    region: 'us-east-x',
-    access_key_id: 'access_key_id',
-    secret_access_key: 'secret_access_key',
-    topic_arn: 'arn:aws:sns:us-east-x:XXXX:my-topic'
-  }
+                                        sns: {
+                                          region: 'us-east-x',
+                                          access_key_id: 'access_key_id',
+                                          secret_access_key: 'secret_access_key',
+                                          topic_arn: 'arn:aws:sns:us-east-x:XXXX:my-topic'
+                                        }
 ```
 
 ##### sns_prefix
@@ -858,22 +860,22 @@ Just add the [HTTParty](https://github.com/jnunemaker/httparty) gem to your `Gem
 gem 'httparty'
 ```
 
-To configure it, you **need** to set the `webhook_url` option.  
-If you are using GitLab for issue tracking, you can specify `git_url` as follows to add a *Create issue* button in your notification.  
-By default this will use your Rails application name to match the git repository. If yours differs, you can specify `app_name`.  
+To configure it, you **need** to set the `webhook_url` option.
+If you are using GitLab for issue tracking, you can specify `git_url` as follows to add a *Create issue* button in your notification.
+By default this will use your Rails application name to match the git repository. If yours differs, you can specify `app_name`.
 By that same notion, you may also set a `jira_url` to get a button that will send you to the New Issue screen in Jira.
 
 ```ruby
 Rails.application.config.middleware.use ExceptionNotification::Rack,
-  :email => {
-    :email_prefix => "[PREFIX] ",
-    :sender_address => %{"notifier" <notifier@example.com>},
-    :exception_recipients => %w{exceptions@example.com}
+  email: {
+    email_prefix: "[PREFIX] ",
+    sender_address: %{"notifier" <notifier@example.com>},
+    exception_recipients: %w{exceptions@example.com}
   },
-  :teams => {
-    :webhook_url => 'https://outlook.office.com/webhook/your-guid/IncomingWebhook/team-guid',
-    :git_url => 'https://your-gitlab.com/Group/Project',
-    :jira_url => 'https://your-jira.com'
+  teams: {
+    webhook_url: 'https://outlook.office.com/webhook/your-guid/IncomingWebhook/team-guid',
+    git_url: 'https://your-gitlab.com/Group/Project',
+    jira_url: 'https://your-jira.com'
   }
 ```
 
@@ -919,47 +921,47 @@ To configure it, you need to set the `url` option, like this:
 
 ```ruby
 Rails.application.config.middleware.use ExceptionNotification::Rack,
-  :email => {
-    :email_prefix => "[PREFIX] ",
-    :sender_address => %{"notifier" <notifier@example.com>},
-    :exception_recipients => %w{exceptions@example.com}
-  },
-  :webhook => {
-    :url => 'http://domain.com:5555/hubot/path'
-  }
+                                        email: {
+                                          email_prefix: '[PREFIX] ',
+                                          sender_address: %{"notifier" <notifier@example.com>},
+                                          exception_recipients: %w{exceptions@example.com}
+                                        },
+                                        webhook: {
+                                          url: 'http://domain.com:5555/hubot/path'
+                                        }
 ```
 
 By default, the WebhookNotifier will call the URLs using the POST method. But, you can change this using the `http_method` option.
 
 ```ruby
 Rails.application.config.middleware.use ExceptionNotification::Rack,
-  :email => {
-    :email_prefix => "[PREFIX] ",
-    :sender_address => %{"notifier" <notifier@example.com>},
-    :exception_recipients => %w{exceptions@example.com}
-  },
-  :webhook => {
-    :url => 'http://domain.com:5555/hubot/path',
-    :http_method => :get
-  }
+                                        email: {
+                                          email_prefix: '[PREFIX] ',
+                                          sender_address: %{"notifier" <notifier@example.com>},
+                                          exception_recipients: %w{exceptions@example.com}
+                                        },
+                                        webhook: {
+                                          url: 'http://domain.com:5555/hubot/path',
+                                          http_method: :get
+                                        }
 ```
 
 Besides the `url` and `http_method` options, all the other options are passed directly to HTTParty. Thus, if the HTTP server requires authentication, you can include the following options:
 
 ```ruby
 Rails.application.config.middleware.use ExceptionNotification::Rack,
-  :email => {
-    :email_prefix => "[PREFIX] ",
-    :sender_address => %{"notifier" <notifier@example.com>},
-    :exception_recipients => %w{exceptions@example.com}
-  },
-  :webhook => {
-    :url => 'http://domain.com:5555/hubot/path',
-    :basic_auth => {
-      :username => 'alice',
-      :password => 'password'
-    }
-  }
+                                        email: {
+                                          email_prefix: '[PREFIX] ',
+                                          sender_address: %{"notifier" <notifier@example.com>},
+                                          exception_recipients: %w{exceptions@example.com}
+                                        },
+                                        webhook: {
+                                          url: 'http://domain.com:5555/hubot/path',
+                                          basic_auth: {
+                                            username: 'alice',
+                                            password: 'password'
+                                          }
+                                        }
 ```
 
 For more HTTParty options, check out the [documentation](https://github.com/jnunemaker/httparty).
@@ -997,14 +999,14 @@ Using it:
 
 ```ruby
 Rails.application.config.middleware.use ExceptionNotification::Rack,
-  :email => {
-    :email_prefix => "[PREFIX] ",
-    :sender_address => %{"notifier" <notifier@example.com>},
-    :exception_recipients => %w{exceptions@example.com}
-  },
-  :simple => {
-    # simple notifier options
-  }
+                                        email: {
+                                          email_prefix: '[PREFIX] ',
+                                          sender_address: %{"notifier" <notifier@example.com>},
+                                          exception_recipients: %w{exceptions@example.com}
+                                        },
+                                        simple: {
+                                          # simple notifier options
+                                        }
 ```
 
 ## Error Grouping
@@ -1016,22 +1018,22 @@ The below shows options used to enable error grouping:
 
 ```ruby
 Rails.application.config.middleware.use ExceptionNotification::Rack,
-  :ignore_exceptions => ['ActionView::TemplateError'] + ExceptionNotifier.ignored_exceptions,
-  :email => {
-    :email_prefix         => "[PREFIX] ",
-    :sender_address       => %{"notifier" <notifier@example.com>},
-    :exception_recipients => %w{exceptions@example.com}
+  ignore_exceptions: ['ActionView::TemplateError'] + ExceptionNotifier.ignored_exceptions,
+  email:  {
+    email_prefix: '[PREFIX] ',
+    sender_address: %{"notifier" <notifier@example.com>},
+    exception_recipients: %w{exceptions@example.com}
   },
-  :error_grouping => true,
-  # :error_grouping_period => 5.minutes,    # the time before an error is regarded as fixed
-  # :error_grouping_cache => Rails.cache,   # for other applications such as Sinatra, use one instance of ActiveSupport::Cache::Store
+  error_grouping: true,
+  # error_grouping_period: 5.minutes,    # the time before an error is regarded as fixed
+  # error_grouping_cache: Rails.cache,   # for other applications such as Sinatra, use one instance of ActiveSupport::Cache::Store
   #
   # notification_trigger: specify a callback to determine when a notification should be sent,
   #   the callback will be invoked with two arguments:
   #     exception: the exception raised
   #     count: accumulated errors count for this exception
   #
-  # :notification_trigger => lambda { |exception, count| count % 10 == 0 }
+  # notification_trigger: lambda { |exception, count| count % 10 == 0 }
 ```
 
 ## Ignore Exceptions
@@ -1053,12 +1055,12 @@ Ignore specified exception types. To achieve that, you should use the `:ignore_e
 
 ```ruby
 Rails.application.config.middleware.use ExceptionNotification::Rack,
-  :ignore_exceptions => ['ActionView::TemplateError'] + ExceptionNotifier.ignored_exceptions,
-  :email => {
-    :email_prefix         => "[PREFIX] ",
-    :sender_address       => %{"notifier" <notifier@example.com>},
-    :exception_recipients => %w{exceptions@example.com}
-  }
+                                        ignore_exceptions: ['ActionView::TemplateError'] + ExceptionNotifier.ignored_exceptions,
+                                        email: {
+                                          email_prefix: '[PREFIX] ',
+                                          sender_address: %{"notifier" <notifier@example.com>},
+                                          exception_recipients: %w{exceptions@example.com}
+                                        }
 ```
 
 The above will make ExceptionNotifier ignore a *TemplateError* exception, plus the ones ignored by default.
@@ -1071,12 +1073,12 @@ In some cases you may want to avoid getting notifications from exceptions made b
 
 ```ruby
 Rails.application.config.middleware.use ExceptionNotification::Rack,
-  :ignore_crawlers => %w{Googlebot bingbot},
-  :email => {
-    :email_prefix         => "[PREFIX] ",
-    :sender_address       => %{"notifier" <notifier@example.com>},
-    :exception_recipients => %w{exceptions@example.com}
-  }
+                                        ignore_crawlers: %w{Googlebot bingbot},
+                                        email: {
+                                          email_prefix: '[PREFIX] ',
+                                          sender_address: %{"notifier" <notifier@example.com>},
+                                          exception_recipients: %w{exceptions@example.com}
+                                        }
 ```
 
 ### :ignore_if
@@ -1087,12 +1089,12 @@ Last but not least, you can ignore exceptions based on a condition. Take a look:
 
 ```ruby
 Rails.application.config.middleware.use ExceptionNotification::Rack,
-  :ignore_if => ->(env, exception) { exception.message =~ /^Couldn't find Page with ID=/ },
-  :email => {
-    :email_prefix         => "[PREFIX] ",
-    :sender_address       => %{"notifier" <notifier@example.com>},
-    :exception_recipients => %w{exceptions@example.com},
-  }
+                                        ignore_if: ->(env, exception) { exception.message =~ /^Couldn't find Page with ID=/ },
+                                        email: {
+                                          email_prefix: '[PREFIX] ',
+                                          sender_address: %{"notifier" <notifier@example.com>},
+                                          exception_recipients: %w{exceptions@example.com},
+                                        }
 ```
 
 You can make use of both the environment and the exception inside the lambda to decide wether to avoid or not sending the notification.
@@ -1126,9 +1128,11 @@ You can include information about the background process that created the error 
 ```ruby
 begin
   some code...
-rescue => exception
-  ExceptionNotifier.notify_exception(exception,
-    :data => {:worker => worker.to_s, :queue => queue, :payload => payload})
+rescue => e
+  ExceptionNotifier.notify_exception(
+    e,
+    data: { worker: worker.to_s, queue: queue, payload: payload}
+  )
 end
 ```
 
@@ -1137,13 +1141,15 @@ end
 If your controller action manually handles an error, the notifier will never be run. To manually notify of an error you can do something like the following:
 
 ```ruby
-rescue_from Exception, :with => :server_error
+rescue_from Exception, with: :server_error
 
 def server_error(exception)
   # Whatever code that handles the exception
 
-  ExceptionNotifier.notify_exception(exception,
-    :env => request.env, :data => {:message => "was doing something wrong"})
+  ExceptionNotifier.notify_exception(
+    exception,
+    env: request.env, data: { message: 'was doing something wrong' }
+  )
 end
 ```
 
