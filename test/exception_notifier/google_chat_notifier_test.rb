@@ -1,128 +1,172 @@
 require 'test_helper'
 require 'httparty'
+require 'timecop'
 
 class GoogleChatNotifierTest < ActiveSupport::TestCase
+  URL = 'http://localhost:8000'.freeze
 
-  test "should send notification if properly configured" do
-    options = {
-      webhook_url: 'http://localhost:8000'
-    }
-    google_chat_notifier = ExceptionNotifier::GoogleChatNotifier.new
-    google_chat_notifier.httparty = FakeHTTParty.new
-
-    options = google_chat_notifier.call ArgumentError.new("foo"), options
-
-    body = ActiveSupport::JSON.decode options[:body]
-    assert body.has_key? 'text'
-
-    text = body['text'].split("\n")
-    assert_equal 6, text.size
-    assert_equal 'Application: *dummy*', text[1]
-    assert_equal 'An *ArgumentError* occured.', text[2]
-    assert_equal '*foo*', text[5]
+  def setup
+    Timecop.freeze('2018-12-09 12:07:16 UTC')
   end
 
-  test "should use 'An' for exceptions count if :accumulated_errors_count option is nil" do
-    google_chat_notifier = ExceptionNotifier::GoogleChatNotifier.new
-    exception = ArgumentError.new("foo")
-    google_chat_notifier.instance_variable_set(:@exception, exception)
-    google_chat_notifier.instance_variable_set(:@options, {})
-
-    assert_includes google_chat_notifier.send(:header), "An *ArgumentError* occured."
+  def teardown
+    Timecop.return
   end
 
-  test "shoud use direct errors count if :accumulated_errors_count option is 5" do
-    google_chat_notifier = ExceptionNotifier::GoogleChatNotifier.new
-    exception = ArgumentError.new("foo")
-    google_chat_notifier.instance_variable_set(:@exception, exception)
-    google_chat_notifier.instance_variable_set(:@options, { accumulated_errors_count: 5 })
-
-    assert_includes google_chat_notifier.send(:header), "5 *ArgumentError* occured."
+  test 'should send notification if properly configured' do
+    HTTParty.expects(:post).with(URL, post_opts("#{header}\n#{body}"))
+    notifier.call ArgumentError.new('foo')
   end
 
-  test "Message request should be formatted as hash" do
-    google_chat_notifier = ExceptionNotifier::GoogleChatNotifier.new
-    request_items = { url: 'http://test.address',
-                      http_method: :get,
-                      ip_address: '127.0.0.1',
-                      parameters: '{"id"=>"foo"}',
-                      timestamp: Time.parse('2018-08-13 12:13:24 UTC') }
-    google_chat_notifier.instance_variable_set(:@request_items, request_items)
+  test 'shoud use errors count if accumulated_errors_count is provided' do
+    text = [
+      '',
+      'Application: *dummy*',
+      '5 *ArgumentError* occured.',
+      '',
+      body
+    ].join("\n")
 
-    message_request =  google_chat_notifier.send(:message_request).join("\n")
-    assert_includes message_request, '* url : http://test.address'
-    assert_includes message_request, '* http_method : get'
-    assert_includes message_request, '* ip_address : 127.0.0.1'
-    assert_includes message_request, '* parameters : {"id"=>"foo"}'
-    assert_includes message_request, '* timestamp : 2018-08-13 12:13:24 UTC'
+    opts = post_opts(text, accumulated_errors_count: 5)
+    HTTParty.expects(:post).with(URL, opts)
+
+    notifier.call(ArgumentError.new('foo'), accumulated_errors_count: 5)
+  end
+
+  test 'Message request should be formatted as hash' do
+    text = [
+      header(true),
+      body,
+      '',
+      '*Request:*',
+      '```',
+      '* url : http://test.address/?id=foo',
+      '* http_method : GET',
+      '* ip_address : 127.0.0.1',
+      '* parameters : {"id"=>"foo"}',
+      '* timestamp : 2018-12-09 12:07:16 UTC',
+      '```'
+    ].join("\n")
+
+    HTTParty.expects(:post).with(URL, post_opts(text))
+
+    notifier.call(ArgumentError.new('foo'), env: test_env)
   end
 
   test 'backtrace with less than 3 lines should be displayed fully' do
-    google_chat_notifier = ExceptionNotifier::GoogleChatNotifier.new
+    text = [
+      header,
+      body,
+      '',
+      '*Backtrace:*',
+      '```',
+      "* app/controllers/my_controller.rb:53:in `my_controller_params'",
+      "* app/controllers/my_controller.rb:34:in `update'",
+      '```'
+    ].join("\n")
 
-    backtrace = ["app/controllers/my_controller.rb:53:in `my_controller_params'", "app/controllers/my_controller.rb:34:in `update'"]
-    google_chat_notifier.instance_variable_set(:@backtrace, backtrace)
+    HTTParty.expects(:post).with(URL, post_opts(text))
 
-    message_backtrace =  google_chat_notifier.send(:message_backtrace).join("\n")
-    assert_includes message_backtrace, "* app/controllers/my_controller.rb:53:in `my_controller_params'"
-    assert_includes message_backtrace, "* app/controllers/my_controller.rb:34:in `update'"
+    exception = ArgumentError.new('foo')
+    exception.set_backtrace([
+      "app/controllers/my_controller.rb:53:in `my_controller_params'",
+      "app/controllers/my_controller.rb:34:in `update'"
+    ])
+
+    notifier.call(exception)
   end
 
   test 'backtrace with more than 3 lines should display only top 3 lines' do
-    google_chat_notifier = ExceptionNotifier::GoogleChatNotifier.new
+    text = [
+      header,
+      body,
+      '',
+      '*Backtrace:*',
+      '```',
+      "* app/controllers/my_controller.rb:99:in `specific_function'",
+      "* app/controllers/my_controller.rb:70:in `specific_param'",
+      "* app/controllers/my_controller.rb:53:in `my_controller_params'",
+      '```'
+    ].join("\n")
 
-    backtrace = ["app/controllers/my_controller.rb:99:in `specific_function'", "app/controllers/my_controller.rb:70:in `specific_param'", "app/controllers/my_controller.rb:53:in `my_controller_params'", "app/controllers/my_controller.rb:34:in `update'"]
-    google_chat_notifier.instance_variable_set(:@backtrace, backtrace)
+    HTTParty.expects(:post).with(URL, post_opts(text))
 
-    message_backtrace =  google_chat_notifier.send(:message_backtrace).join("\n")
-    assert_includes message_backtrace, "* app/controllers/my_controller.rb:99:in `specific_function'"
-    assert_includes message_backtrace, "* app/controllers/my_controller.rb:70:in `specific_param'"
-    assert_includes message_backtrace, "* app/controllers/my_controller.rb:53:in `my_controller_params'"
-    assert_not_includes message_backtrace, "* app/controllers/my_controller.rb:34:in `update'"
+    exception = ArgumentError.new('foo')
+    exception.set_backtrace([
+      "app/controllers/my_controller.rb:99:in `specific_function'",
+      "app/controllers/my_controller.rb:70:in `specific_param'",
+      "app/controllers/my_controller.rb:53:in `my_controller_params'",
+      "app/controllers/my_controller.rb:34:in `update'"
+    ])
+
+    notifier.call(exception)
   end
 
   test 'Get text with backtrace and request info' do
-    google_chat_notifier = ExceptionNotifier::GoogleChatNotifier.new
+    text = [
+      header(true),
+      body,
+      '',
+      '*Request:*',
+      '```',
+      '* url : http://test.address/?id=foo',
+      '* http_method : GET',
+      '* ip_address : 127.0.0.1',
+      '* parameters : {"id"=>"foo"}',
+      '* timestamp : 2018-12-09 12:07:16 UTC',
+      '```',
+      '',
+      '*Backtrace:*',
+      '```',
+      "* app/controllers/my_controller.rb:53:in `my_controller_params'",
+      "* app/controllers/my_controller.rb:34:in `update'",
+      '```'
+    ].join("\n")
 
-    backtrace = ["app/controllers/my_controller.rb:53:in `my_controller_params'", "app/controllers/my_controller.rb:34:in `update'"]
-    google_chat_notifier.instance_variable_set(:@backtrace, backtrace)
+    HTTParty.expects(:post).with(URL, post_opts(text))
 
-    request_items = { url: 'http://test.address',
-                      http_method: :get,
-                      ip_address: '127.0.0.1',
-                      parameters: '{"id"=>"foo"}',
-                      timestamp: Time.parse('2018-08-13 12:13:24 UTC') }
-    google_chat_notifier.instance_variable_set(:@request_items, request_items)
+    exception = ArgumentError.new('foo')
+    exception.set_backtrace([
+      "app/controllers/my_controller.rb:53:in `my_controller_params'",
+      "app/controllers/my_controller.rb:34:in `update'"
+    ])
 
-    google_chat_notifier.instance_variable_set(:@options, {accumulated_errors_count: 0})
+    notifier.call(exception, env: test_env)
+  end
 
-    google_chat_notifier.instance_variable_set(:@application_name, 'dummy')
+  private
 
-    exception = ArgumentError.new("foo")
-    google_chat_notifier.instance_variable_set(:@exception, exception)
+  def notifier
+    ExceptionNotifier::GoogleChatNotifier.new(webhook_url: URL)
+  end
 
-    text = google_chat_notifier.send(:exception_text)
-    expected_text = %q(
-Application: *dummy*
-An *ArgumentError* occured.
+  def post_opts(text, opts = {})
+    {
+      body: { text: text }.to_json,
+      headers: { 'Content-Type' => 'application/json' }
+    }.merge(opts)
+  end
 
-⚠️ Error 500 in test ⚠️
-*foo*
+  def test_env
+    Rack::MockRequest.env_for(
+      '/',
+      'HTTP_HOST' => 'test.address',
+      'REMOTE_ADDR' => '127.0.0.1',
+      'HTTP_USER_AGENT' => 'Rails Testing',
+      params: { id: 'foo' }
+    )
+  end
 
-*Request:*
-```
-* url : http://test.address
-* http_method : get
-* ip_address : 127.0.0.1
-* parameters : {"id"=>"foo"}
-* timestamp : 2018-08-13 12:13:24 UTC
-```
+  def header(env = false)
+    [
+      '',
+      'Application: *dummy*',
+      "An *ArgumentError* occured#{' in *#*' if env}.",
+      ''
+    ].join("\n")
+  end
 
-*Backtrace:*
-```
-* app/controllers/my_controller.rb:53:in `my_controller_params'
-* app/controllers/my_controller.rb:34:in `update'
-```)
-    assert_equal text, expected_text
+  def body
+    "⚠️ Error 500 in test ⚠️\n*foo*"
   end
 end
