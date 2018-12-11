@@ -9,7 +9,7 @@
 
 ---
 
-The Exception Notification gem provides a set of [notifiers](#notifiers) for sending notifications when errors occur in a Rack/Rails application. The built-in notifiers can deliver notifications by [email](#email-notifier), [Campfire](#campfire-notifier), [HipChat](#hipchat-notifier), [Slack](#slack-notifier), [Mattermost](#mattermost-notifier), [Teams](#teams-notifier), [IRC](#irc-notifier), [Amazon SNS](#amazon-sns-notifier), [Google Chat](#google-chat-notifier), [Datadog](#datadog-notifier) or via custom [WebHooks](#webhook-notifier).
+The Exception Notification gem provides a set of [notifiers](#notifiers) for sending notifications when errors occur in a Rack/Rails application. The built-in notifiers can deliver notifications by [email](docs/notifiers/email.md), [Campfire](docs/notifiers/campfire.md), [HipChat](docs/notifiers/hipchat.md), [Slack](docs/notifiers/slack.md), [Mattermost](docs/notifiers/mattermost.md), [Teams](docs/notifiers/teams.md), [IRC](docs/notifiers/irc.md), [Amazon SNS](docs/notifiers/sns.md), [Google Chat](docs/notifiers/google_chat.md), [Datadog](docs/notifiers/datadog.md) or via custom [WebHooks](docs/notifiers/webhook.md).
 
 There's a great [Railscast about Exception Notification](http://railscasts.com/episodes/104-exception-notifications-revised) you can see that may help you getting started.
 
@@ -86,19 +86,19 @@ Options -> sections" below.
 
 ExceptionNotification relies on notifiers to deliver notifications when errors occur in your applications. By default, 8 notifiers are available:
 
-* [Campfire notifier](#campfire-notifier)
-* [Datadog notifier](#datadog-notifier)
-* [Email notifier](#email-notifier)
-* [HipChat notifier](#hipchat-notifier)
-* [IRC notifier](#irc-notifier)
-* [Slack notifier](#slack-notifier)
-* [Mattermost notifier](#mattermost-notifier)
-* [Teams notifier](#teams-notifier)
-* [Amazon SNS](#amazon-sns-notifier)
-* [Google Chat notifier](#google-chat-notifier)
-* [WebHook notifier](#webhook-notifier)
+* [Campfire notifier](docs/notifiers/campfire.md)
+* [Datadog notifier](docs/notifiers/datadog.md)
+* [Email notifier](docs/notifiers/email.md)
+* [HipChat notifier](docs/notifiers/hipchat.md)
+* [IRC notifier](docs/notifiers/irc.md)
+* [Slack notifier](docs/notifiers/slack.md)
+* [Mattermost notifier](docs/notifiers/mattermost.md)
+* [Teams notifier](docs/notifiers/teams.md)
+* [Amazon SNS](docs/notifiers/sns.md)
+* [Google Chat notifier](docs/notifiers/google_chat.md)
+* [WebHook notifier](docs/notifiers/webhook.md)
 
-But, you also can easily implement your own [custom notifier](#custom-notifier).
+But, you also can easily implement your own [custom notifier](docs/notifiers/custom.md).
 
 ## Error Grouping
 In general, exception notification will send every notification when an error occured, which may result in a problem: if your site has a high throughput and an same error raised frequently, you will receive too many notifications during a short period time, your mail box may be full of thousands of exception mails or even your mail server will be slow. To prevent this, you can choose to error errors by using `:error_grouping` option and set it to `true`.
