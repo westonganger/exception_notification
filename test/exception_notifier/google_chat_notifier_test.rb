@@ -27,15 +27,14 @@ class GoogleChatNotifierTest < ActiveSupport::TestCase
       body
     ].join("\n")
 
-    opts = post_opts(text, accumulated_errors_count: 5)
-    HTTParty.expects(:post).with(URL, opts)
+    HTTParty.expects(:post).with(URL, post_opts(text))
 
     notifier.call(ArgumentError.new('foo'), accumulated_errors_count: 5)
   end
 
   test 'Message request should be formatted as hash' do
     text = [
-      header(true),
+      header,
       body,
       '',
       '*Request:*',
@@ -104,7 +103,7 @@ class GoogleChatNotifierTest < ActiveSupport::TestCase
 
   test 'Get text with backtrace and request info' do
     text = [
-      header(true),
+      header,
       body,
       '',
       '*Request:*',
@@ -140,11 +139,11 @@ class GoogleChatNotifierTest < ActiveSupport::TestCase
     ExceptionNotifier::GoogleChatNotifier.new(webhook_url: URL)
   end
 
-  def post_opts(text, opts = {})
+  def post_opts(text)
     {
       body: { text: text }.to_json,
       headers: { 'Content-Type' => 'application/json' }
-    }.merge(opts)
+    }
   end
 
   def test_env
@@ -157,11 +156,11 @@ class GoogleChatNotifierTest < ActiveSupport::TestCase
     )
   end
 
-  def header(env = false)
+  def header
     [
       '',
       'Application: *dummy*',
-      "An *ArgumentError* occured#{' in *#*' if env}.",
+      "An *ArgumentError* occured.",
       ''
     ].join("\n")
   end
