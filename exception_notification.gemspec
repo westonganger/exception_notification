@@ -34,4 +34,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency "slack-notifier", ">= 1.0.0"
   s.add_development_dependency "aws-sdk-sns", "~> 1"
   s.add_development_dependency "dogapi", ">= 1.23.0"
+  s.add_development_dependency "timecop", "~>0.9.0"
 end
