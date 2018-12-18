@@ -3,9 +3,9 @@ module ExceptionNotifier
     def initialize(options)
       super
 
-      raise ArgumentError.new "You must provide 'region' option" unless options[:region]
-      raise ArgumentError.new "You must provide 'access_key_id' option" unless options[:access_key_id]
-      raise ArgumentError.new "You must provide 'secret_access_key' option" unless options[:secret_access_key]
+      raise ArgumentError, "You must provide 'region' option" unless options[:region]
+      raise ArgumentError, "You must provide 'access_key_id' option" unless options[:access_key_id]
+      raise ArgumentError, "You must provide 'secret_access_key' option" unless options[:secret_access_key]
 
       @notifier = Aws::SNS::Client.new(
         region: options[:region],
@@ -35,8 +35,8 @@ module ExceptionNotifier
     def build_subject(exception, options)
       subject = "#{options[:sns_prefix]} - "
       subject << accumulated_exception_name(exception, options)
-      subject << " occurred"
-      subject.length > 120 ? subject[0...120] + "..." : subject
+      subject << ' occurred'
+      subject.length > 120 ? subject[0...120] + '...' : subject
     end
 
     def build_message(exception, options)
@@ -58,7 +58,7 @@ module ExceptionNotifier
       text += "Hostname: #{Socket.gethostname}\n"
 
       if exception.backtrace
-        formatted_backtrace = "#{exception.backtrace.first(options[:backtrace_lines]).join("\n")}"
+        formatted_backtrace = exception.backtrace.first(options[:backtrace_lines]).join("\n").to_s
         text += "Backtrace:\n#{formatted_backtrace}\n"
       end
     end
@@ -66,7 +66,7 @@ module ExceptionNotifier
     def accumulated_exception_name(exception, options)
       errors_count = options[:accumulated_errors_count].to_i
       measure_word = errors_count > 1 ? errors_count : (exception.class.to_s =~ /^[aeiou]/i ? 'An' : 'A')
-      "#{measure_word} #{exception.class.to_s}"
+      "#{measure_word} #{exception.class}"
     end
 
     def default_options

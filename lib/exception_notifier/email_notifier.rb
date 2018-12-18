@@ -1,4 +1,4 @@
-require "active_support/core_ext/hash/reverse_merge"
+require 'active_support/core_ext/hash/reverse_merge'
 require 'active_support/core_ext/time'
 require 'action_mailer'
 require 'action_dispatch'
@@ -7,25 +7,24 @@ require 'pp'
 module ExceptionNotifier
   class EmailNotifier < BaseNotifier
     attr_accessor(:sender_address, :exception_recipients,
-    :pre_callback, :post_callback,
-    :email_prefix, :email_format, :sections, :background_sections,
-    :verbose_subject, :normalize_subject, :include_controller_and_action_names_in_subject,
-    :delivery_method, :mailer_settings, :email_headers, :mailer_parent, :template_path, :deliver_with)
+                  :pre_callback, :post_callback,
+                  :email_prefix, :email_format, :sections, :background_sections,
+                  :verbose_subject, :normalize_subject, :include_controller_and_action_names_in_subject,
+                  :delivery_method, :mailer_settings, :email_headers, :mailer_parent, :template_path, :deliver_with)
 
     module Mailer
       class MissingController
-        def method_missing(*args, &block)
-        end
+        def method_missing(*args, &block); end
       end
 
       def self.extended(base)
         base.class_eval do
-          self.send(:include, ExceptionNotifier::BacktraceCleaner)
+          send(:include, ExceptionNotifier::BacktraceCleaner)
 
           # Append application view path to the ExceptionNotifier lookup context.
-          self.append_view_path "#{File.dirname(__FILE__)}/views"
+          append_view_path "#{File.dirname(__FILE__)}/views"
 
-          def exception_notification(env, exception, options={}, default_options={})
+          def exception_notification(env, exception, options = {}, default_options = {})
             load_custom_views
 
             @env        = env
@@ -37,12 +36,12 @@ module ExceptionNotifier
             @timestamp  = Time.current
             @sections   = @options[:sections]
             @data       = (env['exception_notifier.exception_data'] || {}).merge(options[:data] || {})
-            @sections   = @sections + %w(data) unless @data.empty?
+            @sections += %w[data] unless @data.empty?
 
             compose_email
           end
 
-          def background_exception_notification(exception, options={}, default_options={})
+          def background_exception_notification(exception, options = {}, default_options = {})
             load_custom_views
 
             @exception = exception
@@ -65,7 +64,7 @@ module ExceptionNotifier
             subject << " (#{@exception.class})"
             subject << " #{@exception.message.inspect}" if @options[:verbose_subject]
             subject = EmailNotifier.normalize_digits(subject) if @options[:normalize_subject]
-            subject.length > 120 ? subject[0...120] + "..." : subject
+            subject.length > 120 ? subject[0...120] + '...' : subject
           end
 
           def set_data_variables
@@ -82,17 +81,17 @@ module ExceptionNotifier
 
           def inspect_object(object)
             case object
-              when Hash, Array
-                truncate(object.inspect, 300)
-              else
-                  object.to_s
+            when Hash, Array
+              truncate(object.inspect, 300)
+            else
+              object.to_s
             end
           end
 
           helper_method :safe_encode
 
           def safe_encode(value)
-            value.encode("utf-8", invalid: :replace, undef: :replace, replace: "_")
+            value.encode('utf-8', invalid: :replace, undef: :replace, replace: '_')
           end
 
           def html_mail?
@@ -125,7 +124,7 @@ module ExceptionNotifier
 
           def load_custom_views
             if defined?(Rails) && Rails.respond_to?(:root)
-              self.prepend_view_path Rails.root.nil? ? "app/views" : "#{Rails.root}/app/views"
+              prepend_view_path Rails.root.nil? ? 'app/views' : "#{Rails.root}/app/views"
             end
           end
 
@@ -142,17 +141,20 @@ module ExceptionNotifier
       mailer_settings_key = "#{delivery_method}_settings".to_sym
       options[:mailer_settings] = options.delete(mailer_settings_key)
 
-      options.reverse_merge(EmailNotifier.default_options).select{|k,v|[
-        :sender_address, :exception_recipients, :pre_callback,
-        :post_callback, :email_prefix, :email_format,
-        :sections, :background_sections, :verbose_subject, :normalize_subject,
-        :include_controller_and_action_names_in_subject, :delivery_method, :mailer_settings,
-        :email_headers, :mailer_parent, :template_path, :deliver_with].include?(k)}.each{|k,v| send("#{k}=", v)}
+      options.reverse_merge(EmailNotifier.default_options).select do |k, _v|
+        %i[
+          sender_address exception_recipients pre_callback
+          post_callback email_prefix email_format
+          sections background_sections verbose_subject normalize_subject
+          include_controller_and_action_names_in_subject delivery_method mailer_settings
+          email_headers mailer_parent template_path deliver_with
+        ].include?(k)
+      end .each { |k, v| send("#{k}=", v) }
     end
 
     def options
       @options ||= {}.tap do |opts|
-        self.instance_variables.each { |var| opts[var[1..-1].to_sym] = self.instance_variable_get(var) }
+        instance_variables.each { |var| opts[var[1..-1].to_sym] = instance_variable_get(var) }
       end
     end
 
@@ -163,7 +165,7 @@ module ExceptionNotifier
       end
     end
 
-    def call(exception, options={})
+    def call(exception, options = {})
       message = create_email(exception, options)
 
       # FIXME: use `if Gem::Version.new(ActionMailer::VERSION::STRING) < Gem::Version.new('4.1')`
@@ -178,7 +180,7 @@ module ExceptionNotifier
       end
     end
 
-    def create_email(exception, options={})
+    def create_email(exception, options = {})
       env = options[:env]
       default_options = self.options
       if env.nil?
@@ -198,8 +200,8 @@ module ExceptionNotifier
         exception_recipients: [],
         email_prefix: '[ERROR] ',
         email_format: :text,
-        sections: %w(request session environment backtrace),
-        background_sections: %w(backtrace data),
+        sections: %w[request session environment backtrace],
+        background_sections: %w[backtrace data],
         verbose_subject: true,
         normalize_subject: false,
         include_controller_and_action_names_in_subject: true,

@@ -2,11 +2,11 @@ module ExceptionNotifier
   class BaseNotifier
     attr_accessor :base_options
 
-    def initialize(options={})
+    def initialize(options = {})
       @base_options = options
     end
 
-    def send_notice(exception, options, message, message_opts=nil)
+    def send_notice(exception, options, message, message_opts = nil)
       _pre_callback(exception, options, message, message_opts)
       result = yield(message, message_opts)
       _post_callback(exception, options, message, message_opts)

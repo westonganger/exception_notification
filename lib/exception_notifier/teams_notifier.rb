@@ -6,8 +6,7 @@ module ExceptionNotifier
     include ExceptionNotifier::BacktraceCleaner
 
     class MissingController
-      def method_missing(*args, &block)
-      end
+      def method_missing(*args, &block); end
     end
 
     attr_accessor :httparty
@@ -18,7 +17,7 @@ module ExceptionNotifier
       @httparty = HTTParty
     end
 
-    def call(exception, options={})
+    def call(exception, options = {})
       @options = options.merge(@default_options)
       @exception = exception
       @backtrace = exception.backtrace ? clean_backtrace(exception) : nil
@@ -30,9 +29,11 @@ module ExceptionNotifier
       @jira_url = @options.delete(:jira_url)
 
       @webhook_url = @options.delete(:webhook_url)
-      raise ArgumentError.new "You must provide 'webhook_url' parameter." unless @webhook_url
+      raise ArgumentError, "You must provide 'webhook_url' parameter." unless @webhook_url
 
-      unless @env.nil?
+      if @env.nil?
+        @controller = @request_items = nil
+      else
         @controller = @env['action_controller.instance'] || MissingController.new
 
         request = ActionDispatch::Request.new(@env)
@@ -43,19 +44,17 @@ module ExceptionNotifier
                            parameters: request.filtered_parameters,
                            timestamp: Time.current }
 
-        if request.session["warden.user.user.key"]
-          current_user = User.find(request.session["warden.user.user.key"][0][0])
-          @request_items.merge!({ current_user: { id: current_user.id, email: current_user.email  } })
+        if request.session['warden.user.user.key']
+          current_user = User.find(request.session['warden.user.user.key'][0][0])
+          @request_items[:current_user] = { id: current_user.id, email: current_user.email }
         end
-      else
-        @controller = @request_items = nil
       end
 
       payload = message_text
 
       @options[:body] = payload.to_json
       @options[:headers] ||= {}
-      @options[:headers].merge!({ 'Content-Type' => 'application/json' })
+      @options[:headers]['Content-Type'] = 'application/json'
       @options[:debug_output] = $stdout
 
       @httparty.post(@webhook_url, @options)
@@ -67,17 +66,17 @@ module ExceptionNotifier
       errors_count = @options[:accumulated_errors_count].to_i
 
       text = {
-        "@type" => "MessageCard",
-        "@context" => "http://schema.org/extensions",
-        "summary" => "#{@application_name} Exception Alert",
-        "title" => "⚠️ Exception Occurred in #{Rails.env} ⚠️",
-        "sections" => [
+        '@type' => 'MessageCard',
+        '@context' => 'http://schema.org/extensions',
+        'summary' => "#{@application_name} Exception Alert",
+        'title' => "⚠️ Exception Occurred in #{Rails.env} ⚠️",
+        'sections' => [
           {
-            "activityTitle" => "#{errors_count > 1 ? errors_count : 'A'} *#{@exception.class}* occurred" + if @controller then " in *#{controller_and_method}*." else "." end,
-            "activitySubtitle" => "#{@exception.message}"
+            'activityTitle' => "#{errors_count > 1 ? errors_count : 'A'} *#{@exception.class}* occurred" + (@controller ? " in *#{controller_and_method}*." : '.'),
+            'activitySubtitle' => @exception.message.to_s
           }
         ],
-        "potentialAction" => []
+        'potentialAction' => []
       }
 
       text['sections'].push details
@@ -90,8 +89,8 @@ module ExceptionNotifier
 
     def details
       details = {
-        "title" => "Details",
-        "facts" => []
+        'title' => 'Details',
+        'facts' => []
       }
 
       details['facts'].push message_request unless @request_items.nil?
@@ -102,59 +101,59 @@ module ExceptionNotifier
 
     def message_request
       {
-        "name" => "Request",
-        "value" => "#{hash_presentation(@request_items)}\n  "
+        'name' => 'Request',
+        'value' => "#{hash_presentation(@request_items)}\n  "
       }
     end
 
     def message_backtrace(size = 3)
       text = []
       size = @backtrace.size < size ? @backtrace.size : size
-      text << "```"
-      size.times { |i| text << "* " + @backtrace[i] }
-      text << "```"
+      text << '```'
+      size.times { |i| text << '* ' + @backtrace[i] }
+      text << '```'
 
       {
-        "name" => "Backtrace",
-        "value" => "#{text.join("  \n")}"
+        'name' => 'Backtrace',
+        'value' => text.join("  \n").to_s
       }
     end
 
     def gitlab_view_link
       {
-        "@type" => "ViewAction",
-        "name" => "🦊 View in GitLab",
-        "target" => [
+        '@type' => 'ViewAction',
+        'name' => "\u{1F98A} View in GitLab",
+        'target' => [
           "#{@gitlab_url}/#{@application_name}"
         ]
       }
     end
 
     def gitlab_issue_link
-      link = [@gitlab_url, @application_name, "issues", "new"].join("/")
+      link = [@gitlab_url, @application_name, 'issues', 'new'].join('/')
       params = {
-        "issue[title]" => ["[BUG] Error 500 :",
+        'issue[title]' => ['[BUG] Error 500 :',
                            controller_and_method,
                            "(#{@exception.class})",
-                           @exception.message].compact.join(" ")
+                           @exception.message].compact.join(' ')
       }.to_query
 
       {
-        "@type" => "ViewAction",
-        "name" => "🦊 Create Issue in GitLab",
-        "target" => [
+        '@type' => 'ViewAction',
+        'name' => "\u{1F98A} Create Issue in GitLab",
+        'target' => [
           "#{link}/?#{params}"
-      ]
+        ]
       }
     end
 
     def jira_issue_link
       {
-        "@type" => "ViewAction",
-        "name" => "🐞 Create Issue in Jira",
-        "target" => [
+        '@type' => 'ViewAction',
+        'name' => '🐞 Create Issue in Jira',
+        'target' => [
           "#{@jira_url}/secure/CreateIssue!default.jspa"
-      ]
+        ]
       }
     end
 
@@ -162,7 +161,7 @@ module ExceptionNotifier
       if @controller
         "#{@controller.controller_name}##{@controller.action_name}"
       else
-        ""
+        ''
       end
     end
 

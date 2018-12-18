@@ -3,13 +3,12 @@ require 'active_support/core_ext/time'
 
 module ExceptionNotifier
   class WebhookNotifier < BaseNotifier
-
     def initialize(options)
       super
       @default_options = options
     end
 
-    def call(exception, options={})
+    def call(exception, options = {})
       env = options[:env]
 
       options = options.reverse_merge(@default_options)
@@ -18,7 +17,7 @@ module ExceptionNotifier
 
       options[:body] ||= {}
       options[:body][:server] = Socket.gethostname
-      options[:body][:process] = $$
+      options[:body][:process] = $PROCESS_ID
       if defined?(Rails) && Rails.respond_to?(:root)
         options[:body][:rails_root] = Rails.root
       end

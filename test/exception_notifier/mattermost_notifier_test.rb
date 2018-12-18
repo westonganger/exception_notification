@@ -2,18 +2,18 @@ require 'test_helper'
 require 'httparty'
 
 class MattermostNotifierTest < ActiveSupport::TestCase
-  test "should send notification if properly configured" do
+  test 'should send notification if properly configured' do
     options = {
       webhook_url: 'http://localhost:8000'
     }
     mattermost_notifier = ExceptionNotifier::MattermostNotifier.new
     mattermost_notifier.httparty = FakeHTTParty.new
 
-    options = mattermost_notifier.call ArgumentError.new("foo"), options
+    options = mattermost_notifier.call ArgumentError.new('foo'), options
 
     body = ActiveSupport::JSON.decode options[:body]
-    assert body.has_key? 'text'
-    assert body.has_key? 'username'
+    assert body.key? 'text'
+    assert body.key? 'username'
 
     text = body['text'].split("\n")
     assert_equal 4, text.size
@@ -22,7 +22,7 @@ class MattermostNotifierTest < ActiveSupport::TestCase
     assert_equal '*foo*', text[3]
   end
 
-  test "should send notification with create issue link if specified" do
+  test 'should send notification with create issue link if specified' do
     options = {
       webhook_url: 'http://localhost:8000',
       git_url: 'github.com/aschen'
@@ -30,7 +30,7 @@ class MattermostNotifierTest < ActiveSupport::TestCase
     mattermost_notifier = ExceptionNotifier::MattermostNotifier.new
     mattermost_notifier.httparty = FakeHTTParty.new
 
-    options = mattermost_notifier.call ArgumentError.new("foo"), options
+    options = mattermost_notifier.call ArgumentError.new('foo'), options
 
     body = ActiveSupport::JSON.decode options[:body]
 
@@ -48,7 +48,7 @@ class MattermostNotifierTest < ActiveSupport::TestCase
     mattermost_notifier = ExceptionNotifier::MattermostNotifier.new
     mattermost_notifier.httparty = FakeHTTParty.new
 
-    options = mattermost_notifier.call ArgumentError.new("foo"), options
+    options = mattermost_notifier.call ArgumentError.new('foo'), options
 
     body = ActiveSupport::JSON.decode options[:body]
 
@@ -69,34 +69,34 @@ class MattermostNotifierTest < ActiveSupport::TestCase
     mattermost_notifier = ExceptionNotifier::MattermostNotifier.new
     mattermost_notifier.httparty = FakeHTTParty.new
 
-    options = mattermost_notifier.call ArgumentError.new("foo"), options
+    options = mattermost_notifier.call ArgumentError.new('foo'), options
 
-    assert options.has_key? :basic_auth
+    assert options.key? :basic_auth
     assert 'clara', options[:basic_auth][:username]
     assert 'password', options[:basic_auth][:password]
   end
 
   test "should use 'An' for exceptions count if :accumulated_errors_count option is nil" do
     mattermost_notifier = ExceptionNotifier::MattermostNotifier.new
-    exception = ArgumentError.new("foo")
+    exception = ArgumentError.new('foo')
     mattermost_notifier.instance_variable_set(:@exception, exception)
     mattermost_notifier.instance_variable_set(:@options, {})
 
-    assert_includes mattermost_notifier.send(:message_header), "An *ArgumentError* occured."
+    assert_includes mattermost_notifier.send(:message_header), 'An *ArgumentError* occured.'
   end
 
-  test "shoud use direct errors count if :accumulated_errors_count option is 5" do
+  test 'shoud use direct errors count if :accumulated_errors_count option is 5' do
     mattermost_notifier = ExceptionNotifier::MattermostNotifier.new
-    exception = ArgumentError.new("foo")
+    exception = ArgumentError.new('foo')
     mattermost_notifier.instance_variable_set(:@exception, exception)
-    mattermost_notifier.instance_variable_set(:@options, { accumulated_errors_count: 5 })
+    mattermost_notifier.instance_variable_set(:@options, accumulated_errors_count: 5)
 
-    assert_includes mattermost_notifier.send(:message_header), "5 *ArgumentError* occured."
+    assert_includes mattermost_notifier.send(:message_header), '5 *ArgumentError* occured.'
   end
 end
 
 class FakeHTTParty
-  def post(url, options)
-    return options
+  def post(_url, options)
+    options
   end
 end

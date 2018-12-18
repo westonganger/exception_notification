@@ -68,9 +68,9 @@ class GoogleChatNotifierTest < ActiveSupport::TestCase
 
     exception = ArgumentError.new('foo')
     exception.set_backtrace([
-      "app/controllers/my_controller.rb:53:in `my_controller_params'",
-      "app/controllers/my_controller.rb:34:in `update'"
-    ])
+                              "app/controllers/my_controller.rb:53:in `my_controller_params'",
+                              "app/controllers/my_controller.rb:34:in `update'"
+                            ])
 
     notifier.call(exception)
   end
@@ -92,11 +92,11 @@ class GoogleChatNotifierTest < ActiveSupport::TestCase
 
     exception = ArgumentError.new('foo')
     exception.set_backtrace([
-      "app/controllers/my_controller.rb:99:in `specific_function'",
-      "app/controllers/my_controller.rb:70:in `specific_param'",
-      "app/controllers/my_controller.rb:53:in `my_controller_params'",
-      "app/controllers/my_controller.rb:34:in `update'"
-    ])
+                              "app/controllers/my_controller.rb:99:in `specific_function'",
+                              "app/controllers/my_controller.rb:70:in `specific_param'",
+                              "app/controllers/my_controller.rb:53:in `my_controller_params'",
+                              "app/controllers/my_controller.rb:34:in `update'"
+                            ])
 
     notifier.call(exception)
   end
@@ -126,9 +126,9 @@ class GoogleChatNotifierTest < ActiveSupport::TestCase
 
     exception = ArgumentError.new('foo')
     exception.set_backtrace([
-      "app/controllers/my_controller.rb:53:in `my_controller_params'",
-      "app/controllers/my_controller.rb:34:in `update'"
-    ])
+                              "app/controllers/my_controller.rb:53:in `my_controller_params'",
+                              "app/controllers/my_controller.rb:34:in `update'"
+                            ])
 
     notifier.call(exception, env: test_env)
   end
@@ -160,7 +160,7 @@ class GoogleChatNotifierTest < ActiveSupport::TestCase
     [
       '',
       'Application: *dummy*',
-      "An *ArgumentError* occured.",
+      'An *ArgumentError* occured.',
       ''
     ].join("\n")
   end

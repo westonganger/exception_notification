@@ -15,7 +15,7 @@ module ExceptionNotifier
         @message_opts = options.fetch(:additional_parameters, {})
         @color = @message_opts.delete(:color) { 'danger' }
         @notifier = Slack::Notifier.new webhook_url, options
-      rescue
+      rescue StandardError
         @notifier = nil
       end
     end
@@ -40,13 +40,9 @@ module ExceptionNotifier
 
     def deep_reject(hash, block)
       hash.each do |k, v|
-        if v.is_a?(Hash)
-          deep_reject(v, block)
-        end
+        deep_reject(v, block) if v.is_a?(Hash)
 
-        if block.call(k, v)
-          hash.delete(k)
-        end
+        hash.delete(k) if block.call(k, v)
       end
     end
 

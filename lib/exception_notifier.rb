@@ -30,7 +30,7 @@ module ExceptionNotifier
 
   # Define a set of exceptions to be ignored, ie, dont send notifications when any of them are raised.
   mattr_accessor :ignored_exceptions
-  @@ignored_exceptions = %w{ActiveRecord::RecordNotFound Mongoid::Errors::DocumentNotFound AbstractController::ActionNotFound ActionController::RoutingError ActionController::UnknownFormat ActionController::UrlGenerationError}
+  @@ignored_exceptions = %w[ActiveRecord::RecordNotFound Mongoid::Errors::DocumentNotFound AbstractController::ActionNotFound ActionController::RoutingError ActionController::UnknownFormat ActionController::UrlGenerationError]
 
   mattr_accessor :testing_mode
   @@testing_mode = false
@@ -46,9 +46,10 @@ module ExceptionNotifier
       self.testing_mode = true
     end
 
-    def notify_exception(exception, options={}, &block)
+    def notify_exception(exception, options = {}, &block)
       return false if ignored_exception?(options[:ignore_exceptions], exception)
       return false if ignored?(exception, options)
+
       if error_grouping
         errors_count = group_error!(exception, options)
         return false unless send_notification?(exception, errors_count)
@@ -98,8 +99,9 @@ module ExceptionNotifier
     end
 
     private
+
     def ignored?(exception, options)
-      @@ignores.any?{ |condition| condition.call(exception, options) }
+      @@ignores.any? { |condition| condition.call(exception, options) }
     rescue Exception => e
       raise e if @@testing_mode
 
