@@ -76,7 +76,8 @@ module ExceptionNotifier
       end
 
       def formatted_title
-        title = title_prefix
+        title = ""
+        title << title_prefix
         title << "#{controller.controller_name} #{controller.action_name}" if controller
         title << " (#{exception.class})"
         title << " #{exception.message.inspect}"
