@@ -9,7 +9,7 @@ module ExceptionNotification
     def save
       data = {
         error_class: exception.class.name,
-        error_message: exception.message
+        error_message: exception.message,
         failed_at: Time.now.to_s,
         payload: payload,
         queue: queue,
