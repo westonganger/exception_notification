@@ -124,12 +124,6 @@ Style/MultilineBlockChain:
   Exclude:
     - 'lib/exception_notifier/email_notifier.rb'
 
-# Offense count: 2
-Style/NestedTernaryOperator:
-  Exclude:
-    - 'lib/exception_notifier/slack_notifier.rb'
-    - 'lib/exception_notifier/sns_notifier.rb'
-
 # Offense count: 253
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
 # URISchemes: http, https

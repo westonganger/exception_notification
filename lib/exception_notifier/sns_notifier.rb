@@ -65,7 +65,13 @@ module ExceptionNotifier
 
     def accumulated_exception_name(exception, options)
       errors_count = options[:accumulated_errors_count].to_i
-      measure_word = errors_count > 1 ? errors_count : (exception.class.to_s =~ /^[aeiou]/i ? 'An' : 'A')
+
+      measure_word = if errors_count > 1
+                       errors_count
+                     else
+                       exception.class.to_s =~ /^[aeiou]/i ? 'An' : 'A'
+                     end
+
       "#{measure_word} #{exception.class}"
     end
 
