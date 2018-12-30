@@ -27,13 +27,6 @@ Lint/RescueException:
     - 'lib/exception_notification/sidekiq.rb'
     - 'lib/exception_notifier.rb'
 
-# Offense count: 2
-# Configuration parameters: ContextCreatingMethods, MethodCreatingMethods.
-Lint/UselessAccessModifier:
-  Exclude:
-    - 'lib/exception_notifier/datadog_notifier.rb'
-    - 'test/exception_notifier/datadog_notifier_test.rb'
-
 # Offense count: 1
 Lint/UselessAssignment:
   Exclude:
