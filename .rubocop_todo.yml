@@ -27,11 +27,6 @@ Lint/RescueException:
     - 'lib/exception_notification/sidekiq.rb'
     - 'lib/exception_notifier.rb'
 
-# Offense count: 1
-Lint/UselessAssignment:
-  Exclude:
-    - 'lib/exception_notifier/sns_notifier.rb'
-
 # Offense count: 18
 Metrics/AbcSize:
   Max: 97

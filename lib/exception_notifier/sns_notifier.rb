@@ -59,7 +59,7 @@ module ExceptionNotifier
 
       if exception.backtrace
         formatted_backtrace = exception.backtrace.first(options[:backtrace_lines]).join("\n").to_s
-        text += "Backtrace:\n#{formatted_backtrace}\n"
+        text + "Backtrace:\n#{formatted_backtrace}\n"
       end
     end
 
