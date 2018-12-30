@@ -23,16 +23,9 @@ Layout/RescueEnsureAlignment:
 # Offense count: 12
 Lint/RescueException:
   Exclude:
-    - 'examples/sinatra/sinatra_app.rb'
     - 'lib/exception_notification/rack.rb'
     - 'lib/exception_notification/sidekiq.rb'
     - 'lib/exception_notifier.rb'
-    - 'test/exception_notifier/campfire_notifier_test.rb'
-    - 'test/exception_notifier/hipchat_notifier_test.rb'
-    - 'test/exception_notifier/irc_notifier_test.rb'
-    - 'test/exception_notifier/slack_notifier_test.rb'
-    - 'test/exception_notifier/sns_notifier_test.rb'
-    - 'test/exception_notifier/webhook_notifier_test.rb'
 
 # Offense count: 2
 # Configuration parameters: ContextCreatingMethods, MethodCreatingMethods.

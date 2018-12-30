@@ -127,7 +127,7 @@ class IrcNotifierTest < ActiveSupport::TestCase
 
   def fake_exception
     5 / 0
-  rescue Exception => e
+  rescue StandardError => e
     e
   end
 
