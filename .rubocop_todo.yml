@@ -130,15 +130,6 @@ Style/NestedTernaryOperator:
     - 'lib/exception_notifier/slack_notifier.rb'
     - 'lib/exception_notifier/sns_notifier.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: AutoCorrect, EnforcedStyle, IgnoredMethods.
-# SupportedStyles: predicate, comparison
-Style/NumericPredicate:
-  Exclude:
-    - 'spec/**/*'
-    - 'test/exception_notifier/modules/error_grouping_test.rb'
-
 # Offense count: 253
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
 # URISchemes: http, https

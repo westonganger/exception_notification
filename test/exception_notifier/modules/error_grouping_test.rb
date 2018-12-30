@@ -155,7 +155,7 @@ class ErrorGroupTest < ActiveSupport::TestCase
   end
 
   test 'use specified trigger in .send_notification?' do
-    trigger = proc { |_exception, count| count % 4 == 0 }
+    trigger = proc { |_exception, count| (count % 4).zero? }
     TestModule.stubs(:notification_trigger).returns(trigger)
 
     count = 16
