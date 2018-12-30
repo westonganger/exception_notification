@@ -119,11 +119,6 @@ Style/MissingRespondToMissing:
     - 'lib/exception_notifier/mattermost_notifier.rb'
     - 'lib/exception_notifier/teams_notifier.rb'
 
-# Offense count: 1
-Style/MultilineBlockChain:
-  Exclude:
-    - 'lib/exception_notifier/email_notifier.rb'
-
 # Offense count: 253
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
 # URISchemes: http, https

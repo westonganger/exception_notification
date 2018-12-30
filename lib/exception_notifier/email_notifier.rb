@@ -141,7 +141,8 @@ module ExceptionNotifier
       mailer_settings_key = "#{delivery_method}_settings".to_sym
       options[:mailer_settings] = options.delete(mailer_settings_key)
 
-      options.reverse_merge(EmailNotifier.default_options).select do |k, _v|
+      merged_opts = options.reverse_merge(EmailNotifier.default_options)
+      filtered_opts = merged_opts.select do |k, _v|
         %i[
           sender_address exception_recipients pre_callback
           post_callback email_prefix email_format
@@ -149,7 +150,9 @@ module ExceptionNotifier
           include_controller_and_action_names_in_subject delivery_method mailer_settings
           email_headers mailer_parent template_path deliver_with
         ].include?(k)
-      end .each { |k, v| send("#{k}=", v) }
+      end
+
+      filtered_opts.each { |k, v| send("#{k}=", v) }
     end
 
     def options
