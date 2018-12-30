@@ -8,7 +8,7 @@ module ExceptionNotification
       class_option :sidekiq, type: :boolean, desc: 'Add support for sending notifications when errors occur in Sidekiq jobs.'
 
       def copy_initializer
-        template 'exception_notification.rb', 'config/initializers/exception_notification.rb'
+        template 'exception_notification.rb.erb', 'config/initializers/exception_notification.rb'
       end
     end
   end
