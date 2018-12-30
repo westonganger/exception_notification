@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.add_dependency("activesupport", ">= 4.0", "< 6")
 
   s.add_development_dependency "rails", ">= 4.0", "< 6"
-  s.add_development_dependency "resque", "~> 1.2.0"
+  s.add_development_dependency "resque", "~> 1.8.0"
   # Sidekiq 3.2.2 does not support Ruby 1.9.
   s.add_development_dependency "sidekiq", "~> 3.0.0", "< 3.2.2"
   s.add_development_dependency "tinder", "~> 1.8"
