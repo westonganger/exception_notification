@@ -19,6 +19,12 @@ class ResqueTest < ActiveSupport::TestCase
     @worker.cant_fork = true
   end
 
+  test "count returns the number of failures" do
+    Resque::Job.create(:jobs, BadJob)
+    @worker.work(0)
+    assert_equal 1, ExceptionNotification::Resque.count
+  end
+
   test "notifies exception when job fails" do
     ExceptionNotifier.expects(:notify_exception).with() do |ex, opts|
       RuntimeError === ex &&

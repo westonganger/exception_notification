@@ -3,7 +3,7 @@ require 'resque/failure/base'
 module ExceptionNotification
   class Resque < Resque::Failure::Base
     def self.count
-      Stat[:failed]
+      ::Resque::Stat[:failed]
     end
 
     def save
