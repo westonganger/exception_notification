@@ -29,12 +29,6 @@ Layout/RescueEnsureAlignment:
     - 'lib/exception_notifier/modules/error_grouping.rb'
     - 'test/exception_notifier/webhook_notifier_test.rb'
 
-# Offense count: 2
-# Configuration parameters: AllowSafeAssignment.
-Lint/AssignmentInCondition:
-  Exclude:
-    - 'lib/exception_notifier/modules/error_grouping.rb'
-
 # Offense count: 12
 Lint/RescueException:
   Exclude:
