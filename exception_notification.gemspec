@@ -35,4 +35,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency "aws-sdk-sns", "~> 1"
   s.add_development_dependency "dogapi", ">= 1.23.0"
   s.add_development_dependency "timecop", "~>0.9.0"
+  s.add_development_dependency "mock_redis", "~> 0.19.0"
 end
