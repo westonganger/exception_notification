@@ -111,4 +111,5 @@ Url of your gitlab or github with your organisation name for issue creation link
 
 *String, optional*
 
-Your application name used for issue creation link. Defaults to ```Rails.application.class.parent_name.underscore```.
+Your application name used for issue creation link. Defaults to `Rails.application.class.module_parent_name.underscore` for Rails versions >= 6;
+`Rails.application.class.parent_name.underscore` otherwise.

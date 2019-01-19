@@ -177,7 +177,13 @@ module ExceptionNotifier
     end
 
     def rails_app_name
-      Rails.application.class.parent_name.underscore if defined?(Rails) && Rails.respond_to?(:application)
+      if defined?(Rails) && Rails.respond_to?(:application)
+        if ::Gem::Version.new(Rails.version) >= ::Gem::Version.new('6.0')
+          Rails.application.class.module_parent_name.underscore
+        else
+          Rails.application.class.parent_name.underscore
+        end
+      end
     end
 
     def env_name

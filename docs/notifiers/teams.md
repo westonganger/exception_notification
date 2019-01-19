@@ -50,4 +50,5 @@ Url of your Jira instance, adds button for Create Issue screen. Defaults to nil 
 
 *String, optional*
 
-Your application name used for git issue creation link. Defaults to `Rails.application.class.parent_name.underscore`.
+Your application name used for git issue creation link. Defaults to `Rails.application.class.module_parent_name.underscore` for Rails versions >= 6;
+`Rails.application.class.parent_name.underscore` otherwise.
