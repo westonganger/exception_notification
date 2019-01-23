@@ -1,5 +1,5 @@
 # -------------------------------------------
-# To run the application: ruby example/sample_app.rb
+# To run the application: ruby examples/sample_app.rb
 # -------------------------------------------
 
 require 'bundler/inline'
