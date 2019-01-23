@@ -23,11 +23,12 @@ class SampleApp < Rails::Application
   # -----------------------------------
 
   config.secret_key_base = 'my secret key base'
-  config.logger = Logger.new($stdout)
-  Rails.logger = config.logger
+  file = File.open('sample_app.log', 'w')
+  logger = Logger.new(file)
+  Rails.logger = logger
 
   routes.draw do
-    get 'raise_exception', to: 'exceptions#sample'
+    get 'raise_sample_exception', to: 'exceptions#raise_sample_exception'
   end
 end
 
@@ -37,7 +38,8 @@ require 'active_support'
 class ExceptionsController < ActionController::Base
   include Rails.application.routes.url_helpers
 
-  def sample
+  def raise_sample_exception
+    puts 'Raising exception!'
     raise 'Sample exception raised, you should receive a notification!'
   end
 end
@@ -48,7 +50,8 @@ class Test < Minitest::Test
   include Rack::Test::Methods
 
   def test_raise_exception
-    get '/raise_exception'
+    get '/raise_sample_exception'
+    puts "Working OK!"
   end
 
   private
