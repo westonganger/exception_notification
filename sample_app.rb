@@ -1,4 +1,7 @@
+# -------------------------------------------
 # To run the application: ruby sample_app.rb
+# -------------------------------------------
+
 require 'bundler/inline'
 
 gemfile do
@@ -12,7 +15,7 @@ end
 class SampleApp < Rails::Application
   config.middleware.use ExceptionNotification::Rack,
   # -----------------------------------
-  # Change this with the notifier you want to test
+  # Change this with your configuration
   # https://github.com/smartinez87/exception_notification#notifiers
                         webhook: {
                           url: 'http://domain.com:5555/hubot/path'
