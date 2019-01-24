@@ -26,7 +26,7 @@ class ResqueTest < ActiveSupport::TestCase
   end
 
   test "notifies exception when job fails" do
-    ExceptionNotifier.expects(:notify_exception).with() do |ex, opts|
+    ExceptionNotifier.expects(:notify_exception).with do |ex, opts|
       ex.is_a?(RuntimeError) &&
         ex.message == "Bad job!" &&
         opts[:data][:resque][:error_class] == "RuntimeError" &&

@@ -59,12 +59,6 @@ Style/ClassVars:
     - 'lib/exception_notifier.rb'
     - 'test/exception_notifier/modules/error_grouping_test.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/MethodCallWithoutArgsParentheses:
-  Exclude:
-    - 'test/exception_notification/resque_test.rb'
-
 # Offense count: 3
 Style/MethodMissing:
   Exclude:
