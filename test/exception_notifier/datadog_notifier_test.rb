@@ -30,15 +30,15 @@ class DatadogNotifierTest < ActiveSupport::TestCase
   test 'should include prefix in event title and not append previous events' do
     options = {
       client: @client,
-      title_prefix: "prefix"
+      title_prefix: 'prefix'
     }
 
     notifier = ExceptionNotifier::DatadogNotifier.new(options)
     event = notifier.datadog_event(@exception)
-    assert_equal event.msg_title, "prefix (DatadogNotifierTest::FakeException) \"Fake exception message\""
+    assert_equal event.msg_title, 'prefix (DatadogNotifierTest::FakeException) "Fake exception message"'
 
     event2 = notifier.datadog_event(@exception)
-    assert_equal event2.msg_title, "prefix (DatadogNotifierTest::FakeException) \"Fake exception message\""
+    assert_equal event2.msg_title, 'prefix (DatadogNotifierTest::FakeException) "Fake exception message"'
   end
 
   test 'should include exception message in event title' do
