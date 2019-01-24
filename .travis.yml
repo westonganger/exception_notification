@@ -16,6 +16,9 @@ install:
   - "bundle install --jobs=3 --retry=3 --path=vendor/bundle"
   - "mkdir -p test/dummy/tmp/cache"
   - "mkdir -p test/dummy/tmp/non_default_location"
+script:
+  - bundle exec rake test
+  - bundle exec rubocop
 gemfile:
   - gemfiles/rails4_0.gemfile
   - gemfiles/rails4_1.gemfile
