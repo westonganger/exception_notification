@@ -47,11 +47,6 @@ Metrics/PerceivedComplexity:
   Max: 24
 
 # Offense count: 1
-Style/CaseEquality:
-  Exclude:
-    - 'test/exception_notification/resque_test.rb'
-
-# Offense count: 1
 # Configuration parameters: EnforcedStyle, SupportedStyles.
 # SupportedStyles: nested, compact
 Style/ClassAndModuleChildren:
