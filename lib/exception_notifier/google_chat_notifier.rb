@@ -94,9 +94,7 @@ module ExceptionNotifier
       env = options[:env]
       controller = env ? env['action_controller.instance'] : nil
 
-      if controller
-        " in *#{controller.controller_name}##{controller.action_name}*"
-      end
+      " in *#{controller.controller_name}##{controller.action_name}*" if controller
     end
   end
 end

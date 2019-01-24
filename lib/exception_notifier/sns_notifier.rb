@@ -57,10 +57,10 @@ module ExceptionNotifier
       text += "Exception: #{exception.message}\n"
       text += "Hostname: #{Socket.gethostname}\n"
 
-      if exception.backtrace
-        formatted_backtrace = exception.backtrace.first(options[:backtrace_lines]).join("\n").to_s
-        text + "Backtrace:\n#{formatted_backtrace}\n"
-      end
+      return unless exception.backtrace
+
+      formatted_backtrace = exception.backtrace.first(options[:backtrace_lines]).join("\n").to_s
+      text + "Backtrace:\n#{formatted_backtrace}\n"
     end
 
     def accumulated_exception_name(exception, options)

@@ -5,3 +5,6 @@ AllCops:
   DisplayCopNames: true
   Exclude:
     - "gemfiles/**/*"
+
+Style/Documentation:
+  Enabled: false

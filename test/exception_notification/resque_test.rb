@@ -1,8 +1,8 @@
-require "test_helper"
+require 'test_helper'
 
-require "exception_notification/resque"
-require "resque"
-require "mock_redis"
+require 'exception_notification/resque'
+require 'resque'
+require 'mock_redis'
 require 'resque/failure/multiple'
 require 'resque/failure/redis'
 
@@ -19,22 +19,22 @@ class ResqueTest < ActiveSupport::TestCase
     @worker.cant_fork = true
   end
 
-  test "count returns the number of failures" do
+  test 'count returns the number of failures' do
     Resque::Job.create(:jobs, BadJob)
     @worker.work(0)
     assert_equal 1, ExceptionNotification::Resque.count
   end
 
-  test "notifies exception when job fails" do
-    ExceptionNotifier.expects(:notify_exception).with() do |ex, opts|
-      RuntimeError === ex &&
-        ex.message == "Bad job!" &&
-        opts[:data][:resque][:error_class] == "RuntimeError" &&
-        opts[:data][:resque][:error_message] == "Bad job!" &&
+  test 'notifies exception when job fails' do
+    ExceptionNotifier.expects(:notify_exception).with do |ex, opts|
+      ex.is_a?(RuntimeError) &&
+        ex.message == 'Bad job!' &&
+        opts[:data][:resque][:error_class] == 'RuntimeError' &&
+        opts[:data][:resque][:error_message] == 'Bad job!' &&
         opts[:data][:resque][:failed_at].present? &&
         opts[:data][:resque][:payload] == {
-          "class" => "ResqueTest::BadJob",
-          "args" => []
+          'class' => 'ResqueTest::BadJob',
+          'args' => []
         } &&
         opts[:data][:resque][:queue] == :jobs &&
         opts[:data][:resque][:worker].present?
@@ -46,7 +46,7 @@ class ResqueTest < ActiveSupport::TestCase
 
   class BadJob
     def self.perform
-      raise "Bad job!"
+      raise 'Bad job!'
     end
   end
 end

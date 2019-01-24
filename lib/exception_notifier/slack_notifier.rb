@@ -24,11 +24,11 @@ module ExceptionNotifier
       clean_message = exception.message.tr('`', "'")
       attchs = attchs(exception, clean_message, options)
 
-      if valid?
-        args = [exception, options, clean_message, @message_opts.merge(attachments: attchs)]
-        send_notice(*args) do |_msg, message_opts|
-          @notifier.ping '', message_opts
-        end
+      return unless valid?
+
+      args = [exception, options, clean_message, @message_opts.merge(attachments: attchs)]
+      send_notice(*args) do |_msg, message_opts|
+        @notifier.ping '', message_opts
       end
     end
 

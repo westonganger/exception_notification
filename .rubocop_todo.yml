@@ -46,49 +46,11 @@ Metrics/MethodLength:
 Metrics/PerceivedComplexity:
   Max: 24
 
-# Offense count: 1
-Style/CaseEquality:
-  Exclude:
-    - 'test/exception_notification/resque_test.rb'
-
-# Offense count: 1
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# SupportedStyles: nested, compact
-Style/ClassAndModuleChildren:
-  Exclude:
-    - 'test/dummy/test/test_helper.rb'
-
 # Offense count: 6
 Style/ClassVars:
   Exclude:
     - 'lib/exception_notifier.rb'
     - 'test/exception_notifier/modules/error_grouping_test.rb'
-
-# Offense count: 29
-Style/Documentation:
-  Enabled: false
-
-# Offense count: 1
-Style/DoubleNegation:
-  Exclude:
-    - 'lib/exception_notifier/irc_notifier.rb'
-
-# Offense count: 6
-# Configuration parameters: MinBodyLength.
-Style/GuardClause:
-  Exclude:
-    - 'lib/exception_notifier/campfire_notifier.rb'
-    - 'lib/exception_notifier/email_notifier.rb'
-    - 'lib/exception_notifier/google_chat_notifier.rb'
-    - 'lib/exception_notifier/irc_notifier.rb'
-    - 'lib/exception_notifier/slack_notifier.rb'
-    - 'lib/exception_notifier/sns_notifier.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/MethodCallWithoutArgsParentheses:
-  Exclude:
-    - 'test/exception_notification/resque_test.rb'
 
 # Offense count: 3
 Style/MethodMissing:
@@ -96,13 +58,3 @@ Style/MethodMissing:
     - 'lib/exception_notifier/email_notifier.rb'
     - 'lib/exception_notifier/mattermost_notifier.rb'
     - 'lib/exception_notifier/teams_notifier.rb'
-
-# Offense count: 18
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles, ConsistentQuotesInMultiline.
-# SupportedStyles: single_quotes, double_quotes
-Style/StringLiterals:
-  Exclude:
-    - 'lib/exception_notifier/datadog_notifier.rb'
-    - 'test/exception_notification/resque_test.rb'
-    - 'test/exception_notifier/datadog_notifier_test.rb'
