@@ -48,7 +48,7 @@ module ExceptionNotifier
     end
 
     def valid_uri?(uri)
-      !!URI.parse(uri)
+      URI.parse(uri)
     rescue URI::InvalidURIError
       false
     end
