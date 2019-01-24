@@ -1,9 +1,7 @@
 module ExceptionNotifier
-
   class DatadogNotifier < BaseNotifier
-
     attr_reader :client,
-      :default_options
+                :default_options
 
     def initialize(options)
       super
@@ -32,10 +30,10 @@ module ExceptionNotifier
       MAX_TITLE_LENGTH = 120
       MAX_VALUE_LENGTH = 300
       MAX_BACKTRACE_SIZE = 3
-      ALERT_TYPE = "error"
+      ALERT_TYPE = 'error'.freeze
 
       attr_reader :exception,
-        :options
+                  :options
 
       def initialize(exception, options)
         @exception = exception
@@ -59,7 +57,7 @@ module ExceptionNotifier
       end
 
       def title_prefix
-        options[:title_prefix] || ""
+        options[:title_prefix] || ''
       end
 
       def event
@@ -88,11 +86,11 @@ module ExceptionNotifier
       def formatted_body
         text = []
 
-        text << "%%%"
+        text << '%%%'
         text << formatted_request if request
         text << formatted_session if request
         text << formatted_backtrace
-        text << "%%%"
+        text << '%%%'
 
         text.join("\n")
       end
@@ -103,26 +101,26 @@ module ExceptionNotifier
 
       def formatted_request
         text = []
-        text << "### **Request**"
-        text << formatted_key_value("URL", request.url)
-        text << formatted_key_value("HTTP Method", request.request_method)
-        text << formatted_key_value("IP Address", request.remote_ip)
-        text << formatted_key_value("Parameters", request.filtered_parameters.inspect)
-        text << formatted_key_value("Timestamp", Time.current)
-        text << formatted_key_value("Server", Socket.gethostname)
+        text << '### **Request**'
+        text << formatted_key_value('URL', request.url)
+        text << formatted_key_value('HTTP Method', request.request_method)
+        text << formatted_key_value('IP Address', request.remote_ip)
+        text << formatted_key_value('Parameters', request.filtered_parameters.inspect)
+        text << formatted_key_value('Timestamp', Time.current)
+        text << formatted_key_value('Server', Socket.gethostname)
         if defined?(Rails) && Rails.respond_to?(:root)
-          text << formatted_key_value("Rails root", Rails.root)
+          text << formatted_key_value('Rails root', Rails.root)
         end
-        text << formatted_key_value("Process", $$)
-        text << "___"
+        text << formatted_key_value('Process', $PROCESS_ID)
+        text << '___'
         text.join("\n")
       end
 
       def formatted_session
         text = []
-        text << "### **Session**"
-        text << formatted_key_value("Data", request.session.to_hash)
-        text << "___"
+        text << '### **Session**'
+        text << formatted_key_value('Data', request.session.to_hash)
+        text << '___'
         text.join("\n")
       end
 
@@ -130,11 +128,11 @@ module ExceptionNotifier
         size = [backtrace.size, MAX_BACKTRACE_SIZE].min
 
         text = []
-        text << "### **Backtrace**"
-        text << "````"
+        text << '### **Backtrace**'
+        text << '````'
         size.times { |i| text << backtrace[i] }
-        text << "````"
-        text << "___"
+        text << '````'
+        text << '___'
         text.join("\n")
       end
 
@@ -144,15 +142,12 @@ module ExceptionNotifier
 
       def inspect_object(object)
         case object
-          when Hash, Array
-            truncate(object.inspect, MAX_VALUE_LENGTH)
-          else
-            object.to_s
+        when Hash, Array
+          truncate(object.inspect, MAX_VALUE_LENGTH)
+        else
+          object.to_s
         end
       end
-
     end
   end
-
 end
-

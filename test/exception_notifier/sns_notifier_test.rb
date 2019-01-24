@@ -12,7 +12,7 @@ class SnsNotifierTest < ActiveSupport::TestCase
       secret_access_key: 'my-secret_access_key',
       region: 'us-east',
       topic_arn: 'topicARN',
-      sns_prefix: '[App Exception]',
+      sns_prefix: '[App Exception]'
     }
     Socket.stubs(:gethostname).returns('example.com')
   end
@@ -60,41 +60,38 @@ class SnsNotifierTest < ActiveSupport::TestCase
 
   test 'should send a sns notification in background' do
     Aws::SNS::Client.any_instance.expects(:publish).with(
-      {
-      topic_arn: "topicARN",
+      topic_arn: 'topicARN',
       message: "3 MyException occured in background\n"\
-               "Exception: undefined method 'method=' for Empty\n"\
-               "Hostname: example.com\n"\
-               "Backtrace:\n#{fake_backtrace.join("\n")}\n",
-      subject: "[App Exception] - 3 MyException occurred"
-    })
+             "Exception: undefined method 'method=' for Empty\n"\
+             "Hostname: example.com\n"\
+             "Backtrace:\n#{fake_backtrace.join("\n")}\n",
+      subject: '[App Exception] - 3 MyException occurred'
+    )
 
     sns_notifier = ExceptionNotifier::SnsNotifier.new(@options)
-    sns_notifier.call(@exception, { accumulated_errors_count: 3 })
+    sns_notifier.call(@exception, accumulated_errors_count: 3)
   end
 
   test 'should send a sns notification with controller#action information' do
     ExamplesController.any_instance.stubs(:action_name).returns('index')
 
     Aws::SNS::Client.any_instance.expects(:publish).with(
-      {
-      topic_arn: "topicARN",
-      message: "A MyException occurred while GET </examples> "\
-               "was processed by examples#index\n"\
-               "Exception: undefined method 'method=' for Empty\n"\
-               "Hostname: example.com\n"\
-               "Backtrace:\n#{fake_backtrace.join("\n")}\n",
-      subject: "[App Exception] - A MyException occurred"
-    })
+      topic_arn: 'topicARN',
+      message: 'A MyException occurred while GET </examples> '\
+             "was processed by examples#index\n"\
+             "Exception: undefined method 'method=' for Empty\n"\
+             "Hostname: example.com\n"\
+             "Backtrace:\n#{fake_backtrace.join("\n")}\n",
+      subject: '[App Exception] - A MyException occurred'
+    )
 
     sns_notifier = ExceptionNotifier::SnsNotifier.new(@options)
     sns_notifier.call(@exception,
-      env: {
-        'REQUEST_METHOD' => 'GET',
-        'REQUEST_URI' => '/examples',
-        'action_controller.instance' => ExamplesController.new
-      }
-    )
+                      env: {
+                        'REQUEST_METHOD' => 'GET',
+                        'REQUEST_URI' => '/examples',
+                        'action_controller.instance' => ExamplesController.new
+                      })
   end
 
   private
@@ -102,11 +99,9 @@ class SnsNotifierTest < ActiveSupport::TestCase
   class ExamplesController < ActionController::Base; end
 
   def fake_exception
-    begin
-      1 / 0
-    rescue Exception => e
-      e
-    end
+    1 / 0
+  rescue Exception => e
+    e
   end
 
   def fake_exception_without_backtrace

@@ -1,4 +1,4 @@
-require File.expand_path('../boot', __FILE__)
+require File.expand_path('boot', __dir__)
 
 require 'rails/all'
 
@@ -34,12 +34,12 @@ module Dummy
     # config.action_view.javascript_expansions[:defaults] = %w(jquery rails)
 
     # Configure the default encoding used in templates for Ruby 1.9.
-    config.encoding = "utf-8"
+    config.encoding = 'utf-8'
 
     # Configure sensitive parameters which will be filtered from the log file.
-    config.filter_parameters += [:password, :secret]
+    config.filter_parameters += %i[password secret]
 
     rails_version = Gem::Version.new(Rails.version)
-    config.active_record.sqlite3.represent_boolean_as_integer = true if rails_version >= Gem::Version.new("5.2.0")
+    config.active_record.sqlite3.represent_boolean_as_integer = true if rails_version >= Gem::Version.new('5.2.0')
   end
 end

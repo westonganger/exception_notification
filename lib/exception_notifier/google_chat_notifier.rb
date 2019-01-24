@@ -24,7 +24,7 @@ module ExceptionNotifier
     def body
       text = [
         header,
-        "",
+        '',
         "⚠️ Error 500 in #{Rails.env} ⚠️",
         "*#{exception.message.tr('`', "'")}*"
       ]
@@ -46,18 +46,19 @@ module ExceptionNotifier
 
     def message_request
       return [] unless (env = options[:env])
+
       request = ActionDispatch::Request.new(env)
 
       [
-        "",
-        "*Request:*",
-        "```",
+        '',
+        '*Request:*',
+        '```',
         "* url : #{request.original_url}",
         "* http_method : #{request.method}",
         "* ip_address : #{request.remote_ip}",
         "* parameters : #{request.filtered_parameters}",
         "* timestamp : #{Time.current}",
-        "```"
+        '```'
       ]
     end
 
@@ -69,16 +70,16 @@ module ExceptionNotifier
       text = []
 
       text << ''
-      text << "*Backtrace:*"
-      text << "```"
+      text << '*Backtrace:*'
+      text << '```'
       backtrace.first(3).each { |line| text << "* #{line}" }
-      text << "```"
+      text << '```'
 
       text
     end
 
     def app_name
-      @app_name ||= options[:app_name] || rails_app_name || "N/A"
+      @app_name ||= options[:app_name] || rails_app_name || 'N/A'
     end
 
     def errors_count
