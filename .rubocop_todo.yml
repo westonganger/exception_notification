@@ -59,17 +59,6 @@ Style/ClassVars:
     - 'lib/exception_notifier.rb'
     - 'test/exception_notifier/modules/error_grouping_test.rb'
 
-# Offense count: 6
-# Configuration parameters: MinBodyLength.
-Style/GuardClause:
-  Exclude:
-    - 'lib/exception_notifier/campfire_notifier.rb'
-    - 'lib/exception_notifier/email_notifier.rb'
-    - 'lib/exception_notifier/google_chat_notifier.rb'
-    - 'lib/exception_notifier/irc_notifier.rb'
-    - 'lib/exception_notifier/slack_notifier.rb'
-    - 'lib/exception_notifier/sns_notifier.rb'
-
 # Offense count: 1
 # Cop supports --auto-correct.
 Style/MethodCallWithoutArgsParentheses:

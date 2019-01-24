@@ -13,10 +13,11 @@ module ExceptionNotifier
       message.prepend("(#{errors_count} times)") if errors_count > 1
 
       message += " on '#{exception.backtrace.first}'" if exception.backtrace
-      if active?
-        send_notice(exception, options, message) do |msg, _|
-          send_message([*@config.prefix, *msg].join(' '))
-        end
+
+      return unless active?
+
+      send_notice(exception, options, message) do |msg, _|
+        send_message([*@config.prefix, *msg].join(' '))
       end
     end
 
