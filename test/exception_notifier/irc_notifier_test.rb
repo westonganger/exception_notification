@@ -102,11 +102,13 @@ class IrcNotifierTest < ActiveSupport::TestCase
       prefix: '[test notification]'
     }
 
-    CarrierPigeon.expects(:send).with(has_entries(
-                                        ssl: true,
-                                        join: true,
-                                        notice: true
-                                      )) do |v|
+    entries = {
+      ssl: true,
+      join: true,
+      notice: true
+    }
+
+    CarrierPigeon.expects(:send).with(has_entries(entries)) do |v|
       /\[test notification\]/.match(v[:message])
     end
 
@@ -125,7 +127,7 @@ class IrcNotifierTest < ActiveSupport::TestCase
 
   def fake_exception
     5 / 0
-  rescue Exception => e
+  rescue StandardError => e
     e
   end
 

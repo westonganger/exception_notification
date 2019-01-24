@@ -92,8 +92,6 @@ class DatadogNotifierTest < ActiveSupport::TestCase
     assert_equal event.aggregation_key, [event.msg_title]
   end
 
-  private
-
   class FakeDatadogClient
     def emit_event(event); end
   end

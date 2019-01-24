@@ -197,13 +197,13 @@ class HipchatNotifierTest < ActiveSupport::TestCase
 
   def fake_exception
     5 / 0
-  rescue Exception => e
+  rescue StandardError => e
     e
   end
 
   def fake_exception_with_html_characters
     raise StandardError, 'an error with <html> characters'
-  rescue Exception => e
+  rescue StandardError => e
     e
   end
 

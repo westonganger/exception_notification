@@ -22,7 +22,7 @@ module ExceptionNotifier
                     "The exception occurred #{options[:accumulated_errors_count]} times: '#{exception.message}'"
                   else
                     "A new exception occurred: '#{exception.message}'"
-        end
+                  end
         message += " on '#{exception.backtrace.first}'" if exception.backtrace
         send_notice(exception, options, message) do |msg, _|
           @room.paste msg

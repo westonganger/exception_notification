@@ -22,8 +22,6 @@ module ExceptionNotifier
       ).event
     end
 
-    private
-
     class DatadogExceptionEvent
       include ExceptionNotifier::BacktraceCleaner
 

@@ -28,7 +28,7 @@ class SinatraApp < Sinatra::Base
   get '/background_notification' do
     begin
       1 / 0
-    rescue Exception => e
+    rescue StandardError => e
       ExceptionNotifier.notify_exception(e, data: { msg: 'Cannot divide by zero!' })
     end
     'Check email at <a href="http://localhost:1080">mailcatcher</a>.'

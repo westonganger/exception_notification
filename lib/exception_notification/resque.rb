@@ -13,7 +13,7 @@ module ExceptionNotification
         failed_at: Time.now.to_s,
         payload: payload,
         queue: queue,
-        worker: worker.to_s,
+        worker: worker.to_s
       }
 
       ExceptionNotifier.notify_exception(exception, data: { resque: data })

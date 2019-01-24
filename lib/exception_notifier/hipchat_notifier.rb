@@ -20,7 +20,7 @@ module ExceptionNotifier
                   "The exception occurred #{errors_count} times: '#{Rack::Utils.escape_html(exception.message)}'"
                 else
                   "A new exception occurred: '#{Rack::Utils.escape_html(exception.message)}'"
-          end
+                end
           msg += " on '#{exception.backtrace.first}'" if exception.backtrace
           msg
         }

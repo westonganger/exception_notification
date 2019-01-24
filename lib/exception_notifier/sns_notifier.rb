@@ -59,13 +59,19 @@ module ExceptionNotifier
 
       if exception.backtrace
         formatted_backtrace = exception.backtrace.first(options[:backtrace_lines]).join("\n").to_s
-        text += "Backtrace:\n#{formatted_backtrace}\n"
+        text + "Backtrace:\n#{formatted_backtrace}\n"
       end
     end
 
     def accumulated_exception_name(exception, options)
       errors_count = options[:accumulated_errors_count].to_i
-      measure_word = errors_count > 1 ? errors_count : (exception.class.to_s =~ /^[aeiou]/i ? 'An' : 'A')
+
+      measure_word = if errors_count > 1
+                       errors_count
+                     else
+                       exception.class.to_s =~ /^[aeiou]/i ? 'An' : 'A'
+                     end
+
       "#{measure_word} #{exception.class}"
     end
 

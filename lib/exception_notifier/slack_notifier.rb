@@ -20,13 +20,13 @@ module ExceptionNotifier
       end
     end
 
-    def call(exception, options={})
-      clean_message = exception.message.gsub("`", "'")
+    def call(exception, options = {})
+      clean_message = exception.message.tr('`', "'")
       attchs = attchs(exception, clean_message, options)
 
       if valid?
         args = [exception, options, clean_message, @message_opts.merge(attachments: attchs)]
-        send_notice(*args) do |msg, message_opts|
+        send_notice(*args) do |_msg, message_opts|
           @notifier.ping '', message_opts
         end
       end
@@ -52,13 +52,19 @@ module ExceptionNotifier
       text, data = information_from_options(exception.class, options)
       fields = fields(clean_message, exception.backtrace, data)
 
-      [color: @color, text: text, fields: fields, mrkdwn_in: %w(text fields)]
+      [color: @color, text: text, fields: fields, mrkdwn_in: %w[text fields]]
     end
 
     def information_from_options(exception_class, options)
       errors_count = options[:accumulated_errors_count].to_i
-      measure_word = errors_count > 1 ? errors_count : (exception_class.to_s =~ /^[aeiou]/i ? 'An' : 'A')
-      exception_name = "*#{measure_word}* `#{exception_class.to_s}`"
+
+      measure_word = if errors_count > 1
+                       errors_count
+                     else
+                       exception_class.to_s =~ /^[aeiou]/i ? 'An' : 'A'
+                     end
+
+      exception_name = "*#{measure_word}* `#{exception_class}`"
       env = options[:env]
 
       if env.nil?
@@ -90,7 +96,7 @@ module ExceptionNotifier
 
       unless data.empty?
         deep_reject(data, @ignore_data_if) if @ignore_data_if.is_a?(Proc)
-        data_string = data.map{|k,v| "#{k}: #{v}"}.join("\n")
+        data_string = data.map { |k, v| "#{k}: #{v}" }.join("\n")
         fields << { title: 'Data', value: "```#{data_string}```" }
       end
 

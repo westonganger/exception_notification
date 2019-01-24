@@ -46,13 +46,13 @@ module ExceptionNotifier
         message_based_key = "exception:#{Zlib.crc32("#{exception.class.name}\nmessage:#{exception.message}")}"
         accumulated_errors_count = 1
 
-        if count = error_count(message_based_key)
+        if (count = error_count(message_based_key))
           accumulated_errors_count = count + 1
           save_error_count(message_based_key, accumulated_errors_count)
         else
           backtrace_based_key = "exception:#{Zlib.crc32("#{exception.class.name}\npath:#{exception.backtrace.try(:first)}")}"
 
-          if count = error_grouping_cache.read(backtrace_based_key)
+          if (count = error_grouping_cache.read(backtrace_based_key))
             accumulated_errors_count = count + 1
             save_error_count(backtrace_based_key, accumulated_errors_count)
           else

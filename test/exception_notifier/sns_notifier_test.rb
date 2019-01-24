@@ -100,7 +100,7 @@ class SnsNotifierTest < ActiveSupport::TestCase
 
   def fake_exception
     1 / 0
-  rescue Exception => e
+  rescue StandardError => e
     e
   end
 

@@ -86,7 +86,7 @@ class WebhookNotifierTest < ActiveSupport::TestCase
   def fake_exception
     @fake_exception ||= begin
       5 / 0
-    rescue Exception => e
+    rescue StandardError => e
       e
     end
   end
