@@ -6,6 +6,7 @@ class SlackNotifierTest < ActiveSupport::TestCase
     @exception = fake_exception
     @exception.stubs(:backtrace).returns(fake_backtrace)
     @exception.stubs(:message).returns('exception message')
+    ExceptionNotifier::SlackNotifier.any_instance.stubs(:clean_backtrace).returns(fake_cleaned_backtrace)
     Socket.stubs(:gethostname).returns('example.com')
   end
 
@@ -192,6 +193,10 @@ class SlackNotifierTest < ActiveSupport::TestCase
     ]
   end
 
+  def fake_cleaned_backtrace
+    fake_backtrace[2..-1]
+  end
+
   def fake_notification(exception = @exception, notification_options = {}, data_string = nil, expected_backtrace_lines = 10, additional_fields = [])
     exception_name = "*#{exception.class.to_s =~ /^[aeiou]/i ? 'An' : 'A'}* `#{exception.class}`"
     if notification_options[:env].nil?
@@ -211,7 +216,7 @@ class SlackNotifierTest < ActiveSupport::TestCase
     fields = [{ title: 'Exception', value: exception.message }]
     fields.push(title: 'Hostname', value: 'example.com')
     if exception.backtrace
-      formatted_backtrace = "```#{exception.backtrace.first(expected_backtrace_lines).join("\n")}```"
+      formatted_backtrace = "```#{fake_cleaned_backtrace.first(expected_backtrace_lines).join("\n")}```"
       fields.push(title: 'Backtrace', value: formatted_backtrace)
     end
     fields.push(title: 'Data', value: "```#{data_string}```") if data_string
