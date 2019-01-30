@@ -50,7 +50,8 @@ module ExceptionNotifier
 
     def attchs(exception, clean_message, options)
       text, data = information_from_options(exception.class, options)
-      fields = fields(clean_message, exception.backtrace, data)
+      backtrace = clean_backtrace(exception) if exception.backtrace
+      fields = fields(clean_message, backtrace, data)
 
       [color: @color, text: text, fields: fields, mrkdwn_in: %w[text fields]]
     end
