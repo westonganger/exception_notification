@@ -1,102 +1,185 @@
 require 'test_helper'
 require 'httparty'
+require 'timecop'
 
 class MattermostNotifierTest < ActiveSupport::TestCase
+  URL = 'http://localhost:8000'.freeze
+
+  def setup
+    Timecop.freeze('2018-12-09 12:07:16 UTC')
+  end
+
+  def teardown
+    Timecop.return
+  end
+
   test 'should send notification if properly configured' do
-    options = {
-      webhook_url: 'http://localhost:8000'
+    opts = {
+      body: default_body.to_json,
+      headers: defaul_headers
     }
-    mattermost_notifier = ExceptionNotifier::MattermostNotifier.new
-    mattermost_notifier.httparty = FakeHTTParty.new
 
-    options = mattermost_notifier.call ArgumentError.new('foo'), options
-
-    body = ActiveSupport::JSON.decode options[:body]
-    assert body.key? 'text'
-    assert body.key? 'username'
-
-    text = body['text'].split("\n")
-    assert_equal 4, text.size
-    assert_equal '@channel', text[0]
-    assert_equal 'An *ArgumentError* occured.', text[2]
-    assert_equal '*foo*', text[3]
+    HTTParty.expects(:post).with(URL, opts)
+    notifier.call ArgumentError.new('foo')
   end
 
   test 'should send notification with create issue link if specified' do
-    options = {
-      webhook_url: 'http://localhost:8000',
-      git_url: 'github.com/aschen'
+    body = default_body.merge(
+      text: [
+        '@channel',
+        '### :warning: Error 500 in test :warning:',
+        'An *ArgumentError* occured.',
+        '*foo*',
+        '[Create an issue](github.com/aschen/dummy/issues/new/?issue%5Btitle%5D=%5BBUG%5D+Error+500+%3A++%28ArgumentError%29+foo)'
+      ].join("\n")
+    )
+
+    opts = {
+      body: body.to_json,
+      headers: defaul_headers
     }
-    mattermost_notifier = ExceptionNotifier::MattermostNotifier.new
-    mattermost_notifier.httparty = FakeHTTParty.new
 
-    options = mattermost_notifier.call ArgumentError.new('foo'), options
-
-    body = ActiveSupport::JSON.decode options[:body]
-
-    text = body['text'].split("\n")
-    assert_equal 5, text.size
-    assert_equal '[Create an issue](github.com/aschen/dummy/issues/new/?issue%5Btitle%5D=%5BBUG%5D+Error+500+%3A++%28ArgumentError%29+foo)', text[4]
+    HTTParty.expects(:post).with(URL, opts)
+    notifier.call ArgumentError.new('foo'), git_url: 'github.com/aschen'
   end
 
   test 'should add username and icon_url params to the notification if specified' do
-    options = {
-      webhook_url: 'http://localhost:8000',
+    body = default_body.merge(
+      username: 'Test Bot',
+      icon_url: 'http://site.com/icon.png'
+    )
+
+    opts = {
+      body: body.to_json,
+      headers: defaul_headers
+    }
+
+    HTTParty.expects(:post).with(URL, opts)
+    notifier.call(
+      ArgumentError.new('foo'),
       username: 'Test Bot',
       avatar: 'http://site.com/icon.png'
-    }
-    mattermost_notifier = ExceptionNotifier::MattermostNotifier.new
-    mattermost_notifier.httparty = FakeHTTParty.new
-
-    options = mattermost_notifier.call ArgumentError.new('foo'), options
-
-    body = ActiveSupport::JSON.decode options[:body]
-
-    assert_equal 'Test Bot', body['username']
-    assert_equal 'http://site.com/icon.png', body['icon_url']
+    )
   end
 
   test 'should add other HTTParty options to params' do
-    options = {
-      webhook_url: 'http://localhost:8000',
-      username: 'Test Bot',
-      avatar: 'http://site.com/icon.png',
+    opts = {
+      basic_auth: {
+        username: 'clara',
+        password: 'password'
+      },
+      body: default_body.to_json,
+      headers: defaul_headers
+    }
+
+    HTTParty.expects(:post).with(URL, opts)
+    notifier.call(
+      ArgumentError.new('foo'),
       basic_auth: {
         username: 'clara',
         password: 'password'
       }
-    }
-    mattermost_notifier = ExceptionNotifier::MattermostNotifier.new
-    mattermost_notifier.httparty = FakeHTTParty.new
-
-    options = mattermost_notifier.call ArgumentError.new('foo'), options
-
-    assert options.key? :basic_auth
-    assert 'clara', options[:basic_auth][:username]
-    assert 'password', options[:basic_auth][:password]
+    )
   end
 
   test "should use 'An' for exceptions count if :accumulated_errors_count option is nil" do
-    mattermost_notifier = ExceptionNotifier::MattermostNotifier.new
-    exception = ArgumentError.new('foo')
-    mattermost_notifier.instance_variable_set(:@exception, exception)
-    mattermost_notifier.instance_variable_set(:@options, {})
+    opts = {
+      body: default_body.to_json,
+      headers: defaul_headers
+    }
 
-    assert_includes mattermost_notifier.send(:message_header), 'An *ArgumentError* occured.'
+    HTTParty.expects(:post).with(URL, opts)
+    notifier.call(ArgumentError.new('foo'))
   end
 
   test 'shoud use direct errors count if :accumulated_errors_count option is 5' do
-    mattermost_notifier = ExceptionNotifier::MattermostNotifier.new
-    exception = ArgumentError.new('foo')
-    mattermost_notifier.instance_variable_set(:@exception, exception)
-    mattermost_notifier.instance_variable_set(:@options, accumulated_errors_count: 5)
+    body = default_body.merge(
+      text: [
+        '@channel',
+        '### :warning: Error 500 in test :warning:',
+        '5 *ArgumentError* occured.',
+        '*foo*'
+      ].join("\n")
+    )
 
-    assert_includes mattermost_notifier.send(:message_header), '5 *ArgumentError* occured.'
+    opts = {
+      body: body.to_json,
+      headers: defaul_headers,
+      accumulated_errors_count: 5
+    }
+
+    HTTParty.expects(:post).with(URL, opts)
+    notifier.call(ArgumentError.new('foo'), accumulated_errors_count: 5)
   end
-end
 
-class FakeHTTParty
-  def post(_url, options)
-    options
+  test 'should include backtrace and request info' do
+    body = default_body.merge(
+      text: [
+        '@channel',
+        '### :warning: Error 500 in test :warning:',
+        'An *ArgumentError* occured in *#*.',
+        '*foo*',
+        '### Request',
+        '```',
+        '* url : http://test.address/?id=foo',
+        '* http_method : GET',
+        '* ip_address : 127.0.0.1',
+        '* parameters : {"id"=>"foo"}',
+        '* timestamp : 2018-12-09 12:07:16 UTC',
+        '```',
+        '### Backtrace',
+        '```',
+        "* app/controllers/my_controller.rb:53:in `my_controller_params'",
+        "* app/controllers/my_controller.rb:34:in `update'",
+        '```'
+      ].join("\n")
+    )
+
+    opts = {
+      body: body.to_json,
+      headers: defaul_headers
+    }
+
+    HTTParty.expects(:post).with(URL, opts)
+
+    exception = ArgumentError.new('foo')
+    exception.set_backtrace([
+                              "app/controllers/my_controller.rb:53:in `my_controller_params'",
+                              "app/controllers/my_controller.rb:34:in `update'"
+                            ])
+
+    notifier.call(exception, env: test_env)
+  end
+
+  private
+
+  def notifier
+    ExceptionNotifier::MattermostNotifier.new(webhook_url: URL)
+  end
+
+  def default_body
+    {
+      text: [
+        '@channel',
+        '### :warning: Error 500 in test :warning:',
+        'An *ArgumentError* occured.',
+        '*foo*'
+      ].join("\n"),
+      username: 'Exception Notifier'
+    }
+  end
+
+  def defaul_headers
+    { 'Content-Type' => 'application/json' }
+  end
+
+  def test_env
+    Rack::MockRequest.env_for(
+      '/',
+      'HTTP_HOST' => 'test.address',
+      'REMOTE_ADDR' => '127.0.0.1',
+      'HTTP_USER_AGENT' => 'Rails Testing',
+      params: { id: 'foo' }
+    )
   end
 end
