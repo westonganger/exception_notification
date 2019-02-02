@@ -8,6 +8,7 @@ module ExceptionNotifier
   include ErrorGrouping
 
   autoload :BacktraceCleaner, 'exception_notifier/modules/backtrace_cleaner'
+  autoload :Formatter, 'exception_notifier/modules/formatter'
 
   autoload :Notifier, 'exception_notifier/notifier'
   autoload :EmailNotifier, 'exception_notifier/email_notifier'
