@@ -104,8 +104,7 @@ class MattermostNotifierTest < ActiveSupport::TestCase
 
     opts = {
       body: body.to_json,
-      headers: defaul_headers,
-      accumulated_errors_count: 5
+      headers: defaul_headers
     }
 
     HTTParty.expects(:post).with(URL, opts)

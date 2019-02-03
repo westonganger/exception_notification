@@ -2,35 +2,32 @@ require 'httparty'
 
 module ExceptionNotifier
   class MattermostNotifier < BaseNotifier
-    def call(exception, options = {})
-      @options = options.merge(base_options)
+    def call(exception, opts = {})
+      options = opts.merge(base_options)
       @exception = exception
 
-      @formatter = Formatter.new(
-        exception,
-        env: @options.delete(:env),
-        app_name: @options.delete(:app_name),
-        accumulated_errors_count: @options[:accumulated_errors_count]
-      )
+      @formatter = Formatter.new(exception, options)
 
-      avatar = @options.delete(:avatar)
-      channel = @options.delete(:channel)
-      @gitlab_url = @options.delete(:git_url)
-      @webhook_url = @options.delete(:webhook_url)
-      raise ArgumentError, "You must provide 'webhook_url' parameter." unless @webhook_url
+      @gitlab_url = options[:git_url]
 
       payload = {
-        text: message_text.compact.join("\n")
+        text: message_text.compact.join("\n"),
+        username: options[:username] || 'Exception Notifier'
       }
-      payload[:username] = @options.delete(:username) || 'Exception Notifier'
-      payload[:icon_url] = avatar if avatar
-      payload[:channel] = channel if channel
 
-      @options[:body] = payload.to_json
-      @options[:headers] ||= {}
-      @options[:headers]['Content-Type'] = 'application/json'
+      payload[:icon_url] = options[:avatar] if options[:avatar]
+      payload[:channel] = options[:channel] if options[:channel]
 
-      HTTParty.post(@webhook_url, @options)
+      httparty_options = options.except(
+        :avatar, :channel, :username, :git_url, :webhook_url,
+        :env, :accumulated_errors_count, :app_name
+      )
+
+      httparty_options[:body] = payload.to_json
+      httparty_options[:headers] ||= {}
+      httparty_options[:headers]['Content-Type'] = 'application/json'
+
+      HTTParty.post(options[:webhook_url], httparty_options)
     end
 
     private
