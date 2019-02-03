@@ -27,8 +27,8 @@ class MattermostNotifierTest < ActiveSupport::TestCase
     body = default_body.merge(
       text: [
         '@channel',
-        '### :warning: Error 500 in test :warning:',
-        'An *ArgumentError* occured.',
+        '### ⚠️ Error occurred in test ⚠️',
+        'A *ArgumentError* occurred.',
         '*foo*',
         '[Create an issue](github.com/aschen/dummy/issues/new/?issue%5Btitle%5D=%5BBUG%5D+Error+500+%3A++%28ArgumentError%29+foo)'
       ].join("\n")
@@ -96,8 +96,8 @@ class MattermostNotifierTest < ActiveSupport::TestCase
     body = default_body.merge(
       text: [
         '@channel',
-        '### :warning: Error 500 in test :warning:',
-        '5 *ArgumentError* occured.',
+        '### ⚠️ Error occurred in test ⚠️',
+        '5 *ArgumentError* occurred.',
         '*foo*'
       ].join("\n")
     )
@@ -116,8 +116,8 @@ class MattermostNotifierTest < ActiveSupport::TestCase
     body = default_body.merge(
       text: [
         '@channel',
-        '### :warning: Error 500 in test :warning:',
-        'An *ArgumentError* occured in *#*.',
+        '### ⚠️ Error occurred in test ⚠️',
+        'A *ArgumentError* occurred.',
         '*foo*',
         '### Request',
         '```',
@@ -161,8 +161,8 @@ class MattermostNotifierTest < ActiveSupport::TestCase
     {
       text: [
         '@channel',
-        '### :warning: Error 500 in test :warning:',
-        'An *ArgumentError* occured.',
+        '### ⚠️ Error occurred in test ⚠️',
+        'A *ArgumentError* occurred.',
         '*foo*'
       ].join("\n"),
       username: 'Exception Notifier'

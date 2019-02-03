@@ -57,8 +57,6 @@ module ExceptionNotifier
       return unless request
 
       [
-        '',
-        '*Request:*',
         '```',
         "* url : #{request.original_url}",
         "* http_method : #{request.method}",
@@ -85,13 +83,18 @@ module ExceptionNotifier
 
       text = []
 
-      text << ''
-      text << '*Backtrace:*'
       text << '```'
       backtrace.first(3).each { |line| text << "* #{line}" }
       text << '```'
 
       text.join("\n")
+    end
+
+    #
+    # home#index
+    #
+    def controller_and_action
+      "#{controller.controller_name}##{controller.action_name}" if controller
     end
 
     private
@@ -105,10 +108,6 @@ module ExceptionNotifier
 
     def controller
       env['action_controller.instance'] if env
-    end
-
-    def controller_and_action
-      "#{controller.controller_name}##{controller.action_name}" if controller
     end
   end
 end

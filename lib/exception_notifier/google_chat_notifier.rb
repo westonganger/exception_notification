@@ -21,10 +21,20 @@ module ExceptionNotifier
         formatter.subtitle,
         '',
         formatter.title,
-        "*#{exception.message.tr('`', "'")}*",
-        formatter.request_message,
-        formatter.backtrace_message
+        "*#{exception.message.tr('`', "'")}*"
       ]
+
+      if (request = formatter.request_message.presence)
+        text << ''
+        text << '*Request:*'
+        text << request
+      end
+
+      if (backtrace = formatter.backtrace_message.presence)
+        text << ''
+        text << '*Backtrace:*'
+        text << backtrace
+      end
 
       text.compact.join("\n")
     end

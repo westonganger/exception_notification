@@ -66,8 +66,6 @@ class FormatterTest < ActiveSupport::TestCase
   #
   test 'request_message when env set' do
     text = [
-      '',
-      '*Request:*',
       '```',
       '* url : http://test.address/?id=foo',
       '* http_method : GET',
@@ -98,8 +96,6 @@ class FormatterTest < ActiveSupport::TestCase
   #
   test 'backtrace_message when backtrace set' do
     text = [
-      '',
-      '*Backtrace:*',
       '```',
       "* app/controllers/my_controller.rb:53:in `my_controller_params'",
       "* app/controllers/my_controller.rb:34:in `update'",
@@ -118,5 +114,27 @@ class FormatterTest < ActiveSupport::TestCase
   test 'backtrace_message when no backtrace' do
     formatter = ExceptionNotifier::Formatter.new(@exception)
     assert_nil formatter.backtrace_message
+  end
+
+  #
+  # #controller_and_action
+  #
+  test 'correct controller_and_action if controller is present' do
+    controller = HomeController.new
+    controller.process(:index)
+
+    env = Rack::MockRequest.env_for(
+      '/', 'action_controller.instance' => controller
+    )
+
+    formatter = ExceptionNotifier::Formatter.new(@exception, env: env)
+    assert_equal 'home#index', formatter.controller_and_action
+  end
+
+  test 'controller_and_action is nil if no controller' do
+    env = Rack::MockRequest.env_for('/')
+
+    formatter = ExceptionNotifier::Formatter.new(@exception, env: env)
+    assert_nil formatter.controller_and_action
   end
 end
