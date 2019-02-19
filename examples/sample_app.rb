@@ -14,13 +14,9 @@ end
 
 class SampleApp < Rails::Application
   config.middleware.use ExceptionNotification::Rack,
-  # -----------------------------------
-  # Change this with your configuration
-  # https://github.com/smartinez87/exception_notification#notifiers
                         webhook: {
                           url: 'http://domain.com:5555/hubot/path'
                         }
-  # -----------------------------------
 
   config.secret_key_base = 'my secret key base'
   file = File.open('sample_app.log', 'w')
@@ -51,7 +47,7 @@ class Test < Minitest::Test
 
   def test_raise_exception
     get '/raise_sample_exception'
-    puts "Working OK!"
+    puts 'Working OK!'
   end
 
   private
