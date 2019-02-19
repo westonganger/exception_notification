@@ -16,7 +16,7 @@ class MattermostNotifierTest < ActiveSupport::TestCase
   test 'should send notification if properly configured' do
     opts = {
       body: default_body.to_json,
-      headers: defaul_headers
+      headers: default_headers
     }
 
     HTTParty.expects(:post).with(URL, opts)
@@ -36,7 +36,7 @@ class MattermostNotifierTest < ActiveSupport::TestCase
 
     opts = {
       body: body.to_json,
-      headers: defaul_headers
+      headers: default_headers
     }
 
     HTTParty.expects(:post).with(URL, opts)
@@ -51,7 +51,7 @@ class MattermostNotifierTest < ActiveSupport::TestCase
 
     opts = {
       body: body.to_json,
-      headers: defaul_headers
+      headers: default_headers
     }
 
     HTTParty.expects(:post).with(URL, opts)
@@ -69,7 +69,7 @@ class MattermostNotifierTest < ActiveSupport::TestCase
         password: 'password'
       },
       body: default_body.to_json,
-      headers: defaul_headers
+      headers: default_headers
     }
 
     HTTParty.expects(:post).with(URL, opts)
@@ -85,7 +85,7 @@ class MattermostNotifierTest < ActiveSupport::TestCase
   test "should use 'An' for exceptions count if :accumulated_errors_count option is nil" do
     opts = {
       body: default_body.to_json,
-      headers: defaul_headers
+      headers: default_headers
     }
 
     HTTParty.expects(:post).with(URL, opts)
@@ -104,7 +104,7 @@ class MattermostNotifierTest < ActiveSupport::TestCase
 
     opts = {
       body: body.to_json,
-      headers: defaul_headers
+      headers: default_headers
     }
 
     HTTParty.expects(:post).with(URL, opts)
@@ -136,7 +136,7 @@ class MattermostNotifierTest < ActiveSupport::TestCase
 
     opts = {
       body: body.to_json,
-      headers: defaul_headers
+      headers: default_headers
     }
 
     HTTParty.expects(:post).with(URL, opts)
@@ -168,7 +168,7 @@ class MattermostNotifierTest < ActiveSupport::TestCase
     }
   end
 
-  def defaul_headers
+  def default_headers
     { 'Content-Type' => 'application/json' }
   end
 
