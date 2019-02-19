@@ -35,7 +35,12 @@ module ExceptionNotifier
     # A *NoMethodError* occurred in *home#index*.
     #
     def subtitle
-      errors_text = errors_count > 1 ? errors_count : 'A'
+      errors_text = if errors_count > 1
+                      errors_count
+                    else
+                      exception.class.to_s =~ /^[aeiou]/i ? 'An' : 'A'
+                    end
+
       in_action = " in *#{controller_and_action}*" if controller
 
       "#{errors_text} *#{exception.class}* occurred#{in_action}."

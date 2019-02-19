@@ -160,7 +160,7 @@ class GoogleChatNotifierTest < ActiveSupport::TestCase
     [
       '',
       'Application: *dummy*',
-      'A *ArgumentError* occurred.',
+      'An *ArgumentError* occurred.',
       ''
     ].join("\n")
   end

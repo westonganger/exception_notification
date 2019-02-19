@@ -28,7 +28,7 @@ class MattermostNotifierTest < ActiveSupport::TestCase
       text: [
         '@channel',
         '### ⚠️ Error occurred in test ⚠️',
-        'A *ArgumentError* occurred.',
+        'An *ArgumentError* occurred.',
         '*foo*',
         '[Create an issue](github.com/aschen/dummy/issues/new/?issue%5Btitle%5D=%5BBUG%5D+Error+500+%3A++%28ArgumentError%29+foo)'
       ].join("\n")
@@ -116,7 +116,7 @@ class MattermostNotifierTest < ActiveSupport::TestCase
       text: [
         '@channel',
         '### ⚠️ Error occurred in test ⚠️',
-        'A *ArgumentError* occurred.',
+        'An *ArgumentError* occurred.',
         '*foo*',
         '### Request',
         '```',
@@ -161,7 +161,7 @@ class MattermostNotifierTest < ActiveSupport::TestCase
       text: [
         '@channel',
         '### ⚠️ Error occurred in test ⚠️',
-        'A *ArgumentError* occurred.',
+        'An *ArgumentError* occurred.',
         '*foo*'
       ].join("\n"),
       username: 'Exception Notifier'
