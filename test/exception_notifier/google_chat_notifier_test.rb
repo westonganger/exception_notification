@@ -22,7 +22,7 @@ class GoogleChatNotifierTest < ActiveSupport::TestCase
     text = [
       '',
       'Application: *dummy*',
-      '5 *ArgumentError* occured.',
+      '5 *ArgumentError* occurred.',
       '',
       body
     ].join("\n")
@@ -160,12 +160,12 @@ class GoogleChatNotifierTest < ActiveSupport::TestCase
     [
       '',
       'Application: *dummy*',
-      'An *ArgumentError* occured.',
+      'An *ArgumentError* occurred.',
       ''
     ].join("\n")
   end
 
   def body
-    "⚠️ Error 500 in test ⚠️\n*foo*"
+    "⚠️ Error occurred in test ⚠️\n*foo*"
   end
 end
