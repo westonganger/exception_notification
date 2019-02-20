@@ -34,7 +34,7 @@ Gem::Specification.new do |s|
   # Sidekiq 3.2.2 does not support Ruby 1.9.
   s.add_development_dependency 'sidekiq', '~> 3.0.0', '< 3.2.2'
   s.add_development_dependency 'slack-notifier', '>= 1.0.0'
-  s.add_development_dependency 'sqlite3', '>= 1.3.4'
+  s.add_development_dependency 'sqlite3', '~> 1.3.4'
   s.add_development_dependency 'timecop', '~>0.9.0'
   s.add_development_dependency 'tinder', '~> 1.8'
 end
