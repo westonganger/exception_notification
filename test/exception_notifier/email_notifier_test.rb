@@ -112,13 +112,13 @@ class EmailNotifierTest < ActiveSupport::TestCase
 
   test "mail should prefix exception class with 'an' instead of 'a' when it starts with a vowel" do
     begin
-      raise ActiveRecord::RecordNotFound
+      raise ArgumentError
     rescue StandardError => e
       @vowel_exception = e
       @vowel_mail = @email_notifier.create_email(@vowel_exception)
     end
 
-    assert_includes @vowel_mail.encoded, "An ActiveRecord::RecordNotFound occurred in background at #{Time.current}"
+    assert_includes @vowel_mail.encoded, "An ArgumentError occurred in background at #{Time.current}"
   end
 
   test 'mail should contain backtrace in body' do
@@ -138,7 +138,7 @@ class EmailNotifierTest < ActiveSupport::TestCase
 
   test 'should not send notification if one of ignored exceptions' do
     begin
-      raise ActiveRecord::RecordNotFound
+      raise AbstractController::ActionNotFound
     rescue StandardError => e
       @ignored_exception = e
       unless ExceptionNotifier.ignored_exceptions.include?(@ignored_exception.class.name)
@@ -146,7 +146,7 @@ class EmailNotifierTest < ActiveSupport::TestCase
       end
     end
 
-    assert_equal @ignored_exception.class.inspect, 'ActiveRecord::RecordNotFound'
+    assert_equal @ignored_exception.class.inspect, 'AbstractController::ActionNotFound'
     assert_nil ignored_mail
   end
 
