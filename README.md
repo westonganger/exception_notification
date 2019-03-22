@@ -101,11 +101,12 @@ ExceptionNotification relies on notifiers to deliver notifications when errors o
 But, you also can easily implement your own [custom notifier](docs/notifiers/custom.md).
 
 ## Error Grouping
-In general, exception notification will send every notification when an error occured, which may result in a problem: if your site has a high throughput and an same error raised frequently, you will receive too many notifications during a short period time, your mail box may be full of thousands of exception mails or even your mail server will be slow. To prevent this, you can choose to error errors by using `:error_grouping` option and set it to `true`.
 
-Error grouping has a default formula `log2(errors_count)` to determine if it is needed to send the notification based on the accumulated errors count for specified exception, this makes the notifier only send notification when count is: 1, 2, 4, 8, 16, 32, 64, 128, ... (2**n). You can use `:notification_trigger` to override this default formula.
+In general, ExceptionNotification will send a notification when every error occurs, which may result in a problem: if your site has a high throughput and a particular error is raised frequently, you will receive too many notifications. During a short period of time, your mail box may be filled with thousands of exception mails, or your mail server may even become slow. To prevent this, you can choose to group errors by setting the `:error_grouping` option to `true`.
 
-The below shows options used to enable error grouping:
+Error grouping uses a default formula of `log2(errors_count)` to determine whether to send the notification, based on the accumulated error count for each specific exception. This makes the notifier only send a notification when the count is: 1, 2, 4, 8, 16, 32, 64, 128, ..., (2**n). You can use `:notification_trigger` to override this default formula.
+
+The following code shows the available options to configure error grouping:
 
 ```ruby
 Rails.application.config.middleware.use ExceptionNotification::Rack,
