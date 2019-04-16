@@ -134,7 +134,7 @@ class ErrorGroupTest < ActiveSupport::TestCase
 
   test 'should group error by that message have high priority' do
     message_based_key = "exception:#{Zlib.crc32("RuntimeError\nmessage:ERROR")}"
-    backtrace_based_key = "exception:#{Zlib.crc32("RuntimeError\n/path/where/error/raised:1")}"
+    backtrace_based_key = "exception:#{Zlib.crc32("RuntimeError\npath:/path/where/error/raised:1")}"
 
     TestModule.save_error_count(message_based_key, 1)
     TestModule.save_error_count(backtrace_based_key, 1)
