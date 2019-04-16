@@ -41,7 +41,7 @@ class PostsControllerTest < ActionController::TestCase
   end
 
   test 'mail should contain backtrace in body' do
-    assert_includes @mail.encoded, "`method_missing'\r\n  app/controllers/posts_controller.rb:18:in `create'\r\n"
+    assert_includes @mail.encoded, "undefined method `nw' for Object:Class\r\n  app/controllers/posts_controller.rb:9:in `create'\r\n"
   end
 
   test 'mail should contain timestamp of exception in body' do

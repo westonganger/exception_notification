@@ -1,6 +1,16 @@
 require File.expand_path('boot', __dir__)
 
-require 'rails/all'
+require 'rails'
+# Pick the frameworks you want:
+# require 'active_model/railtie'
+# require 'active_job/railtie'
+# require 'active_record/railtie'
+require 'action_controller/railtie'
+require 'action_mailer/railtie'
+require 'action_view/railtie'
+# require 'action_cable/engine'
+# require 'sprockets/railtie'
+require 'rails/test_unit/railtie'
 
 # If you have a Gemfile, require the gems listed there, including any gems
 # you've limited to :test, :development, or :production.
@@ -38,8 +48,5 @@ module Dummy
 
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += %i[password secret]
-
-    rails_version = Gem::Version.new(Rails.version)
-    config.active_record.sqlite3.represent_boolean_as_integer = true if rails_version >= Gem::Version.new('5.2.0')
   end
 end
