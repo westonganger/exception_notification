@@ -30,20 +30,42 @@ class EmailNotifierTest < ActiveSupport::TestCase
     assert_equal @email_notifier.options[:post_callback_called], 1
   end
 
-  test 'should have default sender address overridden' do
-    assert_equal @email_notifier.sender_address, %("Dummy Notifier" <dummynotifier@example.com>)
-  end
+  test 'sends mail with correct content' do
+    assert_equal %("Dummy Notifier" <dummynotifier@example.com>), @mail[:from].value
+    assert_equal %w[dummyexceptions@example.com], @mail.to
+    assert_equal '[Dummy ERROR]  (ZeroDivisionError) "divided by 0"', @mail.subject
+    assert_equal 'foobar', @mail['X-Custom-Header'].value
+    assert_equal 'text/plain; charset=UTF-8', @mail.content_type
+    assert_equal [], @mail.attachments
 
-  test 'should have default exception recipients overridden' do
-    assert_equal @email_notifier.exception_recipients, %w[dummyexceptions@example.com]
-  end
+    body = <<-BODY.strip_heredoc
+      A ZeroDivisionError occurred in background at Sat, 20 Apr 2013 20:58:55 UTC +00:00 :
 
-  test 'should have default email prefix overridden' do
-    assert_equal @email_notifier.email_prefix, '[Dummy ERROR] '
-  end
+        divided by 0
+        test/exception_notifier/email_notifier_test.rb:20
 
-  test 'should have default email headers overridden' do
-    assert_equal @email_notifier.email_headers, 'X-Custom-Header' => 'foobar'
+      -------------------------------
+      New bkg section:
+      -------------------------------
+
+        * New background section for testing
+
+      -------------------------------
+      Backtrace:
+      -------------------------------
+
+        test/exception_notifier/email_notifier_test.rb:20
+
+      -------------------------------
+      Data:
+      -------------------------------
+
+        * data: {:job=>"DivideWorkerJob", :payload=>"1/0", :message=>"My Custom Message"}
+
+
+    BODY
+
+    assert_equal body, @mail.decode_body
   end
 
   test 'should have default sections overridden' do
@@ -56,26 +78,6 @@ class EmailNotifierTest < ActiveSupport::TestCase
     %w[new_bkg_section backtrace data].each do |section|
       assert_includes @email_notifier.background_sections, section
     end
-  end
-
-  test 'should have email format by default' do
-    assert_equal @email_notifier.email_format, :text
-  end
-
-  test 'should have verbose subject by default' do
-    assert @email_notifier.verbose_subject
-  end
-
-  test 'should have normalize_subject false by default' do
-    refute @email_notifier.normalize_subject
-  end
-
-  test 'should have delivery_method nil by default' do
-    assert_nil @email_notifier.delivery_method
-  end
-
-  test 'should have mailer_settings nil by default' do
-    assert_nil @email_notifier.mailer_settings
   end
 
   test 'should have mailer_parent by default' do
@@ -91,34 +93,6 @@ class EmailNotifierTest < ActiveSupport::TestCase
                  ExceptionNotifier::EmailNotifier.normalize_digits('1 foo 12 bar 123 baz 1234')
   end
 
-  test 'mail should be plain text and UTF-8 enconded by default' do
-    assert_equal @mail.content_type, 'text/plain; charset=UTF-8'
-  end
-
-  test 'should have raised an exception' do
-    refute_nil @exception
-  end
-
-  test 'should have generated a notification email' do
-    refute_nil @mail
-  end
-
-  test 'mail should have a from address set' do
-    assert_equal @mail.from, ['dummynotifier@example.com']
-  end
-
-  test 'mail should have a to address set' do
-    assert_equal @mail.to, ['dummyexceptions@example.com']
-  end
-
-  test 'mail should have a descriptive subject' do
-    assert_match(/^\[Dummy ERROR\]\s+\(ZeroDivisionError\) "divided by 0"$/, @mail.subject)
-  end
-
-  test 'mail should say exception was raised in background at show timestamp' do
-    assert_includes @mail.encoded, "A ZeroDivisionError occurred in background at #{Time.current}"
-  end
-
   test "mail should prefix exception class with 'an' instead of 'a' when it starts with a vowel" do
     begin
       raise ArgumentError
@@ -128,21 +102,6 @@ class EmailNotifierTest < ActiveSupport::TestCase
     end
 
     assert_includes @vowel_mail.encoded, "An ArgumentError occurred in background at #{Time.current}"
-  end
-
-  test 'mail should contain backtrace in body' do
-    assert @mail.encoded.include?('test/exception_notifier/email_notifier_test.rb:20'), "\n#{@mail.inspect}"
-  end
-
-  test 'mail should contain data in body' do
-    assert_includes @mail.encoded, '* data:'
-    assert_includes @mail.encoded, ':payload=>"1/0"'
-    assert_includes @mail.encoded, ':job=>"DivideWorkerJob"'
-    assert_includes @mail.encoded, 'My Custom Message'
-  end
-
-  test 'mail should not contain any attachments' do
-    assert_equal @mail.attachments, []
   end
 
   test 'should not send notification if one of ignored exceptions' do
@@ -172,8 +131,7 @@ class EmailNotifierTest < ActiveSupport::TestCase
         'REQUEST_METHOD' => 'GET',
         'rack.input' => '',
         'invalid_encoding' => "R\xC3\xA9sum\xC3\xA9".force_encoding(Encoding::ASCII)
-      },
-      email_format: :text
+      }
     )
 
     assert_match(/invalid_encoding\s+: R__sum__/, mail.encoded)
@@ -181,16 +139,7 @@ class EmailNotifierTest < ActiveSupport::TestCase
 
   test 'should send email using ActionMailer' do
     ActionMailer::Base.deliveries.clear
-
-    email_notifier = ExceptionNotifier::EmailNotifier.new(
-      email_prefix: '[Dummy ERROR] ',
-      sender_address: %("Dummy Notifier" <dummynotifier@example.com>),
-      exception_recipients: %w[dummyexceptions@example.com],
-      delivery_method: :test
-    )
-
-    email_notifier.call(@exception)
-
+    @email_notifier.call(@exception)
     assert_equal 1, ActionMailer::Base.deliveries.count
   end
 
@@ -231,8 +180,6 @@ class EmailNotifierTest < ActiveSupport::TestCase
   end
 
   test 'should prepend accumulated_errors_count in email subject if accumulated_errors_count larger than 1' do
-    ActionMailer::Base.deliveries.clear
-
     email_notifier = ExceptionNotifier::EmailNotifier.new(
       email_prefix: '[Dummy ERROR] ',
       sender_address: %("Dummy Notifier" <dummynotifier@example.com>),
