@@ -16,7 +16,11 @@ class EmailNotifierTest < ActiveSupport::TestCase
       sections: %w[new_section request session environment backtrace],
       background_sections: %w[new_bkg_section backtrace data],
       pre_callback: proc { |_opts, _notifier, _backtrace, _message, message_opts| message_opts[:pre_callback_called] = 1 },
-      post_callback: proc { |_opts, _notifier, _backtrace, _message, message_opts| message_opts[:post_callback_called] = 1 }
+      post_callback: proc { |_opts, _notifier, _backtrace, _message, message_opts| message_opts[:post_callback_called] = 1 },
+      smtp_settings: {
+        user_name: 'Dummy user_name',
+        password: 'Dummy password'
+      }
     )
 
     @mail = @email_notifier.call(
@@ -37,6 +41,8 @@ class EmailNotifierTest < ActiveSupport::TestCase
     assert_equal 'foobar', @mail['X-Custom-Header'].value
     assert_equal 'text/plain; charset=UTF-8', @mail.content_type
     assert_equal [], @mail.attachments
+    assert_equal 'Dummy user_name', @mail.delivery_method.settings[:user_name]
+    assert_equal 'Dummy password', @mail.delivery_method.settings[:password]
 
     body = <<-BODY.strip_heredoc
       A ZeroDivisionError occurred in background at Sat, 20 Apr 2013 20:58:55 UTC +00:00 :
