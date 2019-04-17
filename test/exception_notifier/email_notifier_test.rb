@@ -5,6 +5,9 @@ class EmailNotifierTest < ActiveSupport::TestCase
   setup do
     Time.stubs(:current).returns('Sat, 20 Apr 2013 20:58:55 UTC +00:00')
 
+    @exception = ZeroDivisionError.new('divided by 0')
+    @exception.set_backtrace(['test/exception_notifier/email_notifier_test.rb:20'])
+
     @email_notifier = ExceptionNotifier::EmailNotifier.new(
       email_prefix: '[Dummy ERROR] ',
       sender_address: %("Dummy Notifier" <dummynotifier@example.com>),
@@ -16,15 +19,10 @@ class EmailNotifierTest < ActiveSupport::TestCase
       post_callback: proc { |_opts, _notifier, _backtrace, _message, message_opts| message_opts[:post_callback_called] = 1 }
     )
 
-    begin
-      1 / 0
-    rescue StandardError => e
-      @exception = e
-      @mail = @email_notifier.create_email(
-        @exception,
-        data: { job: 'DivideWorkerJob', payload: '1/0', message: 'My Custom Message' }
-      )
-    end
+    @mail = @email_notifier.call(
+      @exception,
+      data: { job: 'DivideWorkerJob', payload: '1/0', message: 'My Custom Message' }
+    )
   end
 
   test 'should call pre/post_callback if specified' do
