@@ -4,7 +4,18 @@ require 'action_mailer'
 class EmailNotifierTest < ActiveSupport::TestCase
   setup do
     Time.stubs(:current).returns('Sat, 20 Apr 2013 20:58:55 UTC +00:00')
-    @email_notifier = ExceptionNotifier.registered_exception_notifier(:email)
+
+    @email_notifier = ExceptionNotifier::EmailNotifier.new(
+      email_prefix: '[Dummy ERROR] ',
+      sender_address: %("Dummy Notifier" <dummynotifier@example.com>),
+      exception_recipients: %w[dummyexceptions@example.com],
+      email_headers: { 'X-Custom-Header' => 'foobar' },
+      sections: %w[new_section request session environment backtrace],
+      background_sections: %w[new_bkg_section backtrace data],
+      pre_callback: proc { |_opts, _notifier, _backtrace, _message, message_opts| message_opts[:pre_callback_called] = 1 },
+      post_callback: proc { |_opts, _notifier, _backtrace, _message, message_opts| message_opts[:post_callback_called] = 1 }
+    )
+
     begin
       1 / 0
     rescue StandardError => e
@@ -122,7 +133,7 @@ class EmailNotifierTest < ActiveSupport::TestCase
   end
 
   test 'mail should contain backtrace in body' do
-    assert @mail.encoded.include?('test/exception_notifier/email_notifier_test.rb:9'), "\n#{@mail.inspect}"
+    assert @mail.encoded.include?('test/exception_notifier/email_notifier_test.rb:20'), "\n#{@mail.inspect}"
   end
 
   test 'mail should contain data in body' do
