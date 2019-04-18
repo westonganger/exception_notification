@@ -10,7 +10,6 @@ end
 
 require File.expand_path('dummy/config/environment.rb', __dir__)
 require 'rails/test_help'
-require File.expand_path('dummy/test/test_helper.rb', __dir__)
 
 require 'mocha/setup'
 
