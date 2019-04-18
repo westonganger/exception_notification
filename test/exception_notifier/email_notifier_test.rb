@@ -199,6 +199,10 @@ class EmailNotifierTest < ActiveSupport::TestCase
 end
 
 class EmailNotifierWithEnvTest < ActiveSupport::TestCase
+  class HomeController < ActionController::Metal
+    def index; end
+  end
+
   setup do
     Time.stubs(:current).returns('Sat, 20 Apr 2013 20:58:55 UTC +00:00')
 
@@ -216,6 +220,9 @@ class EmailNotifierWithEnvTest < ActiveSupport::TestCase
       post_callback: proc { |_opts, _notifier, _backtrace, _message, message_opts| message_opts[:post_callback_called] = 1 }
     )
 
+    @controller = HomeController.new
+    @controller.process(:index)
+
     @test_env = Rack::MockRequest.env_for(
       '/',
       'HTTP_HOST' => 'test.address',
@@ -223,6 +230,7 @@ class EmailNotifierWithEnvTest < ActiveSupport::TestCase
       'HTTP_USER_AGENT' => 'Rails Testing',
       'action_dispatch.parameter_filter' => ['secret'],
       'HTTPS' => 'on',
+      'action_controller.instance' => @controller,
       params: { id: 'foo', secret: 'secret' }
     )
 
@@ -232,13 +240,13 @@ class EmailNotifierWithEnvTest < ActiveSupport::TestCase
   test 'sends mail with correct content' do
     assert_equal %("Dummy Notifier" <dummynotifier@example.com>), @mail[:from].value
     assert_equal %w[dummyexceptions@example.com], @mail.to
-    assert_equal '[Dummy ERROR]   (ZeroDivisionError) "divided by 0"', @mail.subject
+    assert_equal '[Dummy ERROR] home index (ZeroDivisionError) "divided by 0"', @mail.subject
     assert_equal 'foobar', @mail['X-Custom-Header'].value
     assert_equal 'text/plain; charset=UTF-8', @mail.content_type
     assert_equal [], @mail.attachments
 
     body = <<-BODY.strip_heredoc
-      A ZeroDivisionError occurred in #:
+      A ZeroDivisionError occurred in home#index:
 
         divided by 0
         test/exception_notifier/email_notifier_test.rb:20
@@ -285,6 +293,7 @@ class EmailNotifierWithEnvTest < ActiveSupport::TestCase
           * SCRIPT_NAME                               :
           * SERVER_NAME                               : example.org
           * SERVER_PORT                               : 80
+          * action_controller.instance                : #{@controller}
           * action_dispatch.parameter_filter          : [\"secret\"]
           * action_dispatch.request.content_type      :
           * action_dispatch.request.parameters        : {"id"=>"foo", "secret"=>"[FILTERED]"}
