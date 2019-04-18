@@ -1,6 +1,8 @@
+require File.expand_path('../lib/exception_notification/version', __FILE__)
+
 Gem::Specification.new do |s|
   s.name = 'exception_notification'
-  s.version = '4.3.0'
+  s.version = ExceptionNotification::VERSION
   s.authors = ['Jamis Buck', 'Josh Peek']
   s.date = '2018-11-22'
   s.summary = 'Exception notification for Rails apps'
