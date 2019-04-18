@@ -40,4 +40,19 @@ class RackTest < ActiveSupport::TestCase
     ExceptionNotification::Rack.new(@normal_app, error_grouping: true).call({})
     assert_equal Rails.cache, ExceptionNotifier.error_grouping_cache
   end
+
+  test 'should ignore exceptions with Usar Agent in ignore_crawlers' do
+    exception_app = Object.new
+    exception_app.stubs(:call).raises(RuntimeError)
+
+    env = { 'HTTP_USER_AGENT' => 'Mozilla/5.0 (compatible; Crawlerbot/2.1;)' }
+
+    begin
+      ExceptionNotification::Rack.new(exception_app, ignore_crawlers: %w[Crawlerbot]).call(env)
+
+      flunk
+    rescue StandardError
+      refute env['exception_notifier.delivered']
+    end
+  end
 end

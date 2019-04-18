@@ -11,22 +11,4 @@ class PostsControllerTest < ActionController::TestCase
       @mail = @email_notifier.create_email(@exception, env: request.env, data: { message: 'My Custom Message' })
     end
   end
-
-  test 'should ignore exception if from unwanted crawler' do
-    request.env['HTTP_USER_AGENT'] = 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
-    begin
-      post :create, method: :post
-    rescue StandardError => e
-      @exception = e
-      custom_env = request.env
-      custom_env['exception_notifier.options'] ||= {}
-      custom_env['exception_notifier.options'][:ignore_crawlers] = %w[Googlebot]
-      ignore_array = custom_env['exception_notifier.options'][:ignore_crawlers]
-      unless ExceptionNotification::Rack.new(Dummy::Application, custom_env['exception_notifier.options']).send(:from_crawler, custom_env, ignore_array)
-        ignored_mail = @email_notifier.create_email(@exception, env: custom_env)
-      end
-    end
-
-    assert_nil ignored_mail
-  end
 end
