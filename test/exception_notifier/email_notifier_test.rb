@@ -196,6 +196,30 @@ class EmailNotifierTest < ActiveSupport::TestCase
     mail = email_notifier.call(@exception, accumulated_errors_count: 3)
     assert mail.subject.start_with?('[Dummy ERROR] (3 times) (ZeroDivisionError)')
   end
+
+  test 'should not include exception message in subject when verbose_subject: false' do
+    email_notifier = ExceptionNotifier::EmailNotifier.new(
+      sender_address: %("Dummy Notifier" <dummynotifier@example.com>),
+      exception_recipients: %w[dummyexceptions@example.com],
+      verbose_subject: false
+    )
+
+    mail = email_notifier.call(@exception)
+
+    assert_equal '[ERROR]  (ZeroDivisionError)', mail.subject
+  end
+
+  test 'should send html email when selected html format' do
+    email_notifier = ExceptionNotifier::EmailNotifier.new(
+      sender_address: %("Dummy Notifier" <dummynotifier@example.com>),
+      exception_recipients: %w[dummyexceptions@example.com],
+      email_format: :html
+    )
+
+    mail = email_notifier.call(@exception)
+
+    assert mail.multipart?
+  end
 end
 
 class EmailNotifierWithEnvTest < ActiveSupport::TestCase
@@ -327,5 +351,17 @@ class EmailNotifierWithEnvTest < ActiveSupport::TestCase
     BODY
 
     assert_equal body, @mail.decode_body
+  end
+
+  test 'should not include controller and action names in subject' do
+    email_notifier = ExceptionNotifier::EmailNotifier.new(
+      sender_address: %("Dummy Notifier" <dummynotifier@example.com>),
+      exception_recipients: %w[dummyexceptions@example.com],
+      include_controller_and_action_names_in_subject: false
+    )
+
+    mail = email_notifier.call(@exception, env: @test_env)
+
+    assert_equal '[ERROR]  (ZeroDivisionError) "divided by 0"', mail.subject
   end
 end
