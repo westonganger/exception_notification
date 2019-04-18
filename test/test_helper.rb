@@ -8,7 +8,10 @@ rescue LoadError
   warn 'warning: coveralls gem not found; skipping Coveralls'
 end
 
-require File.expand_path('dummy/config/environment.rb', __dir__)
+$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
+require 'exception_notification'
+
+require 'dummy/config/application.rb'
 require 'rails/test_help'
 
 require 'mocha/setup'
