@@ -47,7 +47,7 @@ class EmailNotifierTest < ActiveSupport::TestCase
     assert_equal 'Dummy user_name', @mail.delivery_method.settings[:user_name]
     assert_equal 'Dummy password', @mail.delivery_method.settings[:password]
 
-    body = <<-BODY.strip_heredoc
+    body = <<-BODY.gsub(/^      /, '')
       A ZeroDivisionError occurred in background at Sat, 20 Apr 2013 20:58:55 UTC +00:00 :
 
         divided by 0
@@ -274,7 +274,7 @@ class EmailNotifierWithEnvTest < ActiveSupport::TestCase
     assert_equal 'text/plain; charset=UTF-8', @mail.content_type
     assert_equal [], @mail.attachments
 
-    body = <<-BODY.strip_heredoc
+    body = <<-BODY.gsub(/^      /, '')
       A ZeroDivisionError occurred in home#index:
 
         divided by 0
@@ -301,7 +301,7 @@ class EmailNotifierWithEnvTest < ActiveSupport::TestCase
 
     body << "    * Rails root : #{Rails.root}\n" if defined?(Rails) && Rails.respond_to?(:root)
 
-    body << <<-BODY.strip_heredoc
+    body << <<-BODY.gsub(/^      /, '')
         * Process: #{Process.pid}
 
       -------------------------------
