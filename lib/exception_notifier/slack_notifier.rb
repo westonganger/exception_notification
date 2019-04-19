@@ -28,6 +28,8 @@ module ExceptionNotifier
 
       args = [exception, options, clean_message, @message_opts.merge(attachments: attchs)]
       send_notice(*args) do |_msg, message_opts|
+        message_opts[:channel] = options[:channel] if options.key?(:channel)
+
         @notifier.ping '', message_opts
       end
     end

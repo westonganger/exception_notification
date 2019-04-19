@@ -61,6 +61,66 @@ Rails.application.config.middleware.use ExceptionNotification::Rack,
 
 Any evaluation to `true` will cause the key / value pair not be be sent along to Slack.
 
+
+the `slack-notifier` gem allows to override the channel default value, if you ever
+need to send a notification to a different slack channel. Simply add the
+`channel` option when calling `.notify_exception`
+
+```ruby
+ExceptionNotifier.notify_exception(
+  exception,
+  env: request.env,
+  channel: '#my-custom-channel', # Make sure the channel name starts with `#`
+  data: {
+    error: error_variable,
+    server: server_name
+  }
+)
+```
+
+If you ever need to add more `slack-notifier` specific options, and
+particularly to the `#ping` method of the slack notifier, you can use
+the `pre_callback` option when defining the middleware.
+```ruby
+ pre_callback: proc { |opts, _notifier, _backtrace, _message, message_opts|
+   message_opts[:channel] = opts[:channel] if opts.key?(:channel)
+ }
+
+```
+- `message_opts` is the hash you want to append to if you need to add an option.
+- `options` is the hash containing the values when you call
+  `ExceptionNotification.notify_exception`
+
+An example implementation would be:
+```ruby
+config.middleware.use ExceptionNotification::Rack,
+  slack: {
+    webhook_url: '[Your webhook url]',
+    pre_callback: proc { |opts, _notifier, _backtrace, _message, message_opts|
+      message_opts[:ping_option] = opts[:ping_option] if
+      opts.key?(:ping_option)
+    }
+  },
+  error_grouping: true
+```
+Then when calling from within your application code:
+```ruby
+ExceptionNotifier.notify_exception(
+  exception,
+  env: request.env,
+  ping_option: 'value',
+  # this will be passed to the slack notifier's `#ping`
+  # method, as a parameter. The `:pre_callback` hook will catch it
+  # and do that for you.
+  # Helpful, if the API evolves, you only need to update
+  # the `slack-notifier` gem
+  data: {
+    error: error_variable,
+    server: server_name
+  }
+)
+
+```
 #### Options
 
 ##### webhook_url
