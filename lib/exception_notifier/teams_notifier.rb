@@ -1,5 +1,6 @@
 require 'action_dispatch'
 require 'active_support/core_ext/time'
+require 'active_support/core_ext/object/json'
 
 module ExceptionNotifier
   class TeamsNotifier < BaseNotifier
@@ -24,7 +25,7 @@ module ExceptionNotifier
 
       @env = @options.delete(:env)
 
-      @application_name = @options.delete(:app_name) || Rails.application.class.parent_name.underscore
+      @application_name = @options.delete(:app_name) || rails_app_name
       @gitlab_url = @options.delete(:git_url)
       @jira_url = @options.delete(:jira_url)
 
@@ -69,7 +70,7 @@ module ExceptionNotifier
         '@type' => 'MessageCard',
         '@context' => 'http://schema.org/extensions',
         'summary' => "#{@application_name} Exception Alert",
-        'title' => "⚠️ Exception Occurred in #{Rails.env} ⚠️",
+        'title' => "⚠️ Exception Occurred in #{env_name} ⚠️",
         'sections' => [
           {
             'activityTitle' => "#{errors_count > 1 ? errors_count : 'A'} *#{@exception.class}* occurred" + (@controller ? " in *#{controller_and_method}*." : '.'),
@@ -173,6 +174,14 @@ module ExceptionNotifier
       end
 
       text.join("  \n")
+    end
+
+    def rails_app_name
+      Rails.application.class.parent_name.underscore if defined?(Rails) && Rails.respond_to?(:application)
+    end
+
+    def env_name
+      Rails.env if defined?(Rails) && Rails.respond_to?(:env)
     end
   end
 end
