@@ -2,7 +2,7 @@ require 'test_helper'
 require 'rack'
 require 'httparty'
 require 'timecop'
-require 'active_support/core_ext/object/json'
+require 'json'
 
 class GoogleChatNotifierTest < ActiveSupport::TestCase
   URL = 'http://localhost:8000'.freeze

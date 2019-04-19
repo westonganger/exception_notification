@@ -1,7 +1,7 @@
 require 'test_helper'
 require 'httparty'
 require 'timecop'
-require 'active_support/core_ext/object/json'
+require 'json'
 
 class MattermostNotifierTest < ActiveSupport::TestCase
   URL = 'http://localhost:8000'.freeze

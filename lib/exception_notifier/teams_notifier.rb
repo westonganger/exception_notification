@@ -1,6 +1,6 @@
 require 'action_dispatch'
 require 'active_support/core_ext/time'
-require 'active_support/core_ext/object/json'
+require 'json'
 
 module ExceptionNotifier
   class TeamsNotifier < BaseNotifier
