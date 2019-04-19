@@ -1,6 +1,8 @@
 require 'test_helper'
+require 'rack'
 require 'httparty'
 require 'timecop'
+require 'active_support/core_ext/object/json'
 
 class GoogleChatNotifierTest < ActiveSupport::TestCase
   URL = 'http://localhost:8000'.freeze
@@ -21,7 +23,7 @@ class GoogleChatNotifierTest < ActiveSupport::TestCase
   test 'shoud use errors count if accumulated_errors_count is provided' do
     text = [
       '',
-      'Application: *dummy*',
+      "Application: *#{app_name}*",
       '5 *ArgumentError* occurred.',
       '',
       body
@@ -159,13 +161,21 @@ class GoogleChatNotifierTest < ActiveSupport::TestCase
   def header
     [
       '',
-      'Application: *dummy*',
+      "Application: *#{app_name}*",
       'An *ArgumentError* occurred.',
       ''
     ].join("\n")
   end
 
   def body
-    "⚠️ Error occurred in test ⚠️\n*foo*"
+    if defined?(::Rails) && ::Rails.respond_to?(:env)
+      "⚠️ Error occurred in test ⚠️\n*foo*"
+    else
+      "⚠️ Error occurred ⚠️\n*foo*"
+    end
+  end
+
+  def app_name
+    'dummy' if defined?(::Rails) && ::Rails.respond_to?(:application)
   end
 end
