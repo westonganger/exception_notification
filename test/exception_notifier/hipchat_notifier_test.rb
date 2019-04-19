@@ -1,4 +1,5 @@
 require 'test_helper'
+require 'rack'
 
 # silence_warnings trick around require can be removed once
 # https://github.com/hipchat/hipchat-rb/pull/174

@@ -1,6 +1,3 @@
-# Configure Rails Environment
-ENV['RAILS_ENV'] = 'test'
-
 begin
   require 'coveralls'
   Coveralls.wear!
@@ -11,10 +8,11 @@ end
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require 'exception_notification'
 
-require 'dummy/config/application.rb'
-require 'rails/test_help'
+require 'minitest/autorun'
+require 'mocha/minitest'
+require 'active_support/test_case'
+require 'action_mailer'
 
-require 'mocha/setup'
-
-Rails.backtrace_cleaner.remove_silencers!
 ExceptionNotifier.testing_mode!
+Time.zone = 'UTC'
+ActionMailer::Base.delivery_method = :test

@@ -12,7 +12,7 @@ module ExceptionNotification
 
       if options.key?(:error_grouping_cache)
         ExceptionNotifier.error_grouping_cache = options.delete(:error_grouping_cache)
-      elsif defined?(Rails)
+      elsif defined?(Rails) && Rails.respond_to?(:cache)
         ExceptionNotifier.error_grouping_cache = Rails.cache
       end
 

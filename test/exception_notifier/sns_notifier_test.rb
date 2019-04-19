@@ -73,7 +73,9 @@ class SnsNotifierTest < ActiveSupport::TestCase
   end
 
   test 'should send a sns notification with controller#action information' do
-    ExamplesController.any_instance.stubs(:action_name).returns('index')
+    controller = mock('controller')
+    controller.stubs(:action_name).returns('index')
+    controller.stubs(:controller_name).returns('examples')
 
     Aws::SNS::Client.any_instance.expects(:publish).with(
       topic_arn: 'topicARN',
@@ -90,13 +92,11 @@ class SnsNotifierTest < ActiveSupport::TestCase
                       env: {
                         'REQUEST_METHOD' => 'GET',
                         'REQUEST_URI' => '/examples',
-                        'action_controller.instance' => ExamplesController.new
+                        'action_controller.instance' => controller
                       })
   end
 
   private
-
-  class ExamplesController < ActionController::Base; end
 
   def fake_exception
     1 / 0

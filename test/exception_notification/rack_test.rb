@@ -36,9 +36,11 @@ class RackTest < ActiveSupport::TestCase
     assert_respond_to ExceptionNotifier.notification_trigger, :call
   end
 
-  test 'should set default cache to Rails cache' do
-    ExceptionNotification::Rack.new(@normal_app, error_grouping: true).call({})
-    assert_equal Rails.cache, ExceptionNotifier.error_grouping_cache
+  if defined?(Rails) && Rails.respond_to?(:cache)
+    test 'should set default cache to Rails cache' do
+      ExceptionNotification::Rack.new(@normal_app, error_grouping: true).call({})
+      assert_equal Rails.cache, ExceptionNotifier.error_grouping_cache
+    end
   end
 
   test 'should ignore exceptions with Usar Agent in ignore_crawlers' do

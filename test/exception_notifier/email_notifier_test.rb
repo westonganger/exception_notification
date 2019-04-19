@@ -1,5 +1,6 @@
 require 'test_helper'
 require 'action_mailer'
+require 'action_controller'
 
 class EmailNotifierTest < ActiveSupport::TestCase
   setup do
@@ -23,6 +24,8 @@ class EmailNotifierTest < ActiveSupport::TestCase
       }
     )
 
+    @email_notifier.mailer.append_view_path "#{File.dirname(__FILE__)}/../support/views"
+
     @mail = @email_notifier.call(
       @exception,
       data: { job: 'DivideWorkerJob', payload: '1/0', message: 'My Custom Message' }
@@ -44,7 +47,7 @@ class EmailNotifierTest < ActiveSupport::TestCase
     assert_equal 'Dummy user_name', @mail.delivery_method.settings[:user_name]
     assert_equal 'Dummy password', @mail.delivery_method.settings[:password]
 
-    body = <<-BODY.strip_heredoc
+    body = <<-BODY.gsub(/^      /, '')
       A ZeroDivisionError occurred in background at Sat, 20 Apr 2013 20:58:55 UTC +00:00 :
 
         divided by 0
@@ -244,6 +247,8 @@ class EmailNotifierWithEnvTest < ActiveSupport::TestCase
       post_callback: proc { |_opts, _notifier, _backtrace, _message, message_opts| message_opts[:post_callback_called] = 1 }
     )
 
+    @email_notifier.mailer.append_view_path "#{File.dirname(__FILE__)}/../support/views"
+
     @controller = HomeController.new
     @controller.process(:index)
 
@@ -269,7 +274,7 @@ class EmailNotifierWithEnvTest < ActiveSupport::TestCase
     assert_equal 'text/plain; charset=UTF-8', @mail.content_type
     assert_equal [], @mail.attachments
 
-    body = <<-BODY.strip_heredoc
+    body = <<-BODY.gsub(/^      /, '')
       A ZeroDivisionError occurred in home#index:
 
         divided by 0
@@ -292,8 +297,12 @@ class EmailNotifierWithEnvTest < ActiveSupport::TestCase
         * Parameters : {\"id\"=>\"foo\", \"secret\"=>\"[FILTERED]\"}
         * Timestamp  : Sat, 20 Apr 2013 20:58:55 UTC +00:00
         * Server : #{Socket.gethostname}
-          * Rails root : #{Rails.root}
-        * Process: #{$PROCESS_ID}
+    BODY
+
+    body << "    * Rails root : #{Rails.root}\n" if defined?(Rails) && Rails.respond_to?(:root)
+
+    body << <<-BODY.gsub(/^      /, '')
+        * Process: #{Process.pid}
 
       -------------------------------
       Session:

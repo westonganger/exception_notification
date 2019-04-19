@@ -68,11 +68,10 @@ class WebhookNotifierTest < ActiveSupport::TestCase
   end
 
   def fake_params
-    {
+    params = {
       body: {
         server: Socket.gethostname,
         process: $PROCESS_ID,
-        rails_root: Rails.root,
         exception: {
           error_class: 'ZeroDivisionError',
           message: 'divided by 0'.inspect,
@@ -81,6 +80,10 @@ class WebhookNotifierTest < ActiveSupport::TestCase
         data: {}
       }
     }
+
+    params[:body][:rails_root] = Rails.root if defined?(::Rails) && Rails.respond_to?(:root)
+
+    params
   end
 
   def fake_exception

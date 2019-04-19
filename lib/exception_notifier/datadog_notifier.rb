@@ -1,3 +1,5 @@
+require 'action_dispatch'
+
 module ExceptionNotifier
   class DatadogNotifier < BaseNotifier
     attr_reader :client,

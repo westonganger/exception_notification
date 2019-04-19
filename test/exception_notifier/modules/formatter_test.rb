@@ -2,10 +2,6 @@ require 'test_helper'
 require 'timecop'
 
 class FormatterTest < ActiveSupport::TestCase
-  class HomeController < ActionController::Metal
-    def index; end
-  end
-
   setup do
     @exception = RuntimeError.new('test')
     Timecop.freeze('2018-12-09 12:07:16 UTC')
@@ -20,7 +16,14 @@ class FormatterTest < ActiveSupport::TestCase
   #
   test 'title returns correct content' do
     formatter = ExceptionNotifier::Formatter.new(@exception)
-    assert_equal '⚠️ Error occurred in test ⚠️', formatter.title
+
+    title = if defined?(::Rails) && ::Rails.respond_to?(:env)
+              '⚠️ Error occurred in test ⚠️'
+            else
+              '⚠️ Error occurred ⚠️'
+            end
+
+    assert_equal title, formatter.title
   end
 
   #
@@ -37,11 +40,8 @@ class FormatterTest < ActiveSupport::TestCase
   end
 
   test 'subtitle with controller' do
-    controller = HomeController.new
-    controller.process(:index)
-
     env = Rack::MockRequest.env_for(
-      '/', 'action_controller.instance' => controller
+      '/', 'action_controller.instance' => test_controller
     )
 
     formatter = ExceptionNotifier::Formatter.new(@exception, env: env)
@@ -53,7 +53,12 @@ class FormatterTest < ActiveSupport::TestCase
   #
   test 'app_name defaults to Rails app name' do
     formatter = ExceptionNotifier::Formatter.new(@exception)
-    assert_equal 'dummy', formatter.app_name
+
+    if defined?(::Rails) && ::Rails.respond_to?(:application)
+      assert_equal 'dummy', formatter.app_name
+    else
+      assert_nil formatter.app_name
+    end
   end
 
   test 'app_name can be overwritten using options' do
@@ -120,11 +125,8 @@ class FormatterTest < ActiveSupport::TestCase
   # #controller_and_action
   #
   test 'correct controller_and_action if controller is present' do
-    controller = HomeController.new
-    controller.process(:index)
-
     env = Rack::MockRequest.env_for(
-      '/', 'action_controller.instance' => controller
+      '/', 'action_controller.instance' => test_controller
     )
 
     formatter = ExceptionNotifier::Formatter.new(@exception, env: env)
@@ -136,5 +138,13 @@ class FormatterTest < ActiveSupport::TestCase
 
     formatter = ExceptionNotifier::Formatter.new(@exception, env: env)
     assert_nil formatter.controller_and_action
+  end
+
+  def test_controller
+    controller = mock('controller')
+    controller.stubs(:action_name).returns('index')
+    controller.stubs(:controller_name).returns('home')
+
+    controller
   end
 end

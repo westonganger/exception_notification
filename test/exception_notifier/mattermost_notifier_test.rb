@@ -1,6 +1,7 @@
 require 'test_helper'
 require 'httparty'
 require 'timecop'
+require 'json'
 
 class MattermostNotifierTest < ActiveSupport::TestCase
   URL = 'http://localhost:8000'.freeze
@@ -27,10 +28,10 @@ class MattermostNotifierTest < ActiveSupport::TestCase
     body = default_body.merge(
       text: [
         '@channel',
-        '### ⚠️ Error occurred in test ⚠️',
+        error_occurred_in,
         'An *ArgumentError* occurred.',
         '*foo*',
-        '[Create an issue](github.com/aschen/dummy/issues/new/?issue%5Btitle%5D=%5BBUG%5D+Error+500+%3A++%28ArgumentError%29+foo)'
+        github_link
       ].join("\n")
     )
 
@@ -96,7 +97,7 @@ class MattermostNotifierTest < ActiveSupport::TestCase
     body = default_body.merge(
       text: [
         '@channel',
-        '### ⚠️ Error occurred in test ⚠️',
+        error_occurred_in,
         '5 *ArgumentError* occurred.',
         '*foo*'
       ].join("\n")
@@ -115,7 +116,7 @@ class MattermostNotifierTest < ActiveSupport::TestCase
     body = default_body.merge(
       text: [
         '@channel',
-        '### ⚠️ Error occurred in test ⚠️',
+        error_occurred_in,
         'An *ArgumentError* occurred.',
         '*foo*',
         '### Request',
@@ -160,7 +161,7 @@ class MattermostNotifierTest < ActiveSupport::TestCase
     {
       text: [
         '@channel',
-        '### ⚠️ Error occurred in test ⚠️',
+        error_occurred_in,
         'An *ArgumentError* occurred.',
         '*foo*'
       ].join("\n"),
@@ -180,5 +181,22 @@ class MattermostNotifierTest < ActiveSupport::TestCase
       'HTTP_USER_AGENT' => 'Rails Testing',
       params: { id: 'foo' }
     )
+  end
+
+  def error_occurred_in
+    if defined?(::Rails) && ::Rails.respond_to?(:env)
+      '### ⚠️ Error occurred in test ⚠️'
+    else
+      '### ⚠️ Error occurred ⚠️'
+    end
+  end
+
+  def github_link
+    if defined?(::Rails) && ::Rails.respond_to?(:application)
+      '[Create an issue](github.com/aschen/dummy/issues/new/?issue%5Btitle%5D=%5BBUG%5D+Error+500+%3A++%28ArgumentError%29+foo)'
+    else
+      # TODO: fix missing app name
+      '[Create an issue](github.com/aschen//issues/new/?issue%5Btitle%5D=%5BBUG%5D+Error+500+%3A++%28ArgumentError%29+foo)'
+    end
   end
 end
