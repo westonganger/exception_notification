@@ -1,9 +1,5 @@
-begin
-  require 'coveralls'
-  Coveralls.wear!
-rescue LoadError
-  warn 'warning: coveralls gem not found; skipping Coveralls'
-end
+require 'coveralls'
+Coveralls.wear!
 
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require 'exception_notification'
