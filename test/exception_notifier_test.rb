@@ -5,6 +5,8 @@ class ExceptionTwo < StandardError; end
 
 class ExceptionNotifierTest < ActiveSupport::TestCase
   setup do
+    ExceptionNotifier.register_exception_notifier(:email, exception_recipients: %w[dummyexceptions@example.com])
+
     @notifier_calls = 0
     @test_notifier = ->(_exception, _options) { @notifier_calls += 1 }
   end
@@ -13,7 +15,8 @@ class ExceptionNotifierTest < ActiveSupport::TestCase
     ExceptionNotifier.error_grouping = false
     ExceptionNotifier.notification_trigger = nil
     ExceptionNotifier.class_eval('@@notifiers.delete_if { |k, _| k.to_s != "email"}') # reset notifiers
-    Rails.cache.clear
+
+    Rails.cache.clear if defined?(Rails) && Rails.respond_to?(:cache)
   end
 
   test 'should have default ignored exceptions' do
