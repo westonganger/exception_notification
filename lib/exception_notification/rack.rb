@@ -23,12 +23,7 @@ module ExceptionNotification
         end
       end
 
-      if options.key?(:ignore_crawlers)
-        ignore_crawlers = options.delete(:ignore_crawlers)
-        ExceptionNotifier.ignore_if do |_exception, opts|
-          opts.key?(:env) && from_crawler(opts[:env], ignore_crawlers)
-        end
-      end
+      ExceptionNotifier.ignore_crawlers(options.delete(:ignore_crawlers)) if options.key?(:ignore_crawlers)
 
       @ignore_cascade_pass = options.delete(:ignore_cascade_pass) { true }
 
@@ -55,15 +50,6 @@ module ExceptionNotification
       raise exception unless exception.is_a?(CascadePassException)
 
       response
-    end
-
-    private
-
-    def from_crawler(env, ignored_crawlers)
-      agent = env['HTTP_USER_AGENT']
-      Array(ignored_crawlers).any? do |crawler|
-        agent =~ Regexp.new(crawler)
-      end
     end
   end
 end
