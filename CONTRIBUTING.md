@@ -34,7 +34,7 @@ config.middleware.use ExceptionNotification::Rack,
 ```
 
 2) Run `ruby examples/sample_app.rb`
-If exception notification is working OK, you'll see the message "'Raising exception!" and then "Working OK!" and should receive the notification as configured above. If it's not, you can copy the information printed on the terminal related to exception notification and report an issue with more info!
+If exception notification is working OK, the test should pass and trigger a notification as configured above. If it's not, you can copy the information printed on the terminal related to exception notification and report an issue with more info!
 
 ## Pull Requests
 

@@ -2,4 +2,3 @@
 *.gemfile.lock
 /Gemfile.lock
 /.idea/
-sample_app.log
