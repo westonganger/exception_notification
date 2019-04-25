@@ -15,27 +15,22 @@ end
 class SampleApp < Rails::Application
   config.middleware.use ExceptionNotification::Rack,
                         webhook: {
-                          url: 'http://domain.com:5555/hubot/path'
+                          url: 'http://example.com'
                         }
 
   config.secret_key_base = 'my secret key base'
-  file = File.open('sample_app.log', 'w')
-  logger = Logger.new(file)
-  Rails.logger = logger
+
+  Rails.logger = Logger.new($stdout)
 
   routes.draw do
-    get 'raise_sample_exception', to: 'exceptions#raise_sample_exception'
+    get '/', to: 'exceptions#index'
   end
 end
 
 require 'action_controller/railtie'
-require 'active_support'
 
 class ExceptionsController < ActionController::Base
-  include Rails.application.routes.url_helpers
-
-  def raise_sample_exception
-    puts 'Raising exception!'
+  def index
     raise 'Sample exception raised, you should receive a notification!'
   end
 end
@@ -46,8 +41,9 @@ class Test < Minitest::Test
   include Rack::Test::Methods
 
   def test_raise_exception
-    get '/raise_sample_exception'
-    puts 'Working OK!'
+    get '/'
+
+    assert last_response.server_error?
   end
 
   private
