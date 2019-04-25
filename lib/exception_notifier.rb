@@ -95,6 +95,12 @@ module ExceptionNotifier
       @@ignores << block
     end
 
+    def ignore_crawlers(crawlers)
+      ignore_if do |_exception, opts|
+        opts.key?(:env) && from_crawler(opts[:env], crawlers)
+      end
+    end
+
     def clear_ignore_conditions!
       @@ignores.clear
     end
@@ -133,6 +139,13 @@ module ExceptionNotifier
       register_exception_notifier(name, notifier)
     rescue NameError => e
       raise UndefinedNotifierError, "No notifier named '#{name}' was found. Please, revise your configuration options. Cause: #{e.message}"
+    end
+
+    def from_crawler(env, ignored_crawlers)
+      agent = env['HTTP_USER_AGENT']
+      Array(ignored_crawlers).any? do |crawler|
+        agent =~ Regexp.new(crawler)
+      end
     end
   end
 end
