@@ -57,3 +57,7 @@ Style/MethodMissing:
   Exclude:
     - 'lib/exception_notifier/email_notifier.rb'
     - 'lib/exception_notifier/teams_notifier.rb'
+
+Metrics/ModuleLength:
+  Exclude:
+    - 'lib/exception_notifier.rb'
