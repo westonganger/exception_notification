@@ -1,4 +1,3 @@
-require 'active_support/core_ext/hash/reverse_merge'
 require 'active_support/core_ext/time'
 require 'action_mailer'
 require 'action_dispatch'
@@ -50,7 +49,10 @@ module ExceptionNotifier
 
             @env        = env
             @exception  = exception
-            @options    = options.reverse_merge(env['exception_notifier.options'] || {}).reverse_merge(default_options)
+
+            env_options = env['exception_notifier.options'] || {}
+            @options    = default_options.merge(env_options).merge(options)
+
             @kontroller = env['action_controller.instance'] || MissingController.new
             @request    = ActionDispatch::Request.new(env)
             @backtrace  = exception.backtrace ? clean_backtrace(exception) : []
@@ -66,7 +68,7 @@ module ExceptionNotifier
             load_custom_views
 
             @exception = exception
-            @options   = options.reverse_merge(default_options).symbolize_keys
+            @options   = default_options.merge(options).symbolize_keys
             @backtrace = exception.backtrace || []
             @timestamp = Time.current
             @sections  = @options[:background_sections]
@@ -161,7 +163,7 @@ module ExceptionNotifier
       mailer_settings_key = "#{delivery_method}_settings".to_sym
       options[:mailer_settings] = options.delete(mailer_settings_key)
 
-      merged_opts = options.reverse_merge(DEFAULT_OPTIONS)
+      merged_opts = DEFAULT_OPTIONS.merge(options)
 
       merged_opts.each { |k, v| send("#{k}=", v) if ATTRIBUTES.include?(k) }
     end
