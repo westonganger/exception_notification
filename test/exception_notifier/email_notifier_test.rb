@@ -16,8 +16,8 @@ class EmailNotifierTest < ActiveSupport::TestCase
       email_headers: { 'X-Custom-Header' => 'foobar' },
       sections: %w[new_section request session environment backtrace],
       background_sections: %w[new_bkg_section backtrace data],
-      pre_callback: proc { |_opts, _notifier, _backtrace, _message, message_opts| message_opts[:pre_callback_called] = 1 },
-      post_callback: proc { |_opts, _notifier, _backtrace, _message, message_opts| message_opts[:post_callback_called] = 1 },
+      pre_callback: proc { |_opts, _notifier, _backtrace, _message, _message_opts| @pre_callback_called = true },
+      post_callback: proc { |_opts, _notifier, _backtrace, _message, _message_opts| @post_callback_called = true },
       smtp_settings: {
         user_name: 'Dummy user_name',
         password: 'Dummy password'
@@ -33,8 +33,8 @@ class EmailNotifierTest < ActiveSupport::TestCase
   end
 
   test 'should call pre/post_callback if specified' do
-    assert_equal @email_notifier.options[:pre_callback_called], 1
-    assert_equal @email_notifier.options[:post_callback_called], 1
+    assert @pre_callback_called
+    assert @post_callback_called
   end
 
   test 'sends mail with correct content' do
