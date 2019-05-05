@@ -24,7 +24,7 @@ class EmailNotifierTest < ActiveSupport::TestCase
       }
     )
 
-    @email_notifier.mailer.append_view_path "#{File.dirname(__FILE__)}/../support/views"
+    ActionMailer::Base.append_view_path "#{File.dirname(__FILE__)}/../support/views"
 
     @mail = @email_notifier.call(
       @exception,
@@ -247,7 +247,7 @@ class EmailNotifierWithEnvTest < ActiveSupport::TestCase
       post_callback: proc { |_opts, _notifier, _backtrace, _message, message_opts| message_opts[:post_callback_called] = 1 }
     )
 
-    @email_notifier.mailer.append_view_path "#{File.dirname(__FILE__)}/../support/views"
+    ActionMailer::Base.append_view_path "#{File.dirname(__FILE__)}/../support/views"
 
     @controller = HomeController.new
     @controller.process(:index)

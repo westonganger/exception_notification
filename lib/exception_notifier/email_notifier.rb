@@ -174,13 +174,6 @@ module ExceptionNotifier
       end
     end
 
-    def mailer
-      @mailer ||= Class.new(mailer_parent.constantize).tap do |mailer|
-        mailer.extend(EmailNotifier::Mailer)
-        mailer.mailer_name = template_path
-      end
-    end
-
     def call(exception, options = {})
       message = create_email(exception, options)
 
@@ -211,6 +204,15 @@ module ExceptionNotifier
 
     def self.normalize_digits(string)
       string.gsub(/[0-9]+/, 'N')
+    end
+
+    private
+
+    def mailer
+      @mailer ||= Class.new(mailer_parent.constantize).tap do |mailer|
+        mailer.extend(EmailNotifier::Mailer)
+        mailer.mailer_name = template_path
+      end
     end
   end
 end
