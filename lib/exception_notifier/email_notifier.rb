@@ -6,11 +6,32 @@ require 'pp'
 
 module ExceptionNotifier
   class EmailNotifier < BaseNotifier
-    attr_accessor(:sender_address, :exception_recipients,
-                  :pre_callback, :post_callback,
-                  :email_prefix, :email_format, :sections, :background_sections,
-                  :verbose_subject, :normalize_subject, :include_controller_and_action_names_in_subject,
-                  :delivery_method, :mailer_settings, :email_headers, :mailer_parent, :template_path, :deliver_with)
+    ATTRIBUTES = [
+      :sender_address, :exception_recipients, :pre_callback, :post_callback,
+      :email_prefix, :email_format, :sections, :background_sections,
+      :verbose_subject, :normalize_subject, :include_controller_and_action_names_in_subject,
+      :delivery_method, :mailer_settings, :email_headers, :mailer_parent, :template_path, :deliver_with
+    ].freeze
+
+    DEFAULT_OPTIONS = {
+      sender_address: %("Exception Notifier" <exception.notifier@example.com>),
+      exception_recipients: [],
+      email_prefix: '[ERROR] ',
+      email_format: :text,
+      sections: %w[request session environment backtrace],
+      background_sections: %w[backtrace data],
+      verbose_subject: true,
+      normalize_subject: false,
+      include_controller_and_action_names_in_subject: true,
+      delivery_method: nil,
+      mailer_settings: nil,
+      email_headers: {},
+      mailer_parent: 'ActionMailer::Base',
+      template_path: 'exception_notifier',
+      deliver_with: :default
+    }.freeze
+
+    attr_accessor *ATTRIBUTES
 
     module Mailer
       class MissingController
@@ -135,22 +156,14 @@ module ExceptionNotifier
 
     def initialize(options)
       super
+
       delivery_method = (options[:delivery_method] || :smtp)
       mailer_settings_key = "#{delivery_method}_settings".to_sym
       options[:mailer_settings] = options.delete(mailer_settings_key)
 
-      merged_opts = options.reverse_merge(EmailNotifier.default_options)
-      filtered_opts = merged_opts.select do |k, _v|
-        %i[
-          sender_address exception_recipients pre_callback
-          post_callback email_prefix email_format
-          sections background_sections verbose_subject normalize_subject
-          include_controller_and_action_names_in_subject delivery_method mailer_settings
-          email_headers mailer_parent template_path deliver_with
-        ].include?(k)
-      end
+      merged_opts = options.reverse_merge(DEFAULT_OPTIONS)
 
-      filtered_opts.each { |k, v| send("#{k}=", v) }
+      merged_opts.each { |k, v| send("#{k}=", v) if ATTRIBUTES.include?(k) }
     end
 
     def options
@@ -193,26 +206,6 @@ module ExceptionNotifier
           mailer.exception_notification(env, exception, options, default_opts)
         end
       end
-    end
-
-    def self.default_options
-      {
-        sender_address: %("Exception Notifier" <exception.notifier@example.com>),
-        exception_recipients: [],
-        email_prefix: '[ERROR] ',
-        email_format: :text,
-        sections: %w[request session environment backtrace],
-        background_sections: %w[backtrace data],
-        verbose_subject: true,
-        normalize_subject: false,
-        include_controller_and_action_names_in_subject: true,
-        delivery_method: nil,
-        mailer_settings: nil,
-        email_headers: {},
-        mailer_parent: 'ActionMailer::Base',
-        template_path: 'exception_notifier',
-        deliver_with: :default
-      }
     end
 
     def self.normalize_digits(string)
