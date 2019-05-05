@@ -77,26 +77,6 @@ class EmailNotifierTest < ActiveSupport::TestCase
     assert_equal body, @mail.decode_body
   end
 
-  test 'should have default sections overridden' do
-    %w[new_section request session environment backtrace].each do |section|
-      assert_includes @email_notifier.sections, section
-    end
-  end
-
-  test 'should have default background sections' do
-    %w[new_bkg_section backtrace data].each do |section|
-      assert_includes @email_notifier.background_sections, section
-    end
-  end
-
-  test 'should have mailer_parent by default' do
-    assert_equal @email_notifier.mailer_parent, 'ActionMailer::Base'
-  end
-
-  test 'should have template_path by default' do
-    assert_equal @email_notifier.template_path, 'exception_notifier'
-  end
-
   test 'should normalize multiple digits into one N' do
     assert_equal 'N foo N bar N baz N',
                  ExceptionNotifier::EmailNotifier.normalize_digits('1 foo 12 bar 123 baz 1234')
