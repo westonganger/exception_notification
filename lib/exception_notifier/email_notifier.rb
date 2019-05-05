@@ -199,12 +199,11 @@ module ExceptionNotifier
     def create_email(exception, options = {})
       env = options[:env]
       default_options = self.options
-      if env.nil?
-        send_notice(exception, options, nil, default_options) do |_, default_opts|
+
+      send_notice(exception, options, nil, default_options) do |_, default_opts|
+        if env.nil?
           mailer.background_exception_notification(exception, options, default_opts)
-        end
-      else
-        send_notice(exception, options, nil, default_options) do |_, default_opts|
+        else
           mailer.exception_notification(env, exception, options, default_opts)
         end
       end
