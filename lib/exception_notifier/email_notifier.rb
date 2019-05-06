@@ -27,7 +27,7 @@ module ExceptionNotifier
       email_headers: {},
       mailer_parent: 'ActionMailer::Base',
       template_path: 'exception_notifier',
-      deliver_with: :default
+      deliver_with: nil
     }.freeze
 
     attr_accessor *ATTRIBUTES
@@ -177,16 +177,7 @@ module ExceptionNotifier
     def call(exception, options = {})
       message = create_email(exception, options)
 
-      # FIXME: use `if Gem::Version.new(ActionMailer::VERSION::STRING) < Gem::Version.new('4.1')`
-      if deliver_with == :default
-        if message.respond_to?(:deliver_now)
-          message.deliver_now
-        else
-          message.deliver
-        end
-      else
-        message.send(deliver_with)
-      end
+      message.send(deliver_with || default_deliver_with(message))
     end
 
     def create_email(exception, options = {})
@@ -213,6 +204,11 @@ module ExceptionNotifier
         mailer.extend(EmailNotifier::Mailer)
         mailer.mailer_name = template_path
       end
+    end
+
+    def default_deliver_with(message)
+      # FIXME: use `if Gem::Version.new(ActionMailer::VERSION::STRING) < Gem::Version.new('4.1')`
+      message.respond_to?(:deliver_now) ? :deliver_now : :deliver
     end
   end
 end
