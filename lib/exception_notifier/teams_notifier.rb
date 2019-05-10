@@ -177,12 +177,12 @@ module ExceptionNotifier
     end
 
     def rails_app_name
-      if defined?(Rails) && Rails.respond_to?(:application)
-        if ::Gem::Version.new(Rails.version) >= ::Gem::Version.new('6.0')
-          Rails.application.class.module_parent_name.underscore
-        else
-          Rails.application.class.parent_name.underscore
-        end
+      return unless defined?(Rails) && Rails.respond_to?(:application)
+
+      if ::Gem::Version.new(Rails.version) >= ::Gem::Version.new('6.0')
+        Rails.application.class.module_parent_name.underscore
+      else
+        Rails.application.class.parent_name.underscore
       end
     end
 
