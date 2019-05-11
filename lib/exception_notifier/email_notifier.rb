@@ -5,13 +5,6 @@ require 'pp'
 
 module ExceptionNotifier
   class EmailNotifier < BaseNotifier
-    ATTRIBUTES = [
-      :sender_address, :exception_recipients, :pre_callback, :post_callback,
-      :email_prefix, :email_format, :sections, :background_sections,
-      :verbose_subject, :normalize_subject, :include_controller_and_action_names_in_subject,
-      :delivery_method, :mailer_settings, :email_headers, :mailer_parent, :template_path, :deliver_with
-    ].freeze
-
     DEFAULT_OPTIONS = {
       sender_address: %("Exception Notifier" <exception.notifier@example.com>),
       exception_recipients: [],
@@ -29,8 +22,6 @@ module ExceptionNotifier
       template_path: 'exception_notifier',
       deliver_with: nil
     }.freeze
-
-    attr_accessor *ATTRIBUTES
 
     module Mailer
       class MissingController
@@ -163,28 +154,19 @@ module ExceptionNotifier
       mailer_settings_key = "#{delivery_method}_settings".to_sym
       options[:mailer_settings] = options.delete(mailer_settings_key)
 
-      merged_opts = DEFAULT_OPTIONS.merge(options)
-
-      merged_opts.each { |k, v| send("#{k}=", v) if ATTRIBUTES.include?(k) }
-    end
-
-    def options
-      @options ||= {}.tap do |opts|
-        instance_variables.each { |var| opts[var[1..-1].to_sym] = instance_variable_get(var) }
-      end
+      @base_options = DEFAULT_OPTIONS.merge(options)
     end
 
     def call(exception, options = {})
       message = create_email(exception, options)
 
-      message.send(deliver_with || default_deliver_with(message))
+      message.send(base_options[:deliver_with] || default_deliver_with(message))
     end
 
     def create_email(exception, options = {})
       env = options[:env]
-      default_options = self.options
 
-      send_notice(exception, options, nil, default_options) do |_, default_opts|
+      send_notice(exception, options, nil, base_options) do |_, default_opts|
         if env.nil?
           mailer.background_exception_notification(exception, options, default_opts)
         else
@@ -200,9 +182,9 @@ module ExceptionNotifier
     private
 
     def mailer
-      @mailer ||= Class.new(mailer_parent.constantize).tap do |mailer|
+      @mailer ||= Class.new(base_options[:mailer_parent].constantize).tap do |mailer|
         mailer.extend(EmailNotifier::Mailer)
-        mailer.mailer_name = template_path
+        mailer.mailer_name = base_options[:template_path]
       end
     end
 
