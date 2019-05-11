@@ -87,7 +87,7 @@ class EmailNotifierTest < ActiveSupport::TestCase
       raise ArgumentError
     rescue StandardError => e
       @vowel_exception = e
-      @vowel_mail = @email_notifier.create_email(@vowel_exception)
+      @vowel_mail = @email_notifier.call(@vowel_exception)
     end
 
     assert_includes @vowel_mail.encoded, "An ArgumentError occurred in background at #{Time.current}"
@@ -99,7 +99,7 @@ class EmailNotifierTest < ActiveSupport::TestCase
     rescue StandardError => e
       @ignored_exception = e
       unless ExceptionNotifier.ignored_exceptions.include?(@ignored_exception.class.name)
-        ignored_mail = @email_notifier.create_email(@ignored_exception)
+        ignored_mail = @email_notifier.call(@ignored_exception)
       end
     end
 
@@ -110,11 +110,10 @@ class EmailNotifierTest < ActiveSupport::TestCase
   test 'should encode environment strings' do
     email_notifier = ExceptionNotifier::EmailNotifier.new(
       sender_address: '<dummynotifier@example.com>',
-      exception_recipients: %w[dummyexceptions@example.com],
-      deliver_with: :deliver_now
+      exception_recipients: %w[dummyexceptions@example.com]
     )
 
-    mail = email_notifier.create_email(
+    mail = email_notifier.call(
       @exception,
       env: {
         'REQUEST_METHOD' => 'GET',
