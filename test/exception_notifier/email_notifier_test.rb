@@ -24,8 +24,6 @@ class EmailNotifierTest < ActiveSupport::TestCase
       }
     )
 
-    ActionMailer::Base.append_view_path "#{File.dirname(__FILE__)}/../support/views"
-
     @mail = @email_notifier.call(
       @exception,
       data: { job: 'DivideWorkerJob', payload: '1/0', message: 'My Custom Message' }
@@ -225,8 +223,6 @@ class EmailNotifierWithEnvTest < ActiveSupport::TestCase
       pre_callback: proc { |_opts, _notifier, _backtrace, _message, message_opts| message_opts[:pre_callback_called] = 1 },
       post_callback: proc { |_opts, _notifier, _backtrace, _message, message_opts| message_opts[:post_callback_called] = 1 }
     )
-
-    ActionMailer::Base.append_view_path "#{File.dirname(__FILE__)}/../support/views"
 
     @controller = HomeController.new
     @controller.process(:index)
