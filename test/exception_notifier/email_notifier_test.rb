@@ -16,15 +16,13 @@ class EmailNotifierTest < ActiveSupport::TestCase
       email_headers: { 'X-Custom-Header' => 'foobar' },
       sections: %w[new_section request session environment backtrace],
       background_sections: %w[new_bkg_section backtrace data],
-      pre_callback: proc { |_opts, _notifier, _backtrace, _message, message_opts| message_opts[:pre_callback_called] = 1 },
-      post_callback: proc { |_opts, _notifier, _backtrace, _message, message_opts| message_opts[:post_callback_called] = 1 },
+      pre_callback: proc { |_opts, _notifier, _backtrace, _message, _message_opts| @pre_callback_called = true },
+      post_callback: proc { |_opts, _notifier, _backtrace, _message, _message_opts| @post_callback_called = true },
       smtp_settings: {
         user_name: 'Dummy user_name',
         password: 'Dummy password'
       }
     )
-
-    @email_notifier.mailer.append_view_path "#{File.dirname(__FILE__)}/../support/views"
 
     @mail = @email_notifier.call(
       @exception,
@@ -33,8 +31,8 @@ class EmailNotifierTest < ActiveSupport::TestCase
   end
 
   test 'should call pre/post_callback if specified' do
-    assert_equal @email_notifier.options[:pre_callback_called], 1
-    assert_equal @email_notifier.options[:post_callback_called], 1
+    assert @pre_callback_called
+    assert @post_callback_called
   end
 
   test 'sends mail with correct content' do
@@ -77,26 +75,6 @@ class EmailNotifierTest < ActiveSupport::TestCase
     assert_equal body, @mail.decode_body
   end
 
-  test 'should have default sections overridden' do
-    %w[new_section request session environment backtrace].each do |section|
-      assert_includes @email_notifier.sections, section
-    end
-  end
-
-  test 'should have default background sections' do
-    %w[new_bkg_section backtrace data].each do |section|
-      assert_includes @email_notifier.background_sections, section
-    end
-  end
-
-  test 'should have mailer_parent by default' do
-    assert_equal @email_notifier.mailer_parent, 'ActionMailer::Base'
-  end
-
-  test 'should have template_path by default' do
-    assert_equal @email_notifier.template_path, 'exception_notifier'
-  end
-
   test 'should normalize multiple digits into one N' do
     assert_equal 'N foo N bar N baz N',
                  ExceptionNotifier::EmailNotifier.normalize_digits('1 foo 12 bar 123 baz 1234')
@@ -107,7 +85,7 @@ class EmailNotifierTest < ActiveSupport::TestCase
       raise ArgumentError
     rescue StandardError => e
       @vowel_exception = e
-      @vowel_mail = @email_notifier.create_email(@vowel_exception)
+      @vowel_mail = @email_notifier.call(@vowel_exception)
     end
 
     assert_includes @vowel_mail.encoded, "An ArgumentError occurred in background at #{Time.current}"
@@ -119,7 +97,7 @@ class EmailNotifierTest < ActiveSupport::TestCase
     rescue StandardError => e
       @ignored_exception = e
       unless ExceptionNotifier.ignored_exceptions.include?(@ignored_exception.class.name)
-        ignored_mail = @email_notifier.create_email(@ignored_exception)
+        ignored_mail = @email_notifier.call(@ignored_exception)
       end
     end
 
@@ -130,11 +108,10 @@ class EmailNotifierTest < ActiveSupport::TestCase
   test 'should encode environment strings' do
     email_notifier = ExceptionNotifier::EmailNotifier.new(
       sender_address: '<dummynotifier@example.com>',
-      exception_recipients: %w[dummyexceptions@example.com],
-      deliver_with: :deliver_now
+      exception_recipients: %w[dummyexceptions@example.com]
     )
 
-    mail = email_notifier.create_email(
+    mail = email_notifier.call(
       @exception,
       env: {
         'REQUEST_METHOD' => 'GET',
@@ -246,8 +223,6 @@ class EmailNotifierWithEnvTest < ActiveSupport::TestCase
       pre_callback: proc { |_opts, _notifier, _backtrace, _message, message_opts| message_opts[:pre_callback_called] = 1 },
       post_callback: proc { |_opts, _notifier, _backtrace, _message, message_opts| message_opts[:post_callback_called] = 1 }
     )
-
-    @email_notifier.mailer.append_view_path "#{File.dirname(__FILE__)}/../support/views"
 
     @controller = HomeController.new
     @controller.process(:index)
