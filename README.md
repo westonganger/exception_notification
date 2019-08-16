@@ -270,29 +270,6 @@ or
 
 As above, make sure the gem is not listed solely under the `production` group, since this initializer will be loaded regardless of environment.
 
-## Versions
-
-For v4.2.1, see this tag:
-
-http://github.com/smartinez87/exception_notification/tree/v4.2.1
-
-For v4.2.0, see this tag:
-
-http://github.com/smartinez87/exception_notification/tree/v4.2.0
-
-For previous releases, visit:
-
-https://github.com/smartinez87/exception_notification/tags
-
-If you are running Rails 2.3 then see the branch for that:
-
-http://github.com/smartinez87/exception_notification/tree/2-3-stable
-
-If you are running pre-rack Rails then see this tag:
-
-http://github.com/smartinez87/exception_notification/tree/pre-2-3
-
-
 ## Support and tickets
 
 Here's the list of [issues](https://github.com/smartinez87/exception_notification/issues) we're currently working on.
