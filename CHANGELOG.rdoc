@@ -1,3 +1,17 @@
+== 4.4.0
+
+* enhancements
+  * Rails 6 compatibility (by @shanecav)
+  * Add Datadog notifier (by @ajain0184)
+  * Use backtrace cleaner for Slack notifications (by @pomier)
+  * Add slack channel name override option (by @chaadow)
+  * Addition of sample application for testing purposes (by @ampeigonet)
+
+* bug fixes
+  * Fix error in Resque failure backend (by @EmilioCristalli)
+  * Remove sqlite dependency (by @EmilioCristalli)
+  * Configure ignore_crawlers from Rails initializer (by @EmilioCristalli)
+
 == 4.3.0
 
 * enhancements
