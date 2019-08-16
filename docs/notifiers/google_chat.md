@@ -27,4 +27,5 @@ The Incoming WebHook URL on Google Chats.
 
 *String, optional*
 
-Your application name, shown in the notification. Defaults to `Rails.application.class.parent_name.underscore`.
+Your application name, shown in the notification. Defaults to `Rails.application.class.module_parent_name.underscore` for Rails versions >= 6;
+`Rails.application.class.parent_name.underscore` otherwise.
