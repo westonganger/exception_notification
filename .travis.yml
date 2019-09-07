@@ -30,7 +30,7 @@ gemfile:
   - gemfiles/rails6_0.gemfile
 matrix:
   exclude:
-    # Rails 6 supports Ruby 2.2.2 and up
+    # Rails 5 supports Ruby 2.2.2 and up
     - rvm: 2.1.10
       gemfile: gemfiles/rails5_0.gemfile
     - rvm: 2.1.10
