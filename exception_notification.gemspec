@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.email = 'smartinez87@gmail.com'
   s.license = 'MIT'
 
-  s.required_ruby_version     = '>= 2.0'
+  s.required_ruby_version     = '>= 2.1'
   s.required_rubygems_version = '>= 1.8.11'
 
   s.files = `git ls-files`.split("\n")
@@ -32,7 +32,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'mocha', '>= 0.13.0'
   s.add_development_dependency 'rails', '>= 4.0', '< 7'
   s.add_development_dependency 'resque', '~> 1.8.0'
-  s.add_development_dependency 'rubocop', '0.50.0'
+  s.add_development_dependency 'rubocop', '0.57.2'
   # Sidekiq 3.2.2 does not support Ruby 1.9.
   s.add_development_dependency 'sidekiq', '~> 3.0.0', '< 3.2.2'
   s.add_development_dependency 'slack-notifier', '>= 1.0.0'
