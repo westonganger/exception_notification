@@ -140,7 +140,7 @@ class ExceptionNotifierTest < ActiveSupport::TestCase
   test 'should not send notification if extended module one of ignored exceptions' do
     ExceptionNotifier.register_exception_notifier(:test, @test_notifier)
 
-    module StandardErrorModule; end
+    module ::StandardErrorModule; end
 
     exception = StandardError.new
     exception.extend StandardErrorModule
