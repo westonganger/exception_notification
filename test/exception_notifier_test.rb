@@ -137,6 +137,21 @@ class ExceptionNotifierTest < ActiveSupport::TestCase
     assert_equal @notifier_calls, 1
   end
 
+  test 'should not send notification if extended module one of ignored exceptions' do
+    ExceptionNotifier.register_exception_notifier(:test, @test_notifier)
+
+    module StandardErrorModule; end
+
+    exception = StandardError.new
+    exception.extend StandardErrorModule
+
+    ExceptionNotifier.notify_exception(exception, notifiers: :test)
+    assert_equal @notifier_calls, 1
+
+    ExceptionNotifier.notify_exception(exception, notifiers: :test, ignore_exceptions: 'StandardErrorModule')
+    assert_equal @notifier_calls, 1
+  end
+
   test 'should call received block' do
     @block_called = false
     notifier = ->(_exception, _options, &block) { block.call }
