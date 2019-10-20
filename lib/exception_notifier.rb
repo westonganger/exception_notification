@@ -125,7 +125,7 @@ module ExceptionNotifier
 
     def ignored_exception?(ignore_array, exception)
       all_ignored_exceptions = (Array(ignored_exceptions) + Array(ignore_array)).map(&:to_s)
-      exception_ancestors = exception.singleton_class.ancestors[1..-1].map(&:to_s)
+      exception_ancestors = exception.singleton_class.ancestors.map(&:to_s)
       !(all_ignored_exceptions & exception_ancestors).empty?
     end
 

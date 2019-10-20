@@ -137,13 +137,28 @@ class ExceptionNotifierTest < ActiveSupport::TestCase
     assert_equal @notifier_calls, 1
   end
 
-  test 'should not send notification if extended module one of ignored exceptions' do
+  test 'should not send notification if extended module at singleton class one of ignored exceptions' do
     ExceptionNotifier.register_exception_notifier(:test, @test_notifier)
 
     module StandardErrorModule; end
 
     exception = StandardError.new
     exception.extend StandardErrorModule
+
+    ExceptionNotifier.notify_exception(exception, notifiers: :test)
+    assert_equal @notifier_calls, 1
+
+    ExceptionNotifier.notify_exception(exception, notifiers: :test, ignore_exceptions: 'ExceptionNotifierTest::StandardErrorModule')
+    assert_equal @notifier_calls, 1
+  end
+
+  test 'should not send notification if prepended module at singleton class one of ignored exceptions' do
+    ExceptionNotifier.register_exception_notifier(:test, @test_notifier)
+
+    module StandardErrorModule; end
+
+    exception = StandardError.new
+    exception.singleton_class.prepend StandardErrorModule
 
     ExceptionNotifier.notify_exception(exception, notifiers: :test)
     assert_equal @notifier_calls, 1
