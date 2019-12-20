@@ -1,12 +1,11 @@
 language: ruby
 cache: bundler
 rvm:
-  - 2.1.10
-  - 2.2.10
   - 2.3.8
   - 2.4.7
   - 2.5.6
   - 2.6.4
+  - 2.7.0-rc1
 env:
 - COVERALLS_SILENT=true
 before_install:
@@ -29,18 +28,7 @@ gemfile:
 
 matrix:
   exclude:
-    # Rails 5 supports Ruby 2.2.2 and up
-    - rvm: 2.1.10
-      gemfile: gemfiles/rails5_0.gemfile
-    - rvm: 2.1.10
-      gemfile: gemfiles/rails5_1.gemfile
-    - rvm: 2.1.10
-      gemfile: gemfiles/rails5_2.gemfile
     # Rails 6 supports Ruby 2.5 and up
-    - rvm: 2.1.10
-      gemfile: gemfiles/rails6_0.gemfile
-    - rvm: 2.2.10
-      gemfile: gemfiles/rails6_0.gemfile
     - rvm: 2.3.8
       gemfile: gemfiles/rails6_0.gemfile
     - rvm: 2.4.7
