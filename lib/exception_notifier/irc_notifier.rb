@@ -11,9 +11,8 @@ module ExceptionNotifier
     def call(exception, options = {})
       errors_count = options[:accumulated_errors_count].to_i
 
-      message = "'#{exception.message}'"
-      message.prepend("(#{errors_count} times)") if errors_count > 1
-
+      occurrences = "(#{errors_count} times)" if errors_count > 1
+      message = "#{occurrences}'#{exception.message}'"
       message += " on '#{exception.backtrace.first}'" if exception.backtrace
 
       return unless active?

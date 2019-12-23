@@ -76,11 +76,8 @@ module ExceptionNotifier
       end
 
       def formatted_title
-        title = ''
-        title << title_prefix
-        title << "#{controller.controller_name} #{controller.action_name}" if controller
-        title << " (#{exception.class})"
-        title << " #{exception.message.inspect}"
+        title =
+          "#{title_prefix}#{controller_subtitle} (#{exception.class}) #{exception.message.inspect}"
 
         truncate(title, MAX_TITLE_LENGTH)
       end
@@ -147,6 +144,12 @@ module ExceptionNotifier
         else
           object.to_s
         end
+      end
+
+      private
+
+      def controller_subtitle
+        "#{controller.controller_name} #{controller.action_name}" if controller
       end
     end
   end

@@ -116,7 +116,7 @@ class EmailNotifierTest < ActiveSupport::TestCase
       env: {
         'REQUEST_METHOD' => 'GET',
         'rack.input' => '',
-        'invalid_encoding' => "R\xC3\xA9sum\xC3\xA9".force_encoding(Encoding::ASCII)
+        'invalid_encoding' => "R\xC3\xA9sum\xC3\xA9".dup.force_encoding(Encoding::ASCII)
       }
     )
 

@@ -35,9 +35,8 @@ module ExceptionNotifier
     attr_reader :notifier, :options
 
     def build_subject(exception, options)
-      subject = "#{options[:sns_prefix]} - "
-      subject << accumulated_exception_name(exception, options)
-      subject << ' occurred'
+      subject =
+        "#{options[:sns_prefix]} - #{accumulated_exception_name(exception, options)} occurred"
       subject.length > 120 ? subject[0...120] + '...' : subject
     end
 
