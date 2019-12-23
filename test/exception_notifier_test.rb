@@ -5,6 +5,12 @@ require 'test_helper'
 class ExceptionOne < StandardError; end
 class ExceptionTwo < StandardError; end
 
+module ExceptionNotifier
+  def self.reset_notifiers!
+    @@notifiers.delete_if { |k, _| k.to_s != 'email' }
+  end
+end
+
 class ExceptionNotifierTest < ActiveSupport::TestCase
   setup do
     ExceptionNotifier.register_exception_notifier(:email, exception_recipients: %w[dummyexceptions@example.com])
@@ -16,7 +22,7 @@ class ExceptionNotifierTest < ActiveSupport::TestCase
   teardown do
     ExceptionNotifier.error_grouping = false
     ExceptionNotifier.notification_trigger = nil
-    ExceptionNotifier.class_eval('@@notifiers.delete_if { |k, _| k.to_s != "email"}') # reset notifiers
+    ExceptionNotifier.reset_notifiers!
 
     Rails.cache.clear if defined?(Rails) && Rails.respond_to?(:cache)
   end

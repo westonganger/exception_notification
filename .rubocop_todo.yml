@@ -52,11 +52,6 @@ Style/ClassVars:
     - 'lib/exception_notifier.rb'
     - 'test/exception_notifier/modules/error_grouping_test.rb'
 
-# Offense count: 1
-Style/EvalWithLocation:
-  Exclude:
-    - 'test/exception_notifier_test.rb'
-
 # Offense count: 2
 Style/MethodMissingSuper:
   Exclude:
