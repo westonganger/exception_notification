@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ExceptionNotification
   class Rack
     class CascadePassException < RuntimeError; end
@@ -42,12 +44,10 @@ module ExceptionNotification
       end
 
       response
-    rescue Exception => exception
-      if ExceptionNotifier.notify_exception(exception, env: env)
-        env['exception_notifier.delivered'] = true
-      end
+    rescue Exception => e
+      env['exception_notifier.delivered'] = true if ExceptionNotifier.notify_exception(e, env: env)
 
-      raise exception unless exception.is_a?(CascadePassException)
+      raise e unless e.is_a?(CascadePassException)
 
       response
     end

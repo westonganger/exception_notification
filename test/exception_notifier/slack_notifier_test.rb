@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 require 'slack-notifier'
 
@@ -128,9 +130,9 @@ class SlackNotifierTest < ActiveSupport::TestCase
         'exception_notifier.exception_data' => { foo: 'bar', john: 'doe' }
       },
       data: {
-        'user_id'           => 5,
+        'user_id' => 5,
         'key_to_be_ignored' => 'whatever',
-        'ignore_as_well'    => { what: 'ever' }
+        'ignore_as_well' => { what: 'ever' }
       }
     }
 

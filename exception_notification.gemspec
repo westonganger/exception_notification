@@ -1,4 +1,6 @@
-require File.expand_path('../lib/exception_notification/version', __FILE__)
+# frozen_string_literal: true
+
+require File.expand_path('lib/exception_notification/version', __dir__)
 
 Gem::Specification.new do |s|
   s.name = 'exception_notification'
@@ -28,8 +30,8 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'dogapi', '>= 1.23.0'
   s.add_development_dependency 'hipchat', '>= 1.0.0'
   s.add_development_dependency 'httparty', '~> 0.10.2'
-  s.add_development_dependency 'mock_redis', '~> 0.19.0'
   s.add_development_dependency 'mocha', '>= 0.13.0'
+  s.add_development_dependency 'mock_redis', '~> 0.19.0'
   s.add_development_dependency 'rails', '>= 4.0', '< 7'
   s.add_development_dependency 'resque', '~> 1.8.0'
   s.add_development_dependency 'rubocop', '0.78.0'

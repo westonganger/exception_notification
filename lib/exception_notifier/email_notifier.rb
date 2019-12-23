@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'active_support/core_ext/time'
 require 'action_mailer'
 require 'action_dispatch'

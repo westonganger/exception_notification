@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'active_support/core_ext/numeric/time'
 require 'active_support/concern'
 
@@ -26,13 +28,13 @@ module ExceptionNotifier
 
       def error_count(error_key)
         count = begin
-          error_grouping_cache.read(error_key)
-        rescue StandardError => e
-          ExceptionNotifier.logger.warn("#{error_grouping_cache.inspect} failed to read, reason: #{e.message}. Falling back to memory cache store.")
-          fallback_cache_store.read(error_key)
-        end
+                  error_grouping_cache.read(error_key)
+                rescue StandardError => e
+                  ExceptionNotifier.logger.warn("#{error_grouping_cache.inspect} failed to read, reason: #{e.message}. Falling back to memory cache store.")
+                  fallback_cache_store.read(error_key)
+                end
 
-        count.to_i if count
+        count&.to_i
       end
 
       def save_error_count(error_key, count)

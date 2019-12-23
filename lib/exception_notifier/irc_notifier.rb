@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ExceptionNotifier
   class IrcNotifier < BaseNotifier
     def initialize(options)

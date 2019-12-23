@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ExceptionNotifier
   class SnsNotifier < BaseNotifier
     def initialize(options)

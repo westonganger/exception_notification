@@ -6,37 +6,6 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: TreatCommentsAsGroupSeparators, Include.
-# Include: **/*.gemspec
-Gemspec/OrderedDependencies:
-  Exclude:
-    - 'exception_notification.gemspec'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-Layout/EmptyLineAfterGuardClause:
-  Exclude:
-    - 'lib/exception_notifier/modules/formatter.rb'
-
-# Offense count: 2
-# Cop supports --auto-correct.
-# Configuration parameters: AllowMultipleStyles, EnforcedHashRocketStyle, EnforcedColonStyle, EnforcedLastArgumentHashStyle.
-# SupportedHashRocketStyles: key, separator, table
-# SupportedColonStyles: key, separator, table
-# SupportedLastArgumentHashStyles: always_inspect, always_ignore, ignore_implicit, ignore_explicit
-Layout/HashAlignment:
-  Exclude:
-    - 'test/exception_notifier/slack_notifier_test.rb'
-
-# Offense count: 2
-# Cop supports --auto-correct.
-Layout/RescueEnsureAlignment:
-  Exclude:
-    - 'lib/exception_notifier/modules/error_grouping.rb'
-    - 'test/exception_notifier/webhook_notifier_test.rb'
-
 # Offense count: 4
 Lint/RescueException:
   Exclude:
@@ -77,14 +46,6 @@ Metrics/ModuleLength:
 Metrics/PerceivedComplexity:
   Max: 24
 
-# Offense count: 2
-# Cop supports --auto-correct.
-# Configuration parameters: PreferredName.
-Naming/RescuedExceptionsVariableName:
-  Exclude:
-    - 'lib/exception_notification/rack.rb'
-    - 'lib/exception_notification/sidekiq.rb'
-
 # Offense count: 6
 Style/ClassVars:
   Exclude:
@@ -97,29 +58,6 @@ Style/EvalWithLocation:
     - 'test/exception_notifier_test.rb'
 
 # Offense count: 2
-# Cop supports --auto-correct.
-Style/ExpandPathArguments:
-  Exclude:
-    - 'exception_notification.gemspec'
-    - 'test/test_helper.rb'
-
-# Offense count: 50
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: always, never
-Style/FrozenStringLiteralComment:
-  Enabled: false
-
-# Offense count: 4
-# Cop supports --auto-correct.
-Style/IfUnlessModifier:
-  Exclude:
-    - 'lib/exception_notification/rack.rb'
-    - 'lib/exception_notifier/datadog_notifier.rb'
-    - 'lib/exception_notifier/webhook_notifier.rb'
-    - 'test/exception_notifier/email_notifier_test.rb'
-
-# Offense count: 2
 Style/MethodMissingSuper:
   Exclude:
     - 'lib/exception_notifier/email_notifier.rb'
@@ -130,14 +68,6 @@ Style/MissingRespondToMissing:
   Exclude:
     - 'lib/exception_notifier/email_notifier.rb'
     - 'lib/exception_notifier/teams_notifier.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: ConvertCodeThatCanStartToReturnNil, AllowedMethods.
-# AllowedMethods: present?, blank?, presence, try, try!
-Style/SafeNavigation:
-  Exclude:
-    - 'lib/exception_notifier/modules/error_grouping.rb'
 
 # Offense count: 214
 # Cop supports --auto-correct.

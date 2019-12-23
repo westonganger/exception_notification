@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ExceptionNotifier
   class CampfireNotifier < BaseNotifier
     attr_accessor :subdomain

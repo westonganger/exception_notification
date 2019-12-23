@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 require 'dogapi/common'
 require 'dogapi/event'

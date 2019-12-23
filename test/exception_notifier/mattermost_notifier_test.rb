@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 require 'httparty'
 require 'timecop'
 require 'json'
 
 class MattermostNotifierTest < ActiveSupport::TestCase
-  URL = 'http://localhost:8000'.freeze
+  URL = 'http://localhost:8000'
 
   def setup
     Timecop.freeze('2018-12-09 12:07:16 UTC')

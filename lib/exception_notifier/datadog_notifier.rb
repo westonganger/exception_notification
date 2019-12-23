@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'action_dispatch'
 
 module ExceptionNotifier
@@ -30,7 +32,7 @@ module ExceptionNotifier
       MAX_TITLE_LENGTH = 120
       MAX_VALUE_LENGTH = 300
       MAX_BACKTRACE_SIZE = 3
-      ALERT_TYPE = 'error'.freeze
+      ALERT_TYPE = 'error'
 
       attr_reader :exception,
                   :options
@@ -108,9 +110,7 @@ module ExceptionNotifier
         text << formatted_key_value('Parameters', request.filtered_parameters.inspect)
         text << formatted_key_value('Timestamp', Time.current)
         text << formatted_key_value('Server', Socket.gethostname)
-        if defined?(Rails) && Rails.respond_to?(:root)
-          text << formatted_key_value('Rails root', Rails.root)
-        end
+        text << formatted_key_value('Rails root', Rails.root) if defined?(Rails) && Rails.respond_to?(:root)
         text << formatted_key_value('Process', $PROCESS_ID)
         text << '___'
         text.join("\n")

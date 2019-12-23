@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'logger'
 require 'active_support/core_ext/string/inflections'
 require 'active_support/core_ext/module/attribute_accessors'

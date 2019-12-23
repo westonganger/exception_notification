@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 # To allow sidekiq error handlers to be registered, sidekiq must be in

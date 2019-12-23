@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 require 'action_mailer'
 require 'action_controller'
@@ -96,9 +98,7 @@ class EmailNotifierTest < ActiveSupport::TestCase
       raise AbstractController::ActionNotFound
     rescue StandardError => e
       @ignored_exception = e
-      unless ExceptionNotifier.ignored_exceptions.include?(@ignored_exception.class.name)
-        ignored_mail = @email_notifier.call(@ignored_exception)
-      end
+      ignored_mail = @email_notifier.call(@ignored_exception) unless ExceptionNotifier.ignored_exceptions.include?(@ignored_exception.class.name)
     end
 
     assert_equal @ignored_exception.class.inspect, 'AbstractController::ActionNotFound'
