@@ -61,11 +61,7 @@ class GoogleChatNotifierTest < ActiveSupport::TestCase
       header,
       body,
       '',
-      '*Backtrace:*',
-      '```',
-      "* app/controllers/my_controller.rb:53:in `my_controller_params'",
-      "* app/controllers/my_controller.rb:34:in `update'",
-      '```'
+      backtrace
     ].join("\n")
 
     HTTParty.expects(:post).with(URL, post_opts(text))
@@ -119,11 +115,7 @@ class GoogleChatNotifierTest < ActiveSupport::TestCase
       '* timestamp : 2018-12-09 12:07:16 UTC',
       '```',
       '',
-      '*Backtrace:*',
-      '```',
-      "* app/controllers/my_controller.rb:53:in `my_controller_params'",
-      "* app/controllers/my_controller.rb:34:in `update'",
-      '```'
+      backtrace
     ].join("\n")
 
     HTTParty.expects(:post).with(URL, post_opts(text))
@@ -179,5 +171,15 @@ class GoogleChatNotifierTest < ActiveSupport::TestCase
 
   def app_name
     'dummy' if defined?(::Rails) && ::Rails.respond_to?(:application)
+  end
+
+  def backtrace
+    [
+      '*Backtrace:*',
+      '```',
+      "* app/controllers/my_controller.rb:53:in `my_controller_params'",
+      "* app/controllers/my_controller.rb:34:in `update'",
+      '```'
+    ]
   end
 end

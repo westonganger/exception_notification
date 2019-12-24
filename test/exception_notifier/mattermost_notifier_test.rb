@@ -115,27 +115,14 @@ class MattermostNotifierTest < ActiveSupport::TestCase
   end
 
   test 'should include backtrace and request info' do
-    body = default_body.merge(
-      text: [
-        '@channel',
-        error_occurred_in,
-        'An *ArgumentError* occurred.',
-        '*foo*',
-        '### Request',
-        '```',
-        '* url : http://test.address/?id=foo',
-        '* http_method : GET',
-        '* ip_address : 127.0.0.1',
-        '* parameters : {"id"=>"foo"}',
-        '* timestamp : 2018-12-09 12:07:16 UTC',
-        '```',
-        '### Backtrace',
-        '```',
-        "* app/controllers/my_controller.rb:53:in `my_controller_params'",
-        "* app/controllers/my_controller.rb:34:in `update'",
-        '```'
-      ].join("\n")
-    )
+    body = default_body.merge(text: [
+      '@channel',
+      error_occurred_in,
+      'An *ArgumentError* occurred.',
+      '*foo*',
+      request_info,
+      backtrace_info
+    ].join("\n"))
 
     opts = {
       body: body.to_json,
@@ -200,5 +187,28 @@ class MattermostNotifierTest < ActiveSupport::TestCase
       # TODO: fix missing app name
       '[Create an issue](github.com/aschen//issues/new/?issue%5Btitle%5D=%5BBUG%5D+Error+500+%3A++%28ArgumentError%29+foo)'
     end
+  end
+
+  def request_info
+    [
+      '### Request',
+      '```',
+      '* url : http://test.address/?id=foo',
+      '* http_method : GET',
+      '* ip_address : 127.0.0.1',
+      '* parameters : {"id"=>"foo"}',
+      '* timestamp : 2018-12-09 12:07:16 UTC',
+      '```'
+    ]
+  end
+
+  def backtrace_info
+    [
+      '### Backtrace',
+      '```',
+      "* app/controllers/my_controller.rb:53:in `my_controller_params'",
+      "* app/controllers/my_controller.rb:34:in `update'",
+      '```'
+    ]
   end
 end
