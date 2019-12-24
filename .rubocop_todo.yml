@@ -63,10 +63,3 @@ Style/MissingRespondToMissing:
   Exclude:
     - 'lib/exception_notifier/email_notifier.rb'
     - 'lib/exception_notifier/teams_notifier.rb'
-
-# Offense count: 217
-# Cop supports --auto-correct.
-# Configuration parameters: AutoCorrect, AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
-# URISchemes: http, https
-Layout/LineLength:
-  Max: 226

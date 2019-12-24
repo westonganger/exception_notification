@@ -76,11 +76,15 @@ module ExceptionNotifier
           def compose_subject
             subject = @options[:email_prefix].to_s.dup
             subject << "(#{@options[:accumulated_errors_count]} times)" if @options[:accumulated_errors_count].to_i > 1
-            subject << "#{@kontroller.controller_name} #{@kontroller.action_name}" if @kontroller && @options[:include_controller_and_action_names_in_subject]
+            subject << "#{@kontroller.controller_name} #{@kontroller.action_name}" if include_controller?
             subject << " (#{@exception.class})"
             subject << " #{@exception.message.inspect}" if @options[:verbose_subject]
             subject = EmailNotifier.normalize_digits(subject) if @options[:normalize_subject]
             subject.length > 120 ? subject[0...120] + '...' : subject
+          end
+
+          def include_controller?
+            @kontroller && @options[:include_controller_and_action_names_in_subject]
           end
 
           def set_data_variables
@@ -139,7 +143,9 @@ module ExceptionNotifier
           end
 
           def load_custom_views
-            prepend_view_path Rails.root.nil? ? 'app/views' : "#{Rails.root}/app/views" if defined?(Rails) && Rails.respond_to?(:root)
+            if defined?(Rails) && Rails.respond_to?(:root)
+              prepend_view_path Rails.root.nil? ? 'app/views' : "#{Rails.root}/app/views"
+            end
           end
 
           def maybe_call(maybe_proc)

@@ -7,15 +7,17 @@ module ExceptionNotification
     def initialize(app, options = {})
       @app = app
 
-      ExceptionNotifier.ignored_exceptions = options.delete(:ignore_exceptions) if options.key?(:ignore_exceptions)
-      ExceptionNotifier.error_grouping = options.delete(:error_grouping) if options.key?(:error_grouping)
-      ExceptionNotifier.error_grouping_period = options.delete(:error_grouping_period) if options.key?(:error_grouping_period)
-      ExceptionNotifier.notification_trigger = options.delete(:notification_trigger) if options.key?(:notification_trigger)
+      ExceptionNotifier.tap do |en|
+        en.ignored_exceptions = options.delete(:ignore_exceptions) if options.key?(:ignore_exceptions)
+        en.error_grouping = options.delete(:error_grouping) if options.key?(:error_grouping)
+        en.error_grouping_period = options.delete(:error_grouping_period) if options.key?(:error_grouping_period)
+        en.notification_trigger = options.delete(:notification_trigger) if options.key?(:notification_trigger)
 
-      if options.key?(:error_grouping_cache)
-        ExceptionNotifier.error_grouping_cache = options.delete(:error_grouping_cache)
-      elsif defined?(Rails) && Rails.respond_to?(:cache)
-        ExceptionNotifier.error_grouping_cache = Rails.cache
+        if options.key?(:error_grouping_cache)
+          en.error_grouping_cache = options.delete(:error_grouping_cache)
+        elsif defined?(Rails) && Rails.respond_to?(:cache)
+          en.error_grouping_cache = Rails.cache
+        end
       end
 
       if options.key?(:ignore_if)

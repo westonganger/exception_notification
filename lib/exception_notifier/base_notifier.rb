@@ -16,11 +16,15 @@ module ExceptionNotifier
     end
 
     def _pre_callback(exception, options, message, message_opts)
-      @base_options[:pre_callback].call(options, self, exception.backtrace, message, message_opts) if @base_options[:pre_callback].respond_to?(:call)
+      if @base_options[:pre_callback].respond_to?(:call)
+        @base_options[:pre_callback].call(options, self, exception.backtrace, message, message_opts)
+      end
     end
 
     def _post_callback(exception, options, message, message_opts)
-      @base_options[:post_callback].call(options, self, exception.backtrace, message, message_opts) if @base_options[:post_callback].respond_to?(:call)
+      if @base_options[:post_callback].respond_to?(:call)
+        @base_options[:post_callback].call(options, self, exception.backtrace, message, message_opts)
+      end
     end
   end
 end
