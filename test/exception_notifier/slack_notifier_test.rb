@@ -138,7 +138,9 @@ class SlackNotifierTest < ActiveSupport::TestCase
 
     expected_data_string = "foo: bar\njohn: doe\nuser_id: 5"
 
-    Slack::Notifier.any_instance.expects(:ping).with('', fake_notification(@exception, notification_options, expected_data_string))
+    Slack::Notifier.any_instance
+                   .expects(:ping)
+                   .with('', fake_notification(@exception, notification_options, expected_data_string))
     slack_notifier = ExceptionNotifier::SlackNotifier.new(options)
     slack_notifier.call(@exception, notification_options)
   end
@@ -199,7 +201,9 @@ class SlackNotifierTest < ActiveSupport::TestCase
     fake_backtrace[2..-1]
   end
 
-  def fake_notification(exception = @exception, notification_options = {}, data_string = nil, expected_backtrace_lines = 10, additional_fields = [])
+  def fake_notification(exception = @exception, notification_options = {},
+                        data_string = nil, expected_backtrace_lines = 10, additional_fields = [])
+
     exception_name = "*#{exception.class.to_s =~ /^[aeiou]/i ? 'An' : 'A'}* `#{exception.class}`"
     if notification_options[:env].nil?
       text = "#{exception_name} *occured in background*"

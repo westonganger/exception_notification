@@ -96,9 +96,14 @@ class CampfireNotifierTest < ActiveSupport::TestCase
     {
       message: {
         type: 'PasteMessage',
-        body: "A new exception occurred: 'divided by 0' on '/Users/sebastian/exception_notification/test/campfire_test.rb:45:in `/'"
+        body: fake_notification_body
       }
     }
+  end
+
+  def fake_notification_body
+    "A new exception occurred: 'divided by 0' on " \
+    "/Users/sebastian/exception_notification/test/campfire_test.rb:45:in `/'"
   end
 
   def fake_exception

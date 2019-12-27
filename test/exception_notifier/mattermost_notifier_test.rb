@@ -182,10 +182,12 @@ class MattermostNotifierTest < ActiveSupport::TestCase
 
   def github_link
     if defined?(::Rails) && ::Rails.respond_to?(:application)
-      '[Create an issue](github.com/aschen/dummy/issues/new/?issue%5Btitle%5D=%5BBUG%5D+Error+500+%3A++%28ArgumentError%29+foo)'
+      '[Create an issue]' \
+      '(github.com/aschen/dummy/issues/new/?issue%5Btitle%5D=%5BBUG%5D+Error+500+%3A++%28ArgumentError%29+foo)'
     else
       # TODO: fix missing app name
-      '[Create an issue](github.com/aschen//issues/new/?issue%5Btitle%5D=%5BBUG%5D+Error+500+%3A++%28ArgumentError%29+foo)'
+      '[Create an issue]' \
+      '(github.com/aschen//issues/new/?issue%5Btitle%5D=%5BBUG%5D+Error+500+%3A++%28ArgumentError%29+foo)'
     end
   end
 

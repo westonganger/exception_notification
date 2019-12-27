@@ -222,8 +222,10 @@ class EmailNotifierWithEnvTest < ActiveSupport::TestCase
       email_headers: { 'X-Custom-Header' => 'foobar' },
       sections: %w[new_section request session environment backtrace],
       background_sections: %w[new_bkg_section backtrace data],
-      pre_callback: proc { |_opts, _notifier, _backtrace, _message, message_opts| message_opts[:pre_callback_called] = 1 },
-      post_callback: proc { |_opts, _notifier, _backtrace, _message, message_opts| message_opts[:post_callback_called] = 1 }
+      pre_callback:
+        proc { |_opts, _notifier, _backtrace, _message, message_opts| message_opts[:pre_callback_called] = 1 },
+      post_callback:
+        proc { |_opts, _notifier, _backtrace, _message, message_opts| message_opts[:post_callback_called] = 1 }
     )
 
     @controller = HomeController.new

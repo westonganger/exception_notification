@@ -63,9 +63,9 @@ class SnsNotifierTest < ActiveSupport::TestCase
   test 'should send a sns notification in background' do
     Aws::SNS::Client.any_instance.expects(:publish).with(
       topic_arn: 'topicARN',
-      message: "3 MyException occured in background\n"\
-             "Exception: undefined method 'method=' for Empty\n"\
-             "Hostname: example.com\n"\
+      message: "3 MyException occured in background\n" \
+             "Exception: undefined method 'method=' for Empty\n" \
+             "Hostname: example.com\n" \
              "Backtrace:\n#{fake_backtrace.join("\n")}\n",
       subject: '[App Exception] - 3 MyException occurred'
     )
@@ -81,10 +81,10 @@ class SnsNotifierTest < ActiveSupport::TestCase
 
     Aws::SNS::Client.any_instance.expects(:publish).with(
       topic_arn: 'topicARN',
-      message: 'A MyException occurred while GET </examples> '\
-             "was processed by examples#index\n"\
-             "Exception: undefined method 'method=' for Empty\n"\
-             "Hostname: example.com\n"\
+      message: 'A MyException occurred while GET </examples> ' \
+             "was processed by examples#index\n" \
+             "Exception: undefined method 'method=' for Empty\n" \
+             "Hostname: example.com\n" \
              "Backtrace:\n#{fake_backtrace.join("\n")}\n",
       subject: '[App Exception] - A MyException occurred'
     )

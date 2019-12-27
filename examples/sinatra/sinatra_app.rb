@@ -7,7 +7,8 @@ require 'exception_notification'
 
 class SinatraApp < Sinatra::Base
   use Rack::Config do |env|
-    env['action_dispatch.parameter_filter'] = [:password] # This is highly recommended.  It will prevent the ExceptionNotification email from including your users' passwords
+    # This is highly recommended.  It will prevent the ExceptionNotification email from including your users' passwords
+    env['action_dispatch.parameter_filter'] = [:password]
   end
 
   use ExceptionNotification::Rack,
@@ -24,7 +25,8 @@ class SinatraApp < Sinatra::Base
   get '/' do
     raise StandardError, "ERROR: #{params[:error]}" unless params[:error].blank?
 
-    'Everything is fine! Now, lets break things clicking <a href="/?error=ops"> here </a>. Dont forget to see the emails at <a href="http://localhost:1080">mailcatcher</a> !'
+    'Everything is fine! Now, lets break things clicking <a href="/?error=ops"> here </a>.' \
+    'Dont forget to see the emails at <a href="http://localhost:1080">mailcatcher</a> !'
   end
 
   get '/background_notification' do

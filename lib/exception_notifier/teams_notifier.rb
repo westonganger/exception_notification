@@ -66,8 +66,6 @@ module ExceptionNotifier
     private
 
     def message_text
-      errors_count = @options[:accumulated_errors_count].to_i
-
       text = {
         '@type' => 'MessageCard',
         '@context' => 'http://schema.org/extensions',
@@ -75,7 +73,7 @@ module ExceptionNotifier
         'title' => "⚠️ Exception Occurred in #{env_name} ⚠️",
         'sections' => [
           {
-            'activityTitle' => "#{errors_count > 1 ? errors_count : 'A'} *#{@exception.class}* occurred" + (@controller ? " in *#{controller_and_method}*." : '.'),
+            'activityTitle' => activity_title,
             'activitySubtitle' => @exception.message.to_s
           }
         ],
@@ -100,6 +98,13 @@ module ExceptionNotifier
       details['facts'].push message_backtrace unless @backtrace.nil?
 
       details
+    end
+
+    def activity_title
+      errors_count = @options[:accumulated_errors_count].to_i
+
+      "#{errors_count > 1 ? errors_count : 'A'} *#{@exception.class}* occurred" +
+        (@controller ? " in *#{controller_and_method}*." : '.')
     end
 
     def message_request
