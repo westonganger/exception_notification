@@ -5,6 +5,7 @@ rvm:
   - 2.4.9
   - 2.5.7
   - 2.6.5
+  - 2.7.0
 env:
 - COVERALLS_SILENT=true
 before_install:
@@ -45,9 +46,13 @@ matrix:
       gemfile: gemfiles/rails4_0.gemfile
     - rvm: 2.6.5
       gemfile: gemfiles/rails4_1.gemfile
+    - rvm: 2.7.0
+      gemfile: gemfiles/rails4_0.gemfile
+    - rvm: 2.7.0
+      gemfile: gemfiles/rails4_1.gemfile
 
 jobs:
   include:
     - stage: Lint
-      rvm: 2.6.4
+      rvm: 2.7.0
       script: bundle exec rubocop
