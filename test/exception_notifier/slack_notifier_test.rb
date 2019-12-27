@@ -188,12 +188,8 @@ class SlackNotifierTest < ActiveSupport::TestCase
 
   def fake_backtrace
     [
-      'backtrace line 1',
-      'backtrace line 2',
-      'backtrace line 3',
-      'backtrace line 4',
-      'backtrace line 5',
-      'backtrace line 6'
+      'backtrace line 1', 'backtrace line 2', 'backtrace line 3',
+      'backtrace line 4', 'backtrace line 5', 'backtrace line 6'
     ]
   end
 

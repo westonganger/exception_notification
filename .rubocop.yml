@@ -11,3 +11,15 @@ Style/Documentation:
 
 Layout/LineLength:
   Max: 120
+
+Metrics/ModuleLength:
+  Exclude:
+    - "lib/exception_notifier.rb"
+
+Metrics/MethodLength:
+  Exclude:
+    - "lib/exception_notifier/email_notifier.rb"
+
+Metrics/BlockLength:
+  Exclude:
+    - "lib/exception_notifier/email_notifier.rb"
