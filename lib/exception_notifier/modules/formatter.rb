@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'active_support/core_ext/time'
 require 'action_dispatch'
 
@@ -108,6 +110,7 @@ module ExceptionNotifier
 
     def rails_app_name
       return unless defined?(::Rails) && ::Rails.respond_to?(:application)
+
       Rails.application.class.parent_name.underscore
     end
 

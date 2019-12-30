@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 require 'rack'
 
@@ -33,7 +35,9 @@ class HipchatNotifierTest < ActiveSupport::TestCase
       post_callback: proc { |*| post_callback_called += 1 }
     }
 
-    HipChat::Room.any_instance.expects(:send).with('Exception', fake_body, { color: 'yellow' }.merge(options.except(:api_token, :room_name)))
+    HipChat::Room.any_instance
+                 .expects(:send)
+                 .with('Exception', fake_body, { color: 'yellow' }.merge(options.except(:api_token, :room_name)))
 
     hipchat = ExceptionNotifier::HipchatNotifier.new(options)
     hipchat.call(fake_exception)
@@ -105,7 +109,9 @@ class HipchatNotifierTest < ActiveSupport::TestCase
       message_template: ->(exception, _) { "This is custom message: '#{exception.message}'" }
     }
 
-    HipChat::Room.any_instance.expects(:send).with('Exception', "This is custom message: '#{fake_exception.message}'", color: 'yellow')
+    HipChat::Room.any_instance
+                 .expects(:send)
+                 .with('Exception', "This is custom message: '#{fake_exception.message}'", color: 'yellow')
 
     hipchat = ExceptionNotifier::HipchatNotifier.new(options)
     hipchat.call(fake_exception)

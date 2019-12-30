@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # -------------------------------------------
 # To run the application: ruby examples/sample_app.rb
 # -------------------------------------------

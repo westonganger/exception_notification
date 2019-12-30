@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'logger'
 require 'active_support/core_ext/string/inflections'
 require 'active_support/core_ext/module/attribute_accessors'
@@ -31,7 +33,10 @@ module ExceptionNotifier
 
   # Define a set of exceptions to be ignored, ie, dont send notifications when any of them are raised.
   mattr_accessor :ignored_exceptions
-  @@ignored_exceptions = %w[ActiveRecord::RecordNotFound Mongoid::Errors::DocumentNotFound AbstractController::ActionNotFound ActionController::RoutingError ActionController::UnknownFormat ActionController::UrlGenerationError]
+  @@ignored_exceptions = %w[
+    ActiveRecord::RecordNotFound Mongoid::Errors::DocumentNotFound AbstractController::ActionNotFound
+    ActionController::RoutingError ActionController::UnknownFormat ActionController::UrlGenerationError
+  ]
 
   mattr_accessor :testing_mode
   @@testing_mode = false
@@ -112,7 +117,9 @@ module ExceptionNotifier
     rescue Exception => e
       raise e if @@testing_mode
 
-      logger.warn "An error occurred when evaluating an ignore condition. #{e.class}: #{e.message}\n#{e.backtrace.join("\n")}"
+      logger.warn(
+        "An error occurred when evaluating an ignore condition. #{e.class}: #{e.message}\n#{e.backtrace.join("\n")}"
+      )
       false
     end
 
@@ -128,7 +135,10 @@ module ExceptionNotifier
     rescue Exception => e
       raise e if @@testing_mode
 
-      logger.warn "An error occurred when sending a notification using '#{notifier_name}' notifier. #{e.class}: #{e.message}\n#{e.backtrace.join("\n")}"
+      logger.warn(
+        "An error occurred when sending a notification using '#{notifier_name}' notifier." \
+        "#{e.class}: #{e.message}\n#{e.backtrace.join("\n")}"
+      )
       false
     end
 
@@ -138,7 +148,8 @@ module ExceptionNotifier
       notifier = notifier_class.new(options)
       register_exception_notifier(name, notifier)
     rescue NameError => e
-      raise UndefinedNotifierError, "No notifier named '#{name}' was found. Please, revise your configuration options. Cause: #{e.message}"
+      raise UndefinedNotifierError,
+            "No notifier named '#{name}' was found. Please, revise your configuration options. Cause: #{e.message}"
     end
 
     def from_crawler(env, ignored_crawlers)

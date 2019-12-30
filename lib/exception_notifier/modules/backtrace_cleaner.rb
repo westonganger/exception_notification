@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ExceptionNotifier
   module BacktraceCleaner
     def clean_backtrace(exception)

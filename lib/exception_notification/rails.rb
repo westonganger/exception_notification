@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ExceptionNotification
   class Engine < ::Rails::Engine
     config.exception_notification = ExceptionNotifier

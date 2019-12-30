@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'action_dispatch'
 require 'active_support/core_ext/time'
 
@@ -18,9 +20,7 @@ module ExceptionNotifier
       options[:body] ||= {}
       options[:body][:server] = Socket.gethostname
       options[:body][:process] = $PROCESS_ID
-      if defined?(Rails) && Rails.respond_to?(:root)
-        options[:body][:rails_root] = Rails.root
-      end
+      options[:body][:rails_root] = Rails.root if defined?(Rails) && Rails.respond_to?(:root)
       options[:body][:exception] = {
         error_class: exception.class.to_s,
         message: exception.message.inspect,

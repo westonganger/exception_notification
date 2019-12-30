@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 require 'action_mailer'
 require 'action_controller'
@@ -116,7 +118,7 @@ class EmailNotifierTest < ActiveSupport::TestCase
       env: {
         'REQUEST_METHOD' => 'GET',
         'rack.input' => '',
-        'invalid_encoding' => "R\xC3\xA9sum\xC3\xA9".force_encoding(Encoding::ASCII)
+        'invalid_encoding' => "R\xC3\xA9sum\xC3\xA9".dup.force_encoding(Encoding::ASCII)
       }
     )
 
@@ -220,8 +222,10 @@ class EmailNotifierWithEnvTest < ActiveSupport::TestCase
       email_headers: { 'X-Custom-Header' => 'foobar' },
       sections: %w[new_section request session environment backtrace],
       background_sections: %w[new_bkg_section backtrace data],
-      pre_callback: proc { |_opts, _notifier, _backtrace, _message, message_opts| message_opts[:pre_callback_called] = 1 },
-      post_callback: proc { |_opts, _notifier, _backtrace, _message, message_opts| message_opts[:post_callback_called] = 1 }
+      pre_callback:
+        proc { |_opts, _notifier, _backtrace, _message, message_opts| message_opts[:pre_callback_called] = 1 },
+      post_callback:
+        proc { |_opts, _notifier, _backtrace, _message, message_opts| message_opts[:post_callback_called] = 1 }
     )
 
     @controller = HomeController.new

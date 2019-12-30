@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 require 'httparty'
 
@@ -88,9 +90,9 @@ class WebhookNotifierTest < ActiveSupport::TestCase
 
   def fake_exception
     @fake_exception ||= begin
-      5 / 0
-    rescue StandardError => e
-      e
-    end
+                          5 / 0
+                        rescue StandardError => e
+                          e
+                        end
   end
 end

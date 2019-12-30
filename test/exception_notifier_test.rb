@@ -1,7 +1,15 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class ExceptionOne < StandardError; end
 class ExceptionTwo < StandardError; end
+
+module ExceptionNotifier
+  def self.reset_notifiers!
+    @@notifiers.delete_if { |k, _| k.to_s != 'email' }
+  end
+end
 
 class ExceptionNotifierTest < ActiveSupport::TestCase
   setup do
@@ -14,15 +22,16 @@ class ExceptionNotifierTest < ActiveSupport::TestCase
   teardown do
     ExceptionNotifier.error_grouping = false
     ExceptionNotifier.notification_trigger = nil
-    ExceptionNotifier.class_eval('@@notifiers.delete_if { |k, _| k.to_s != "email"}') # reset notifiers
+    ExceptionNotifier.reset_notifiers!
 
     Rails.cache.clear if defined?(Rails) && Rails.respond_to?(:cache)
   end
 
   test 'should have default ignored exceptions' do
     assert_equal ExceptionNotifier.ignored_exceptions,
-                 ['ActiveRecord::RecordNotFound', 'Mongoid::Errors::DocumentNotFound', 'AbstractController::ActionNotFound',
-                  'ActionController::RoutingError', 'ActionController::UnknownFormat', 'ActionController::UrlGenerationError']
+                 ['ActiveRecord::RecordNotFound', 'Mongoid::Errors::DocumentNotFound',
+                  'AbstractController::ActionNotFound', 'ActionController::RoutingError',
+                  'ActionController::UnknownFormat', 'ActionController::UrlGenerationError']
   end
 
   test 'should have email notifier registered' do

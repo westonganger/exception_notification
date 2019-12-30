@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 require 'coveralls'
 Coveralls.wear!
 
-$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
+$LOAD_PATH.unshift File.expand_path('../lib', __dir__)
 require 'exception_notification'
 
 require 'minitest/autorun'
