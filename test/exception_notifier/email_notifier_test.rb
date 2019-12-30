@@ -356,7 +356,7 @@ end
 
 class EmailNotifierWithCustomParentClassTest < ActiveSupport::TestCase
   class ApplicationMailer < ActionMailer::Base
-    default from: "infrastructure@example.com"
+    default from: 'infrastructure@example.com'
   end
 
   setup do
@@ -366,12 +366,12 @@ class EmailNotifierWithCustomParentClassTest < ActiveSupport::TestCase
 
   test 'uses default from configured parent class' do
     email_notifier = ExceptionNotifier::EmailNotifier.new(
-      mailer_parent: "EmailNotifierWithCustomParentClassTest::ApplicationMailer",
+      mailer_parent: 'EmailNotifierWithCustomParentClassTest::ApplicationMailer',
       exception_recipients: %w[dummyexceptions@example.com]
     )
     mail = email_notifier.call(@exception)
 
     assert email_notifier.__send__(:mailer) < ApplicationMailer
-    assert_equal [ "infrastructure@example.com" ], mail.from
+    assert_equal ['infrastructure@example.com'], mail.from
   end
 end
