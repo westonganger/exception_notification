@@ -59,4 +59,5 @@ jobs:
   include:
     - stage: Lint
       rvm: 2.7.0
+      gemfile: gemfiles/rails6_0.gemfile
       script: bundle exec rubocop
