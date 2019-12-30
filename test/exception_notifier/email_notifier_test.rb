@@ -353,3 +353,25 @@ class EmailNotifierWithEnvTest < ActiveSupport::TestCase
     assert_equal '[ERROR]  (ZeroDivisionError) "divided by 0"', mail.subject
   end
 end
+
+class EmailNotifierWithCustomParentClassTest < ActiveSupport::TestCase
+  class ApplicationMailer < ActionMailer::Base
+    default from: "infrastructure@example.com"
+  end
+
+  setup do
+    @exception = ZeroDivisionError.new('divided by 0')
+    @exception.set_backtrace(["#{__FILE__}:#{__LINE__}"])
+  end
+
+  test 'uses default from configured parent class' do
+    email_notifier = ExceptionNotifier::EmailNotifier.new(
+      mailer_parent: "EmailNotifierWithCustomParentClassTest::ApplicationMailer",
+      exception_recipients: %w[dummyexceptions@example.com]
+    )
+    mail = email_notifier.call(@exception)
+
+    assert email_notifier.__send__(:mailer) < ApplicationMailer
+    assert_equal [ "infrastructure@example.com" ], mail.from
+  end
+end
