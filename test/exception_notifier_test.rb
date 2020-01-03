@@ -148,7 +148,8 @@ class ExceptionNotifierTest < ActiveSupport::TestCase
     ExceptionNotifier.notify_exception(exception, notifiers: :test)
     assert_equal @notifier_calls, 1
 
-    ExceptionNotifier.notify_exception(exception, notifiers: :test, ignore_exceptions: 'ExceptionNotifierTest::StandardErrorModule')
+    ignore_exceptions = 'ExceptionNotifierTest::StandardErrorModule'
+    ExceptionNotifier.notify_exception(exception, notifiers: :test, ignore_exceptions: ignore_exceptions)
     assert_equal @notifier_calls, 1
   end
 
@@ -163,7 +164,8 @@ class ExceptionNotifierTest < ActiveSupport::TestCase
     ExceptionNotifier.notify_exception(exception, notifiers: :test)
     assert_equal @notifier_calls, 1
 
-    ExceptionNotifier.notify_exception(exception, notifiers: :test, ignore_exceptions: 'ExceptionNotifierTest::StandardErrorModule')
+    ignore_exceptions = 'ExceptionNotifierTest::StandardErrorModule'
+    ExceptionNotifier.notify_exception(exception, notifiers: :test, ignore_exceptions: ignore_exceptions)
     assert_equal @notifier_calls, 1
   end
 
