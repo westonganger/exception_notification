@@ -12,8 +12,7 @@ class RackTest < ActiveSupport::TestCase
   end
 
   teardown do
-    ExceptionNotifier.error_grouping = false
-    ExceptionNotifier.notification_trigger = nil
+    ExceptionNotifier.reset_notifiers!
   end
 
   test 'should ignore "X-Cascade" header by default' do

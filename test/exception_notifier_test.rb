@@ -5,12 +5,6 @@ require 'test_helper'
 class ExceptionOne < StandardError; end
 class ExceptionTwo < StandardError; end
 
-module ExceptionNotifier
-  def self.reset_notifiers!
-    @@notifiers.delete_if { |k, _| k.to_s != 'email' }
-  end
-end
-
 class ExceptionNotifierTest < ActiveSupport::TestCase
   setup do
     ExceptionNotifier.register_exception_notifier(:email, exception_recipients: %w[dummyexceptions@example.com])
@@ -20,8 +14,6 @@ class ExceptionNotifierTest < ActiveSupport::TestCase
   end
 
   teardown do
-    ExceptionNotifier.error_grouping = false
-    ExceptionNotifier.notification_trigger = nil
     ExceptionNotifier.reset_notifiers!
 
     Rails.cache.clear if defined?(Rails) && Rails.respond_to?(:cache)
@@ -106,8 +98,6 @@ class ExceptionNotifierTest < ActiveSupport::TestCase
     env = 'development'
     ExceptionNotifier.notify_exception(exception, notifiers: :test)
     assert_equal @notifier_calls, 1
-
-    ExceptionNotifier.clear_ignore_conditions!
   end
 
   test 'should ignore exception if satisfies by-notifier conditional ignore' do
@@ -144,8 +134,6 @@ class ExceptionNotifierTest < ActiveSupport::TestCase
     ExceptionNotifier.notify_exception(exception)
     assert_equal notifier1_calls, 2
     assert_equal notifier2_calls, 2
-
-    ExceptionNotifier.clear_ignore_conditions!
   end
 
   test 'should return false if all the registered notifiers are ignored' do
@@ -167,8 +155,6 @@ class ExceptionNotifierTest < ActiveSupport::TestCase
     exception = StandardError.new('a non_critical_error occured.')
 
     refute ExceptionNotifier.notify_exception(exception)
-
-    ExceptionNotifier.clear_ignore_conditions!
   end
 
   test 'should return true if one of the notifiers fires' do
@@ -187,8 +173,6 @@ class ExceptionNotifierTest < ActiveSupport::TestCase
     exception = StandardError.new('a non-critical error occured')
 
     assert ExceptionNotifier.notify_exception(exception)
-
-    ExceptionNotifier.clear_ignore_conditions!
   end
 
   test 'should not send notification if one of ignored exceptions' do
