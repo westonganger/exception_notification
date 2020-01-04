@@ -27,6 +27,15 @@ module ExceptionNotification
         end
       end
 
+      if options.key?(:ignore_notifier_if)
+        rack_ignore_by_notifier = options.delete(:ignore_notifier_if)
+        rack_ignore_by_notifier.each do |notifier, proc|
+          ExceptionNotifier.ignore_notifier_if(notifier) do |exception, opts|
+            opts.key?(:env) && proc.call(opts[:env], exception)
+          end
+        end
+      end
+
       ExceptionNotifier.ignore_crawlers(options.delete(:ignore_crawlers)) if options.key?(:ignore_crawlers)
 
       @ignore_cascade_pass = options.delete(:ignore_cascade_pass) { true }

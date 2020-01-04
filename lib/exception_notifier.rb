@@ -45,6 +45,9 @@ module ExceptionNotifier
     # Store conditions that decide when exceptions must be ignored or not.
     @@ignores = []
 
+    # Store by-notifier conditions that decide when exceptions must be ignored or not.
+    @@by_notifier_ignores = {}
+
     # Store notifiers that send notifications when exceptions are raised.
     @@notifiers = {}
 
@@ -61,11 +64,16 @@ module ExceptionNotifier
         return false unless send_notification?(exception, errors_count)
       end
 
+      notification_fired = false
       selected_notifiers = options.delete(:notifiers) || notifiers
       [*selected_notifiers].each do |notifier|
-        fire_notification(notifier, exception, options.dup, &block)
+        unless notifier_ignored?(exception, options, notifier: notifier)
+          fire_notification(notifier, exception, options.dup, &block)
+          notification_fired = true
+        end
       end
-      true
+
+      notification_fired
     end
 
     def register_exception_notifier(name, notifier_or_options)
@@ -100,6 +108,10 @@ module ExceptionNotifier
       @@ignores << block
     end
 
+    def ignore_notifier_if(notifier, &block)
+      @@by_notifier_ignores[notifier] = block
+    end
+
     def ignore_crawlers(crawlers)
       ignore_if do |_exception, opts|
         opts.key?(:env) && from_crawler(opts[:env], crawlers)
@@ -108,6 +120,7 @@ module ExceptionNotifier
 
     def clear_ignore_conditions!
       @@ignores.clear
+      @@by_notifier_ignores.clear
     end
 
     private
@@ -120,6 +133,21 @@ module ExceptionNotifier
       logger.warn(
         "An error occurred when evaluating an ignore condition. #{e.class}: #{e.message}\n#{e.backtrace.join("\n")}"
       )
+      false
+    end
+
+    def notifier_ignored?(exception, options, notifier:)
+      return false unless @@by_notifier_ignores.key?(notifier)
+
+      condition = @@by_notifier_ignores[notifier]
+      condition.call(exception, options)
+    rescue Exception => e
+      raise e if @@testing_mode
+
+      logger.warn(<<~"MESSAGE")
+        An error occurred when evaluating a by-notifier ignore condition. #{e.class}: #{e.message}
+        #{e.backtrace.join("\n")}
+      MESSAGE
       false
     end
 
