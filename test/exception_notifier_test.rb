@@ -5,12 +5,6 @@ require 'test_helper'
 class ExceptionOne < StandardError; end
 class ExceptionTwo < StandardError; end
 
-module ExceptionNotifier
-  def self.reset_notifiers!
-    @@notifiers.delete_if { |k, _| k.to_s != 'email' }
-  end
-end
-
 class ExceptionNotifierTest < ActiveSupport::TestCase
   setup do
     ExceptionNotifier.register_exception_notifier(:email, exception_recipients: %w[dummyexceptions@example.com])
@@ -20,8 +14,6 @@ class ExceptionNotifierTest < ActiveSupport::TestCase
   end
 
   teardown do
-    ExceptionNotifier.error_grouping = false
-    ExceptionNotifier.notification_trigger = nil
     ExceptionNotifier.reset_notifiers!
 
     Rails.cache.clear if defined?(Rails) && Rails.respond_to?(:cache)
@@ -106,8 +98,81 @@ class ExceptionNotifierTest < ActiveSupport::TestCase
     env = 'development'
     ExceptionNotifier.notify_exception(exception, notifiers: :test)
     assert_equal @notifier_calls, 1
+  end
 
-    ExceptionNotifier.clear_ignore_conditions!
+  test 'should ignore exception if satisfies by-notifier conditional ignore' do
+    notifier1_calls = 0
+    notifier1 = ->(_exception, _options) { notifier1_calls += 1 }
+    ExceptionNotifier.register_exception_notifier(:notifier1, notifier1)
+
+    notifier2_calls = 0
+    notifier2 = ->(_exception, _options) { notifier2_calls += 1 }
+    ExceptionNotifier.register_exception_notifier(:notifier2, notifier2)
+
+    env = 'production'
+    ExceptionNotifier.ignore_notifier_if(:notifier1) do |_exception, _options|
+      env == 'development'
+    end
+    ExceptionNotifier.ignore_notifier_if(:notifier2) do |_exception, _options|
+      env == 'production'
+    end
+
+    exception = StandardError.new
+
+    ExceptionNotifier.notify_exception(exception)
+    assert_equal notifier1_calls, 1
+    assert_equal notifier2_calls, 0
+
+    env = 'development'
+
+    ExceptionNotifier.notify_exception(exception)
+    assert_equal notifier1_calls, 1
+    assert_equal notifier2_calls, 1
+
+    env = 'test'
+
+    ExceptionNotifier.notify_exception(exception)
+    assert_equal notifier1_calls, 2
+    assert_equal notifier2_calls, 2
+  end
+
+  test 'should return false if all the registered notifiers are ignored' do
+    ExceptionNotifier.notifiers.each do |notifier|
+      # make sure to register no other notifiers but the tested ones
+      ExceptionNotifier.unregister_exception_notifier(notifier)
+    end
+
+    ExceptionNotifier.register_exception_notifier(:notifier1, ->(_, _) {})
+    ExceptionNotifier.register_exception_notifier(:notifier2, ->(_, _) {})
+
+    ExceptionNotifier.ignore_notifier_if(:notifier1) do |exception, _options|
+      exception.message =~ /non_critical_error/
+    end
+    ExceptionNotifier.ignore_notifier_if(:notifier2) do |exception, _options|
+      exception.message =~ /non_critical_error/
+    end
+
+    exception = StandardError.new('a non_critical_error occured.')
+
+    refute ExceptionNotifier.notify_exception(exception)
+  end
+
+  test 'should return true if one of the notifiers fires' do
+    ExceptionNotifier.notifiers.each do |notifier|
+      # make sure to register no other notifiers but the tested ones
+      ExceptionNotifier.unregister_exception_notifier(notifier)
+    end
+
+    ExceptionNotifier.register_exception_notifier(:notifier1, ->(_, _) {})
+    ExceptionNotifier.register_exception_notifier(:notifier2, ->(_, _) {})
+
+    ExceptionNotifier.ignore_notifier_if(:notifier1) do |exception, _options|
+      exception.message =~ /non-critical\serror/
+    end
+
+    exception = StandardError.new('a non-critical error occured')
+
+    assert ExceptionNotifier.notify_exception(exception)
   end
 
   test 'should not send notification if one of ignored exceptions' do

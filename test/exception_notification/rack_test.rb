@@ -12,8 +12,7 @@ class RackTest < ActiveSupport::TestCase
   end
 
   teardown do
-    ExceptionNotifier.error_grouping = false
-    ExceptionNotifier.notification_trigger = nil
+    ExceptionNotifier.reset_notifiers!
   end
 
   test 'should ignore "X-Cascade" header by default' do
@@ -57,6 +56,51 @@ class RackTest < ActiveSupport::TestCase
       flunk
     rescue StandardError
       refute env['exception_notifier.delivered']
+    end
+  end
+
+  test 'should ignore exceptions if ignore_if condition is met' do
+    exception_app = Object.new
+    exception_app.stubs(:call).raises(RuntimeError)
+
+    env = {}
+
+    begin
+      ExceptionNotification::Rack.new(
+        exception_app,
+        ignore_if: ->(_env, exception) { exception.is_a? RuntimeError }
+      ).call(env)
+
+      flunk
+    rescue StandardError
+      refute env['exception_notifier.delivered']
+    end
+  end
+
+  test 'should ignore exceptions with notifiers that satisfies ignore_notifier_if condition' do
+    exception_app = Object.new
+    exception_app.stubs(:call).raises(RuntimeError)
+
+    notifier1_called = notifier2_called = false
+    notifier1 = ->(_exception, _options) { notifier1_called = true }
+    notifier2 = ->(_exception, _options) { notifier2_called = true }
+
+    env = {}
+
+    begin
+      ExceptionNotification::Rack.new(
+        exception_app,
+        ignore_notifier_if: {
+          notifier1: ->(_env, exception) { exception.is_a? RuntimeError }
+        },
+        notifier1: notifier1,
+        notifier2: notifier2
+      ).call(env)
+
+      flunk
+    rescue StandardError
+      refute notifier1_called
+      assert notifier2_called
     end
   end
 end

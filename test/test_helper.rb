@@ -12,6 +12,8 @@ require 'active_support/test_case'
 require 'action_mailer'
 
 ExceptionNotifier.testing_mode!
+require 'support/exception_notifier_helper'
+
 Time.zone = 'UTC'
 ActionMailer::Base.delivery_method = :test
 ActionMailer::Base.append_view_path "#{File.dirname(__FILE__)}/support/views"

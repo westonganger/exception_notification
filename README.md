@@ -136,6 +136,8 @@ You can choose to ignore certain exceptions, which will make ExceptionNotificati
 
 * `:ignore_if`         - Custom (i.e. ignore exceptions that satisfy some condition)
 
+* `:ignore_notifer_if` - Custom (i.e. let each notifier ignore exceptions if by-notifier condition is satisfied)
+
 
 ### :ignore_exceptions
 
@@ -175,7 +177,7 @@ Rails.application.config.middleware.use ExceptionNotification::Rack,
 
 *Lambda, default: nil*
 
-Last but not least, you can ignore exceptions based on a condition. Take a look:
+You can ignore exceptions based on a condition. Take a look:
 
 ```ruby
 Rails.application.config.middleware.use ExceptionNotification::Rack,
@@ -188,6 +190,32 @@ Rails.application.config.middleware.use ExceptionNotification::Rack,
 ```
 
 You can make use of both the environment and the exception inside the lambda to decide wether to avoid or not sending the notification.
+
+### :ignore_notifier_if
+
+* Hash of Lambda, default: nil*
+
+In case you want a notifier to ignore certain exceptions, but don't want other notifiers to skip them, you can set by-notifier ignore options.
+By setting below, each notifier will ignore exceptions when its corresponding condition is met.
+
+```ruby
+Rails.application.config.middleware.use ExceptionNotification::Rack,
+                                        ignore_notifier_if: {
+                                          email: ->(env, exception) { !Rails.env.production? },
+                                          slack: ->(env, exception) { exception.message =~ /^Couldn't find Page with ID=/ }
+                                        }
+
+                                        email: {
+                                          sender_address: %{"notifier" <notifier@example.com>},
+                                          exception_recipients: %w{exceptions@example.com}
+                                        },
+                                        slack: {
+                                          webhook_url: '[Your webhook url]',
+                                          channel: '#exceptions',
+                                        }
+```
+
+To customize each condition, you can make use of environment and the exception object inside the lambda.
 
 ## Rack X-Cascade Header
 
