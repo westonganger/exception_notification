@@ -56,7 +56,7 @@ module ExceptionNotifier
         text << backtrace
       end
 
-      if (exception_data = @env["exception_notifier.exception_data"])
+      if (exception_data = @env['exception_notifier.exception_data'])
         text << '### Data'
         data_string = exception_data.map { |k, v| "* #{k} : #{v}" }.join("\n")
         text << "```\n#{data_string}\n```"
