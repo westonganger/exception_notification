@@ -140,6 +140,31 @@ class MattermostNotifierTest < ActiveSupport::TestCase
     notifier.call(exception, env: test_env)
   end
 
+  test 'should include exception_data_info' do
+    body = default_body.merge(
+      text: [
+        '@channel',
+        error_occurred_in,
+        'An *ArgumentError* occurred.',
+        '*foo*',
+        request_info,
+        exception_data_info
+      ].join("\n")
+    )
+
+    opts = {
+      body: body.to_json,
+      headers: default_headers
+    }
+
+    env = test_env.merge(
+      'exception_notifier.exception_data' => { foo: 'bar', john: 'doe' }
+    )
+
+    HTTParty.expects(:post).with(URL, opts)
+    notifier.call(ArgumentError.new('foo'), env: env)
+  end
+
   private
 
   def notifier
@@ -210,6 +235,16 @@ class MattermostNotifierTest < ActiveSupport::TestCase
       '```',
       "* app/controllers/my_controller.rb:53:in `my_controller_params'",
       "* app/controllers/my_controller.rb:34:in `update'",
+      '```'
+    ]
+  end
+
+  def exception_data_info
+    [
+      '### Data',
+      '```',
+      '* foo : bar',
+      '* john : doe',
       '```'
     ]
   end

@@ -12,6 +12,8 @@ module ExceptionNotifier
 
       @gitlab_url = options[:git_url]
 
+      @env = options[:env] || {}
+
       payload = {
         text: message_text.compact.join("\n"),
         username: options[:username] || 'Exception Notifier'
@@ -52,6 +54,12 @@ module ExceptionNotifier
       if (backtrace = formatter.backtrace_message.presence)
         text << '### Backtrace'
         text << backtrace
+      end
+
+      if (exception_data = @env['exception_notifier.exception_data'])
+        text << '### Data'
+        data_string = exception_data.map { |k, v| "* #{k} : #{v}" }.join("\n")
+        text << "```\n#{data_string}\n```"
       end
 
       text << message_issue_link if @gitlab_url
