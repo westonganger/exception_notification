@@ -1,3 +1,13 @@
+== 4.4.1
+
+* enhancements
+  * Enhance `ignore_if` option to allow by-notifier customization (by @fursich)
+  * Ignore extended modules of ignored exceptions (by @elengine)
+  * Add `exception_data` to Mattermost notifier (by @camillof)
+
+* bug fixes
+  * Fix Rubocop offenses (by @nicolasferraro)
+
 == 4.4.0
 
 * enhancements
