@@ -44,7 +44,6 @@ module ExceptionNotifier
             @exception  = exception
 
             env_options = env['exception_notifier.options'] || {}
-            options[:sender_address] ||= self.class.default[:from] unless self.class.default[:from].nil?
             @options    = default_options.merge(env_options).merge(options)
 
             @kontroller = env['action_controller.instance'] || MissingController.new
@@ -62,7 +61,6 @@ module ExceptionNotifier
             load_custom_views
 
             @exception = exception
-            options[:sender_address] ||= self.class.default[:from] unless self.class.default[:from].nil?
             @options   = default_options.merge(options).symbolize_keys
             @backtrace = exception.backtrace || []
             @timestamp = Time.current
