@@ -1,4 +1,9 @@
-== 4.4.2
+== 4.4.3
+
+* big fixes
+  * Remove using configured default from address from custom mailer_parent class
+
+== 4.4.2 (yanked)
 
 * bug fixes
   * Fix `sender_address` being overwritten
